@@ -30,12 +30,14 @@ FIND_PACKAGE(Fcppt REQUIRED)
 
 INCLUDE_DIRECTORIES(${FCPPT_INCLUDE_DIRS})
 
-ADD_EXECUTABLE(
+ADD_SUBDIRECTORY(
 	convenience_headers
-	src/convenience_headers.cpp
 )
 
-TARGET_LINK_LIBRARIES(
-	convenience_headers	
-	${FCPPT_LIBRARIES}
+ADD_SUBDIRECTORY(
+	update_license
+)
+
+ADD_SUBDIRECTORY(
+	update_cmake
 )

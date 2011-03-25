@@ -5,6 +5,7 @@
 #include <fcppt/filesystem/path.hpp>
 #include <fcppt/filesystem/path_to_string.hpp>
 #include <fcppt/filesystem/recursive_directory_iterator.hpp>
+#include <fcppt/filesystem/remove_extension.hpp>
 #include <fcppt/filesystem/stem.hpp>
 #include <fcppt/io/cerr.hpp>
 #include <fcppt/io/ofstream.hpp>
@@ -12,6 +13,7 @@
 #include <fcppt/from_std_string.hpp>
 #include <fcppt/string.hpp>
 #include <fcppt/text.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/foreach.hpp>
 #include <algorithm>
 #include <exception>
@@ -46,6 +48,47 @@ make_header(
 			+ FCPPT_TEXT(".hpp")
 		);
 			
+}
+
+fcppt::string const
+make_include_guard(
+	fcppt::filesystem::path const &_path
+)
+{
+	fcppt::string ret;
+
+	fcppt::filesystem::path const new_path(
+		fcppt::filesystem::remove_extension(
+			_path
+		)
+	);
+
+	for(
+		fcppt::filesystem::path::const_iterator it(
+			new_path.begin()
+		);
+		it != new_path.end();
+		++it
+	)
+	{
+		fcppt::string component(
+			fcppt::filesystem::path_to_string(
+				*it
+			)
+		);
+
+		boost::algorithm::to_upper(
+			component
+		);
+		
+		ret +=
+			component
+			+ FCPPT_TEXT('_');
+	}
+	
+	ret += FCPPT_TEXT("HPP_INCLUDED");
+
+	return ret;
 }
 
 typedef std::vector<
@@ -187,6 +230,19 @@ try
 			filenames.end()
 		);
 
+		fcppt::string const include_guard_name(
+			make_include_guard(
+				header
+			)
+		);
+
+		file
+			<< FCPPT_TEXT("#ifndef ")
+			<< include_guard_name
+			<< FCPPT_TEXT("\n#define ")
+			<< include_guard_name
+			<< FCPPT_TEXT("\n\n");
+
 		BOOST_FOREACH(
 			string_vector::const_reference cur_name,
 			filenames
@@ -195,6 +251,9 @@ try
 				<< FCPPT_TEXT("#include <")
 				<< cur_name
 				<< FCPPT_TEXT(">\n");
+
+		file
+			<< FCPPT_TEXT("\n#endif\n");
 	}
 }
 catch(

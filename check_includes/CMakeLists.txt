@@ -1,0 +1,35 @@
+SET(
+	HASKELL_COMPILER ghc CACHE STRING "The haskell compiler to use"
+)
+
+SET(
+	HASKELL_TEMP_DIR
+	${CMAKE_BINARY_DIR}/check_includes
+)
+
+ADD_CUSTOM_COMMAND(
+	OUTPUT
+		${HASKELL_TEMP_DIR}/Main.hi
+		${HASKELL_TEMP_DIR}/Main.o
+		${HASKELL_TEMP_DIR}/Util.hi
+		${HASKELL_TEMP_DIR}/Util.o
+		${EXECUTABLE_OUTPUT_PATH}/check_includes
+	COMMAND ${HASKELL_COMPILER}
+	ARGS
+		${HASKELL_FLAGS}
+		-o ${EXECUTABLE_OUTPUT_PATH}/check_includes
+		-odir ${HASKELL_TEMP_DIR}
+		-hidir ${HASKELL_TEMP_DIR}
+		-tmpdir ${HASKELL_TEMP_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/Util.hs
+		${CMAKE_CURRENT_SOURCE_DIR}/Main.hs
+	DEPENDS
+		${CMAKE_CURRENT_SOURCE_DIR}/Util.hs
+		${CMAKE_CURRENT_SOURCE_DIR}/Main.hs
+)
+
+ADD_CUSTOM_TARGET(
+	check_includes
+	ALL DEPENDS
+	${EXECUTABLE_OUTPUT_PATH}/check_includes
+)

@@ -1,9 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3)
 
-SET (EXTRA_CMAKE_MODULE_PATH "" CACHE PATH "Extra paths to search for cmake modules")
-
-SET (CMAKE_MODULE_PATH "${EXTRA_CMAKE_MODULE_PATH}")
-
 PROJECT (sgeutils)
 
 INCLUDE(FcpptCMakeUtils)

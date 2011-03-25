@@ -202,6 +202,12 @@ try
 		)
 		{
 			if(
+				file_it->path()
+				== header
+			)
+				continue;
+
+			if(
 				needs_header(
 					file_it->path()	
 				)

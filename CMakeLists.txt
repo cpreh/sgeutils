@@ -1,0 +1,41 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3)
+
+SET (EXTRA_CMAKE_MODULE_PATH "" CACHE PATH "Extra paths to search for cmake modules")
+
+SET (CMAKE_MODULE_PATH "${EXTRA_CMAKE_MODULE_PATH}")
+
+PROJECT (sgeutils)
+
+INCLUDE(FcpptCMakeUtils)
+
+# Find Boost
+FIND_PACKAGE(
+	Boost 1.40.0 REQUIRED
+)
+
+INCLUDE_DIRECTORIES(
+	SYSTEM ${Boost_INCLUDE_DIR}
+)
+
+LINK_DIRECTORIES(
+	${Boost_LIBRARY_DIRS}
+)
+
+# Find fcppt
+FIND_PACKAGE(
+	Fcppt REQUIRED
+)
+
+FIND_PACKAGE(Fcppt REQUIRED)
+
+INCLUDE_DIRECTORIES(${FCPPT_INCLUDE_DIRS})
+
+ADD_EXECUTABLE(
+	convenience_headers
+	src/convenience_headers.cpp
+)
+
+TARGET_LINK_LIBRARIES(
+	convenience_headers	
+	${FCPPT_LIBRARIES}
+)

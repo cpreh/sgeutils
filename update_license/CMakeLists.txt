@@ -22,6 +22,11 @@ TARGET_LINK_LIBRARIES(
 	${FCPPT_LIBRARIES}
 )
 
+INSTALL(
+	TARGETS update_license 
+	DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/
+)
+
 ADD_EXECUTABLE(
 	multi_update_license
 	multi_update_license.cpp
@@ -32,4 +37,9 @@ TARGET_LINK_LIBRARIES(
 	${FCPPT_LIBRARIES}
 	${SGE_LIBRARIES}
 	${Boost_LIBRARIES}
+)
+
+INSTALL(
+	TARGETS multi_update_license 
+	DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/
 )

@@ -26,9 +26,17 @@ FIND_PACKAGE(Fcppt REQUIRED)
 
 INCLUDE_DIRECTORIES(${FCPPT_INCLUDE_DIRS})
 
-ADD_SUBDIRECTORY(
-	check_includes
+OPTION(
+	ENABLE_HASKELL
+	"Build haskell programs"
+	ON
 )
+
+IF(ENABLE_HASKELL)
+	ADD_SUBDIRECTORY(
+		check_includes
+	)
+ENDIF()
 
 ADD_SUBDIRECTORY(
 	convenience_headers

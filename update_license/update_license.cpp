@@ -117,28 +117,97 @@ main(
 		filename + ".temp"
 	);
 
-	std::ofstream ofs(
-		temp_filename.c_str()
-	);
-
-	if(
-		!ofs.is_open()
-	)
 	{
-		std::cerr
-			<< "Cannot open "
-			<< temp_filename
-			<< '\n';
+		std::ofstream ofs(
+			temp_filename.c_str()
+		);
 
-		return EXIT_FAILURE;
+		if(
+			!ofs.is_open()
+		)
+		{
+			std::cerr
+				<< "Cannot open "
+				<< temp_filename
+				<< '\n';
+
+			return EXIT_FAILURE;
+		}
+
+		ofs
+			<< license.rdbuf()
+			<< ifs.rdbuf();
 	}
 
-	ofs
-		<< license.rdbuf()
-		<< ifs.rdbuf();
+	{
+		ifs.clear();
 
-	ifs.close();
-	ofs.close();
+		ifs.seekg(
+			std::ios_base::beg
+		);
+
+		if(
+			!ifs
+		)
+		{
+			std::cerr
+				<< "Rewinding "
+				<< filename
+				<< " failed\n";
+
+			return EXIT_FAILURE;
+		}
+
+		std::ifstream new_ifs(
+			temp_filename.c_str()
+		);
+
+		if(
+			!new_ifs
+		)
+		{
+			std::cerr
+				<< "Opening "
+				<< temp_filename
+				<< " failed\n";
+
+			return EXIT_FAILURE;
+		}
+
+		std::string
+			line1,
+			line2;
+
+		bool equal(
+			true
+		);
+
+		while(
+			std::getline(
+				ifs,
+				line1
+			)
+			&& std::getline(
+				new_ifs,
+				line2
+			)
+		)
+			if(
+				line1 != line2
+			)
+			{
+				equal = false;
+
+				break;
+			}
+
+		if(
+			equal
+		)
+			return EXIT_SUCCESS;
+
+		ifs.close();
+	}
 
 	if(
 		std::rename(

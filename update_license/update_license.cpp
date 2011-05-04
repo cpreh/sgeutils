@@ -204,10 +204,29 @@ main(
 		if(
 			equal
 		)
-			return EXIT_SUCCESS;
+		{
+			new_ifs.close();
 
-		ifs.close();
+			if(
+				std::remove(
+					temp_filename.c_str()
+				)
+				!= 0
+			)
+			{
+				std::cerr
+					<< "Cannot remove "
+					<< temp_filename
+					<< '\n';
+
+				return EXIT_FAILURE;
+			}
+
+			return EXIT_SUCCESS;
+		}
 	}
+
+	ifs.close();
 
 	if(
 		std::rename(

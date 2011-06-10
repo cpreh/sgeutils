@@ -58,7 +58,7 @@ add_files(
 			continue;
 
 		_files.push_back(
-			_iterator->path().string()
+			_iterator->path().generic_string()
 		);
 	}
 }
@@ -214,7 +214,7 @@ try
 
 	if(
 		line != search_line
-		)
+	)
 	{
 		std::cerr
 			<< search_line

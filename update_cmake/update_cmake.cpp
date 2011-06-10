@@ -111,7 +111,8 @@ try
 	);
 
 	std::ofstream ofs(
-		out_file.c_str()
+		out_file.c_str(),
+		std::ios_base::binary
 	);
 
 	if(

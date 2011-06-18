@@ -58,7 +58,7 @@ add_files(
 			continue;
 
 		_files.push_back(
-			_iterator->path().string()
+			_iterator->path().generic_string()
 		);
 	}
 }
@@ -111,7 +111,8 @@ try
 	);
 
 	std::ofstream ofs(
-		out_file.c_str()
+		out_file.c_str(),
+		std::ios_base::binary
 	);
 
 	if(
@@ -214,7 +215,7 @@ try
 
 	if(
 		line != search_line
-		)
+	)
 	{
 		std::cerr
 			<< search_line

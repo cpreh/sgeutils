@@ -5,7 +5,7 @@ ADD_EXECUTABLE(
 
 TARGET_LINK_LIBRARIES(
 	convenience_headers	
-	${FCPPT_LIBRARIES}
+	${Fcppt_LIBRARIES}
 )
 
 INSTALL(

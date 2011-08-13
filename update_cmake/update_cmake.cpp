@@ -72,8 +72,8 @@ try
 			<< "Usage: "
 			<< argv[0]
 			<< " <CMakeFile> <VAR_NAME> <path1> [path2] ...\n"
-			<< "In front of every path the additional option -r, -n and -e is accepted.\n"
-			<< "-r will search recursively, while -n will not. The default is -r.\n"
+			<< "In front of every path the additional options -r, -n and -e are accepted.\n"
+			<< "-r will search recursively, while -n will not.\n"
 			<< "-e will change the regex the filenames have to match.\n"
 			<< "The default is -r -e \".*\\..pp\"\n";
 

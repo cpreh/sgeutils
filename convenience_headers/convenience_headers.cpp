@@ -47,7 +47,7 @@ make_header(
 			)
 			+ FCPPT_TEXT(".hpp")
 		);
-			
+
 }
 
 fcppt::string const
@@ -80,12 +80,12 @@ make_include_guard(
 		boost::algorithm::to_upper(
 			component
 		);
-		
+
 		ret +=
 			component
 			+ FCPPT_TEXT('_');
 	}
-	
+
 	ret += FCPPT_TEXT("HPP_INCLUDED");
 
 	return ret;
@@ -186,7 +186,7 @@ try
 		{
 			fcppt::io::cerr
 				<< FCPPT_TEXT("Failed to open ")
-				<< header 
+				<< header
 				<< FCPPT_TEXT('\n');
 
 			return EXIT_FAILURE;
@@ -209,7 +209,7 @@ try
 
 			if(
 				needs_header(
-					file_it->path()	
+					file_it->path()
 				)
 			)
 				filenames.push_back(

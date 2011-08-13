@@ -23,7 +23,7 @@ TARGET_LINK_LIBRARIES(
 )
 
 INSTALL(
-	TARGETS update_license 
+	TARGETS update_license
 	DESTINATION ${INSTALL_BINARY_DIR}
 )
 
@@ -40,6 +40,6 @@ TARGET_LINK_LIBRARIES(
 )
 
 INSTALL(
-	TARGETS multi_update_license 
+	TARGETS multi_update_license
 	DESTINATION ${INSTALL_BINARY_DIR}
 )

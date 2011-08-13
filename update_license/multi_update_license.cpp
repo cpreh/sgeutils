@@ -1,11 +1,11 @@
-/* 
+/*
 Example file:
 
 {
   "main_license" : "foo.license"
-  "exceptions" : 
+  "exceptions" :
   [
-    { 
+    {
       "files" : ["foo/bar/.*","baz"]
       "license" : ["bar.license"]
     },
@@ -95,7 +95,7 @@ extract_regexes(
 					r)));
 	return rs;
 }
-	
+
 exception_set const
 extract_exceptions(
 	sge::parse::json::object const &o)
@@ -122,10 +122,10 @@ extract_exceptions(
 		exceptions_->elements
 	)
 	{
-		sge::parse::json::object const &r2 = 
+		sge::parse::json::object const &r2 =
 			sge::parse::json::get<sge::parse::json::object>(
 				r1);
-			
+
 		es.insert(
 			exception(
 				extract_regexes(
@@ -135,7 +135,7 @@ extract_exceptions(
 				sge::parse::json::find_member_exn<sge::parse::json::string>(
 					r2.members,
 					FCPPT_TEXT("license"))));
-	
+
 		// The license file has to exist!
 		FCPPT_ASSERT(
 			fcppt::filesystem::exists(
@@ -166,7 +166,7 @@ has_hidden_components(
 			next->string().at(0) == FCPPT_TEXT('.')
 		)
 			return true;
-	
+
 	return false;
 }
 
@@ -176,7 +176,7 @@ extract_paths(
 {
 	path_set s;
 	for(
-		fcppt::filesystem::recursive_directory_iterator 
+		fcppt::filesystem::recursive_directory_iterator
 			i(
 				FCPPT_TEXT(".")),
 			end;
@@ -223,13 +223,13 @@ intersection(
 		{
 			FCPPT_ASSERT(
 				p.string().compare(0,2,"./") == 0);
-			
-			bool const result = 
+
+			bool const result =
 				regex_match(
 					p.string().substr(2),
-					r, 
+					r,
 					boost::match_default);
-				
+
 			if(result)
 				ret.insert(
 					p);
@@ -271,33 +271,33 @@ intersections(
 
 // Thanks to Graphics Noob at
 // http://stackoverflow.com/questions/1964150/c-test-if-2-sets-are-disjoint
-template<class Set1, class Set2> 
-bool 
+template<class Set1, class Set2>
+bool
 is_disjoint(
-	Set1 const &set1, 
+	Set1 const &set1,
 	Set2 const &set2)
 {
-	if(set1.empty() || set2.empty()) 
+	if(set1.empty() || set2.empty())
 		return true;
 
-	typename Set1::const_iterator 
-		it1 = set1.begin(), 
+	typename Set1::const_iterator
+		it1 = set1.begin(),
 		it1End = set1.end();
-		
-	typename Set2::const_iterator 
-		it2 = set2.begin(), 
+
+	typename Set2::const_iterator
+		it2 = set2.begin(),
 		it2End = set2.end();
 
-	if(*it1 > *set2.rbegin() || *it2 > *set1.rbegin()) 
+	if(*it1 > *set2.rbegin() || *it2 > *set1.rbegin())
 		return true;
 
 	while(it1 != it1End && it2 != it2End)
 	{
-		if(*it1 == *it2) 
+		if(*it1 == *it2)
 			return false;
-		if(*it1 < *it2) 
+		if(*it1 < *it2)
 			it1++;
-		else 
+		else
 			it2++;
 	}
 
@@ -310,16 +310,16 @@ bool
 is_pairwise_disjoint(
 	std::set<T*> const &ts)
 {
-	typedef 
-	std::set<T*> 
+	typedef
+	std::set<T*>
 	set;
-	
+
 	typedef typename
 	set::const_iterator
 	const_iterator;
-	
+
 	for(
-		const_iterator i = ts.begin(); 
+		const_iterator i = ts.begin();
 		i != boost::prior(ts.end());
 		++i)
 		for (
@@ -331,7 +331,7 @@ is_pairwise_disjoint(
 	return true;
 }
 
-	
+
 typedef
 std::set<path_set const *>
 path_ref_set;
@@ -396,81 +396,81 @@ try
 {
 	if (_argc != 2)
 	{
-		fcppt::io::cerr 
+		fcppt::io::cerr
 			<< FCPPT_TEXT("usage: ")
 			<< fcppt::from_std_string(_argv[0])
 			<< FCPPT_TEXT(" <json file>\n");
 		return EXIT_FAILURE;
 	}
-	
-	fcppt::string const json_file_name = 
+
+	fcppt::string const json_file_name =
 		fcppt::from_std_string(
 			_argv[1]);
 
 	sge::parse::json::object json_file;
-		
+
 	if (
 		!sge::parse::json::parse_file(
 			json_file_name,
 			json_file))
 	{
-		fcppt::io::cerr 
+		fcppt::io::cerr
 			<< FCPPT_TEXT("Couldn't parse file \"")
 			<< json_file_name
 			<< FCPPT_TEXT("\"\n");
 		return EXIT_FAILURE;
 	}
-	
-	fcppt::io::clog 
-		<< FCPPT_TEXT("Successfully parsed the file \"") 
-		<< json_file_name 
+
+	fcppt::io::clog
+		<< FCPPT_TEXT("Successfully parsed the file \"")
+		<< json_file_name
 		<< FCPPT_TEXT("\"\n");
 
-	fcppt::filesystem::path const main_license = 
+	fcppt::filesystem::path const main_license =
 		sge::parse::json::find_member_exn<sge::parse::json::string>(
 			json_file.members,
 			FCPPT_TEXT("main_license"));
-	
+
 	regex const standard_regex(
 		sge::parse::json::find_member_exn<sge::parse::json::string>(
 			json_file.members,
 			FCPPT_TEXT("standard_match")));
-	
+
 	FCPPT_ASSERT(
 		fcppt::filesystem::exists(
 			main_license));
-	
-	exception_set const exceptions = 
+
+	exception_set const exceptions =
 		extract_exceptions(
 			json_file);
 
-	regex_set const nolicense = 
+	regex_set const nolicense =
 		extract_regexes(
 			sge::parse::json::find_member_exn<sge::parse::json::array>(
 				json_file.members,
 				FCPPT_TEXT("nolicense")));
-	
+
 	path_set const a =
 		extract_paths(
 			standard_regex);
-	
-	path_set const nolicense_paths = 
+
+	path_set const nolicense_paths =
 		intersection(
 			a,
 			nolicense);
 
-	path_set_with_license_set const exception_paths = 
+	path_set_with_license_set const exception_paths =
 		intersections(
 			a,
 			exceptions);
-	
+
 	path_ref_set path_refs;
 	BOOST_FOREACH(
 		path_set_with_license_set::const_reference r,
 		exception_paths)
 		path_refs.insert(
 			&(r.first));
-	
+
 	path_refs.insert(
 		&nolicense_paths);
 
@@ -479,7 +479,7 @@ try
 		fcppt::io::cerr << FCPPT_TEXT("The nolicense and exception sets have to be pairwise disjoint. They're not.\n");
 		return EXIT_FAILURE;
 	}
-	
+
 	// Collect all the files which are not "excepted" and have a license
 	BOOST_FOREACH(
 		path_set::const_reference r,
@@ -506,17 +506,17 @@ try
 catch (
 	fcppt::exception const &_e)
 {
-	fcppt::io::cerr 
-		<< FCPPT_TEXT("Caught an exception: ") 
-		<< _e.string() 
+	fcppt::io::cerr
+		<< FCPPT_TEXT("Caught an exception: ")
+		<< _e.string()
 		<< FCPPT_TEXT("\n");
-	
+
 	return EXIT_FAILURE;
 }
 catch (
 	std::exception const &_e)
 {
-	std::cerr 
+	std::cerr
 		<< "Caught a standard exception: "
 		<< _e.what()
 		<< '\n';

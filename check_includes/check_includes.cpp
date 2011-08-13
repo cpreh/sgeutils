@@ -42,10 +42,10 @@ path_levels(
 		).empty()
 	)
 		--ret;
-	
+
 	return ret;
 }
-	
+
 fcppt::string const
 make_include_guard(
 	fcppt::filesystem::path::iterator::difference_type const _base_level,
@@ -86,7 +86,7 @@ make_include_guard(
 				)
 			)
 			+ FCPPT_TEXT('_');
-	
+
 	return
 		ret
 		+

@@ -1,6 +1,7 @@
 #include <boost/filesystem/v3/convenience.hpp>
 #include <boost/filesystem/v3/operations.hpp>
 #include <boost/filesystem/v3/path.hpp>
+#include <boost/regex.hpp>
 #include <algorithm>
 #include <exception>
 #include <fstream>
@@ -23,6 +24,7 @@ template<
 void
 add_files(
 	Iterator _iterator,
+	boost::regex const &_regex,
 	file_vector &_files
 )
 {
@@ -39,21 +41,11 @@ add_files(
 		)
 			continue;
 
-		std::string const extension(
-			boost::filesystem::extension(
-				*_iterator
-			)
-		);
-
 		if(
-			extension.size()
-			!= 4u
-			||
-			extension.substr(
-				2u,
-				2u
+			!boost::regex_match(
+				_iterator->path().filename().string(),
+				_regex
 			)
-			!= "pp"
 		)
 			continue;
 
@@ -80,8 +72,10 @@ try
 			<< "Usage: "
 			<< argv[0]
 			<< " <CMakeFile> <VAR_NAME> <path1> [path2] ...\n"
-			<< "In front of every path the additional option -r or -n is accepted.\n"
-			<< "-r will search recursively, while -n will not. The default is -r.\n";
+			<< "In front of every path the additional option -r, -n and -e is accepted.\n"
+			<< "-r will search recursively, while -n will not. The default is -r.\n"
+			<< "-e will change the regex the filenames have to match.\n"
+			<< "The default is -r -e \".*\\..pp\"\n";
 
 		return EXIT_FAILURE;
 	}
@@ -133,6 +127,10 @@ try
 		"r"
 	);
 
+	boost::regex fileregex(
+		".*\\..pp"
+	);
+
 	for(
 		int arg = 3;
 		arg < argc;
@@ -149,14 +147,51 @@ try
 			arg_string[0] == '-'
 		)
 		{
-			mode =
-				arg_string.substr(
-					1u
-				);
+			if(
+				arg_string.size() < 2
+			)
+			{
+				std::cerr
+					<< "- must be followed by an option\n";
+
+				return EXIT_FAILURE;
+			}
+
+			if(
+				arg_string[1]
+				== 'n'
+				||
+				arg_string[1]
+				== 'r'
+			)
+				mode =
+					arg_string.substr(
+						1u
+					);
+			else if(
+				arg_string[1]
+				== 'e'
+			)
+			{
+				++arg;
+
+				if(
+					arg == argc
+				)
+				{
+					std::cerr
+						<< "-e must be followed by a regex!\n";
+
+					return EXIT_FAILURE;
+				}
+
+				fileregex =
+					argv[arg];
+			}
 
 			continue;
 		}
-		
+
 		if(
 			mode == "r"
 		)
@@ -164,6 +199,7 @@ try
 				boost::filesystem::recursive_directory_iterator(
 					arg_string
 				),
+				fileregex,
 				files
 			);
 		else if(
@@ -173,6 +209,7 @@ try
 				boost::filesystem::directory_iterator(
 					arg_string
 				),
+				fileregex,
 				files
 			);
 		else
@@ -288,6 +325,6 @@ catch(
 	std::cerr
 		<< _error.what()
 		<< '\n';
-	
+
 	return EXIT_FAILURE;
 }

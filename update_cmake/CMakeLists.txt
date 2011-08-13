@@ -1,3 +1,9 @@
+FIND_PACKAGE(
+	Boost REQUIRED
+	filesystem
+	regex
+)
+
 ADD_EXECUTABLE(
 	update_cmake
 	update_cmake.cpp
@@ -5,10 +11,10 @@ ADD_EXECUTABLE(
 
 TARGET_LINK_LIBRARIES(
 	update_cmake
-	${Fcppt_LIBRARIES}
+	${Boost_LIBRARIES}
 )
 
 INSTALL(
-	TARGETS update_cmake 
+	TARGETS update_cmake
 	DESTINATION ${INSTALL_BINARY_DIR}
 )

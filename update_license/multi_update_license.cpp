@@ -33,7 +33,8 @@ Assertions:
 #include <fcppt/exception.hpp>
 #include <fcppt/from_std_string.hpp>
 #include <fcppt/to_std_string.hpp>
-#include <fcppt/assert.hpp>
+#include <fcppt/assert/exception.hpp>
+#include <fcppt/assert/throw.hpp>
 #include <fcppt/filesystem/recursive_directory_iterator.hpp>
 #include <fcppt/filesystem/exists.hpp>
 #include <fcppt/filesystem/is_regular.hpp>
@@ -137,9 +138,12 @@ extract_exceptions(
 					FCPPT_TEXT("license"))));
 
 		// The license file has to exist!
-		FCPPT_ASSERT(
+		FCPPT_ASSERT_THROW(
 			fcppt::filesystem::exists(
-				(--es.end())->second));
+				(--es.end())->second
+			),
+			fcppt::assert_::exception
+		)
 	}
 	return es;
 }
@@ -221,8 +225,10 @@ intersection(
 			regex_set::const_reference r,
 			rs)
 		{
-			FCPPT_ASSERT(
-				p.string().compare(0,2,"./") == 0);
+			FCPPT_ASSERT_THROW(
+				p.string().compare(0,2,"./") == 0,
+				fcppt::assert_::exception
+			);
 
 			bool const result =
 				regex_match(
@@ -436,9 +442,12 @@ try
 			json_file.members,
 			FCPPT_TEXT("standard_match")));
 
-	FCPPT_ASSERT(
+	FCPPT_ASSERT_THROW(
 		fcppt::filesystem::exists(
-			main_license));
+			main_license
+		),
+		fcppt::assert_::exception
+	)
 
 	exception_set const exceptions =
 		extract_exceptions(

@@ -38,6 +38,7 @@ Assertions:
 #include <fcppt/filesystem/recursive_directory_iterator.hpp>
 #include <fcppt/filesystem/exists.hpp>
 #include <fcppt/filesystem/is_regular.hpp>
+#include <fcppt/filesystem/path_to_string.hpp>
 #include <boost/foreach.hpp>
 #include <boost/regex.hpp>
 #include <boost/next_prior.hpp>
@@ -202,7 +203,9 @@ extract_paths(
 			)
 			&&
 			boost::regex_match(
-				path_.string(),
+				fcppt::filesystem::path_to_string(
+					path_
+				),
 				_standard_regex)
 		)
 			s.insert(
@@ -232,7 +235,9 @@ intersection(
 
 			bool const result =
 				regex_match(
-					p.string().substr(2),
+					fcppt::filesystem::path_to_string(
+						p
+					).substr(2),
 					r,
 					boost::match_default);
 
@@ -378,11 +383,15 @@ apply_license(
 			(
 				"update_license "
 				+ fcppt::to_std_string(
-					file.string()
+					fcppt::filesystem::path_to_string(
+						file
+					)
 				)
 				+ " "
 				+ fcppt::to_std_string(
-					license.string()
+					fcppt::filesystem::path_to_string(
+						license
+					)
 				)
 			).c_str()
 		)

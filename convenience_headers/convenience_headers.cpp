@@ -269,6 +269,8 @@ catch(
 	fcppt::io::cerr
 		<< _error.string()
 		<< FCPPT_TEXT('\n');
+
+	return EXIT_FAILURE;
 }
 catch(
 	std::exception const &_error
@@ -277,4 +279,6 @@ catch(
 	std::cerr
 		<< _error.what()
 		<< '\n';
+
+	return EXIT_FAILURE;
 }

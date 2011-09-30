@@ -411,7 +411,7 @@ try
 {
 	if (_argc != 2)
 	{
-		fcppt::io::cerr
+		fcppt::io::cerr()
 			<< FCPPT_TEXT("usage: ")
 			<< fcppt::from_std_string(_argv[0])
 			<< FCPPT_TEXT(" <json file>\n");
@@ -429,14 +429,14 @@ try
 			json_file_name,
 			json_file))
 	{
-		fcppt::io::cerr
+		fcppt::io::cerr()
 			<< FCPPT_TEXT("Couldn't parse file \"")
 			<< json_file_name
 			<< FCPPT_TEXT("\"\n");
 		return EXIT_FAILURE;
 	}
 
-	fcppt::io::clog
+	fcppt::io::clog()
 		<< FCPPT_TEXT("Successfully parsed the file \"")
 		<< json_file_name
 		<< FCPPT_TEXT("\"\n");
@@ -494,7 +494,7 @@ try
 
 	if (!is_pairwise_disjoint(path_refs))
 	{
-		fcppt::io::cerr << FCPPT_TEXT("The nolicense and exception sets have to be pairwise disjoint. They're not.\n");
+		fcppt::io::cerr() << FCPPT_TEXT("The nolicense and exception sets have to be pairwise disjoint. They're not.\n");
 		return EXIT_FAILURE;
 	}
 
@@ -524,7 +524,7 @@ try
 catch (
 	fcppt::exception const &_e)
 {
-	fcppt::io::cerr
+	fcppt::io::cerr()
 		<< FCPPT_TEXT("Caught an exception: ")
 		<< _e.string()
 		<< FCPPT_TEXT("\n");

@@ -112,7 +112,7 @@ main(
 		|| argc > 3
 	)
 	{
-		fcppt::io::cerr
+		fcppt::io::cerr()
 			<< FCPPT_TEXT("Usage: ")
 			<< argv[0]
 			<< FCPPT_TEXT(" path [prefix]\n");
@@ -178,7 +178,7 @@ main(
 			!stream.is_open()
 		)
 		{
-			fcppt::io::cerr
+			fcppt::io::cerr()
 				<< FCPPT_TEXT("Failed to open ")
 				<< path
 				<< FCPPT_TEXT('\n');
@@ -244,7 +244,7 @@ main(
 		if(
 			!guard_found
 		)
-			fcppt::io::cout
+			fcppt::io::cout()
 				<< path
 				<< FCPPT_TEXT(": ")
 				<< include_guard

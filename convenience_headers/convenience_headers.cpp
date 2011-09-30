@@ -137,7 +137,7 @@ try
 		argc != 2
 	)
 	{
-		fcppt::io::cerr
+		fcppt::io::cerr()
 			<< FCPPT_TEXT("Usage: ")
 			<< argv[0]
 			<< FCPPT_TEXT(" <dir1>\n");
@@ -184,7 +184,7 @@ try
 			!file.is_open()
 		)
 		{
-			fcppt::io::cerr
+			fcppt::io::cerr()
 				<< FCPPT_TEXT("Failed to open ")
 				<< header
 				<< FCPPT_TEXT('\n');
@@ -266,7 +266,7 @@ catch(
 	fcppt::exception const &_error
 )
 {
-	fcppt::io::cerr
+	fcppt::io::cerr()
 		<< _error.string()
 		<< FCPPT_TEXT('\n');
 

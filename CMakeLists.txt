@@ -37,6 +37,10 @@ ADD_SUBDIRECTORY(
 )
 
 ADD_SUBDIRECTORY(
+	generate_includeguard
+)
+
+ADD_SUBDIRECTORY(
 	update_license
 )
 

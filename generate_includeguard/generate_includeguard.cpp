@@ -1,6 +1,7 @@
 #include <fcppt/exception.hpp>
 #include <fcppt/filesystem/is_directory.hpp>
 #include <fcppt/filesystem/path.hpp>
+#include <fcppt/filesystem/path_to_string.hpp>
 #include <fcppt/from_std_string.hpp>
 #include <fcppt/io/cerr.hpp>
 #include <fcppt/io/cout.hpp>
@@ -34,7 +35,11 @@ directory_sequence const
 calculate_sequence(
 	fcppt::filesystem::path const &current)
 {
-	if(current.filename().string() == FCPPT_TEXT("include"))
+	if(
+		fcppt::filesystem::path_to_string(
+			current.filename())
+		== FCPPT_TEXT("include")
+	)
 		return directory_sequence();
 
 	if (!current.has_parent_path())
@@ -45,7 +50,8 @@ calculate_sequence(
 			current.parent_path());
 	
 	result.push_back(
-		current.filename().string());
+		fcppt::filesystem::path_to_string(
+			current.filename()));
 	
 	return result;
 }
@@ -125,7 +131,8 @@ try
 	fcppt::string const guard = 
 		create_guard(
 			s,
-			p.filename().string());
+			fcppt::filesystem::path_to_string(
+				p.filename()));
 	
 	fcppt::io::cout()
 		<< FCPPT_TEXT("#ifndef ") << guard << FCPPT_TEXT("\n")

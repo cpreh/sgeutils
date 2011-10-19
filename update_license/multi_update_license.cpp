@@ -144,7 +144,7 @@ extract_exceptions(
 				(--es.end())->second
 			),
 			fcppt::assert_::exception
-		)
+		);
 	}
 	return es;
 }
@@ -456,7 +456,7 @@ try
 			main_license
 		),
 		fcppt::assert_::exception
-	)
+	);
 
 	exception_set const exceptions =
 		extract_exceptions(

@@ -47,3 +47,7 @@ ADD_SUBDIRECTORY(
 ADD_SUBDIRECTORY(
 	update_cmake
 )
+
+ADD_SUBDIRECTORY(
+	prettify_includes
+)

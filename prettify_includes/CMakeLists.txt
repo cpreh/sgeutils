@@ -1,0 +1,4 @@
+INSTALL(
+	FILES prettify_includes.py
+	DESTINATION ${INSTALL_BINARY_DIR}
+)

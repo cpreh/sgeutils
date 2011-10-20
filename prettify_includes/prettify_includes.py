@@ -20,8 +20,10 @@ def remove_duplicates_from_list(mylist,key):
 
 # The main function
 def modify_file(filename,reserved_prefixes,debug):
+	# 1. Read ALL the lines into the lines array
 	lines = []
 	with open(filename,'r') as f:
+		# readlines idiotically leaves in the \n at the end. rstrip removes those
 		lines = [l.rstrip() for l in f.readlines()]
 
 	begin_of_includes = None
@@ -44,20 +46,27 @@ def modify_file(filename,reserved_prefixes,debug):
 
 			return self.path.__repr__()
 
+	# We store the original #include lines to compare it with the modified lines
+	# later (and maybe not update the file)
 	original_raw_include_lines = []
+
+	# These are the extracted include lines
 	include_lines = []
 
+	# Precompile regex (will be faster!)
 	compiled_include_regex = re.compile(r'\s*#include\s+<(([^/]+)(/[^>]*)?)>')
 
 	line_counter = 0
 	for line in lines:
 		include_search_result = compiled_include_regex.search(line)
 
+		# Is it an include line?
 		if include_search_result != None:
+			# Save the original for later
 			original_raw_include_lines.append(
 				line)
 
-			# We've found the starting include!
+			# We've found the first #include in the file!
 			if begin_of_includes == None:
 				begin_of_includes = line_counter
 			else:
@@ -70,6 +79,12 @@ def modify_file(filename,reserved_prefixes,debug):
 			rest = include_search_result.group(3)
 			path = include_search_result.group(1)
 
+			# This way we handle the special case where we have no prefix (e.g. <algorithm>).
+			if rest == None:
+				rest = prefix
+				prefix = None
+
+			# Here we "hack" a little and filter the includes. We don't want external_begin/external_end in the list.
 			if prefix != 'fcppt' or (rest != '/config/external_begin.hpp' and rest != '/config/external_end.hpp'):
 				include_lines.append(
 					IncludeLine(
@@ -96,11 +111,7 @@ def modify_file(filename,reserved_prefixes,debug):
 	groups = {}
 
 	for l in include_lines:
-		corrected_prefix = l.prefix
-
-		if not corrected_prefix in reserved_prefixes:
-			corrected_prefix = ''
-
+		corrected_prefix = l.prefix if l.prefix != None else ''
 		if not corrected_prefix in groups:
 			groups[corrected_prefix] = [l]
 		else:
@@ -125,14 +136,23 @@ def modify_file(filename,reserved_prefixes,debug):
 					lambda x : '#include <{}>'.format(x.path),
 					groups[prefix]))
 
-	if '' in groups and len(groups['']) != 0:
-		new_includes.append('#include <fcppt/config/external_begin.hpp>')
-		new_includes += list(
-				map(
-					lambda x : '#include <{}>'.format(x.path),
-					groups['']))
-		new_includes.append('#include <fcppt/config/external_end.hpp>')
+	rest_groups = groups.keys() - set(reserved_prefixes) - {''}
 
+	if len(rest_groups) != 0 or '' in groups:
+		new_includes.append('#include <fcppt/config/external_begin.hpp>')
+		for group in rest_groups:
+			new_includes += list(
+					map(
+						lambda x : '#include <{}>'.format(x.path),
+						groups[group]))
+
+		if '' in groups:
+			new_includes += list(
+					map(
+						lambda x : '#include <{}>'.format(x.path),
+						groups['']))
+
+		new_includes.append('#include <fcppt/config/external_end.hpp>')
 
 	modifications_present = new_includes != original_raw_include_lines
 	new_includes.append('\n')

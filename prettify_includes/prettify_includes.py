@@ -133,20 +133,23 @@ def modify_file(filename,reserved_prefixes,debug):
 					groups['']))
 		new_includes.append('#include <fcppt/config/external_end.hpp>')
 
-	# Remove old includes and add the new ones
+
+	modifications_present = new_includes != original_raw_include_lines
+	new_includes.append('\n')
 	lines[begin_of_includes:end_of_includes] = new_includes
 
 	if debug == True:
-		if new_includes == original_raw_include_lines:
+		if modifications_present == False:
 			print('No modification to {}'.format(filename))
+		else:
+			# Remove old includes and add the new ones
+			print('Modification needed: ')
+			for l in lines:
+				sys.stdout.write(
+					l+'\n')
 
-		#for l in lines:
-		#	sys.stdout.write(
-		#		l+'\n')
 	else:
-		if new_includes != original_raw_include_lines:
-			new_includes.append('\n\n')
-
+		if modifications_present == True:
 			with open(filename,'w') as f:
 				f.write(("\n".join(lines))+'\n')
 

@@ -4,6 +4,26 @@ import sys
 import re
 import argparse
 
+class PathComparator:
+	def __init__(self,x):
+		self.filename = x[-1]
+		self.paths = x[:-1]
+
+	def __lt__(self,other):
+		if len(self.paths) == 0 and len(other.paths) == 0:
+			return self.filename < other.filename
+
+		if len(self.paths) == 0:
+			return True
+
+		if len(other.paths) == 0:
+			return False
+
+		if self.paths[0] == other.paths[0]:
+			return PathComparator(self.paths[1:] + [self.filename]) < PathComparator(other.paths[1:] + [other.filename])
+
+		return self.paths[0] < other.paths[0]
+
 # Helper functions
 def remove_duplicates_from_list(mylist,key):
 	"""
@@ -120,7 +140,7 @@ def modify_file(filename,reserved_prefixes,debug):
 
 	for name,includes in groups.items():
 		includes.sort(
-			key = lambda x : x.path)
+			key = lambda x : PathComparator(x.path.split('/')))
 
 		remove_duplicates_from_list(
 			includes,

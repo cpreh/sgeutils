@@ -39,7 +39,17 @@ def remove_duplicates_from_list(mylist,key):
 	return mylist
 
 # The main function
-def modify_file(filename,reserved_prefixes,debug):
+def modify_file(filename,reserved_prefixes,external_begin,external_end,debug):
+	# This one looks strange, but it's easily explained. At some point later in
+	# the code, we _only_ add a #include statement if it's not the external
+	# begin/end include.
+	#
+	# However, when we test this, we have the "incoming" path in (prefix,rest)
+	# form. The rest begins with '/'. So we transform it to this form.
+	external_prefix = external_begin.split('/')[0]
+	external_begin_path = "/"+("/".join(external_begin.split('/')[1:]))
+	external_end_path = "/"+("/".join(external_end.split('/')[1:]))
+
 	# 1. Read ALL the lines into the lines array
 	lines = []
 	with open(filename,'r') as f:
@@ -105,7 +115,7 @@ def modify_file(filename,reserved_prefixes,debug):
 				prefix = None
 
 			# Here we "hack" a little and filter the includes. We don't want external_begin/external_end in the list.
-			if prefix != 'fcppt' or (rest != '/config/external_begin.hpp' and rest != '/config/external_end.hpp'):
+			if prefix != external_prefix or (rest != external_begin_path and rest != external_end_path):
 				include_lines.append(
 					IncludeLine(
 						path = path,
@@ -159,7 +169,7 @@ def modify_file(filename,reserved_prefixes,debug):
 	rest_groups = groups.keys() - set(reserved_prefixes) - {''}
 
 	if len(rest_groups) != 0 or '' in groups:
-		new_includes.append('#include <fcppt/config/external_begin.hpp>')
+		new_includes.append('#include <'+external_begin+'>')
 		for group in rest_groups:
 			new_includes += list(
 					map(
@@ -172,7 +182,7 @@ def modify_file(filename,reserved_prefixes,debug):
 						lambda x : '#include <{}>'.format(x.path),
 						groups['']))
 
-		new_includes.append('#include <fcppt/config/external_end.hpp>')
+		new_includes.append('#include <'+external_end+'>')
 
 	modifications_present = new_includes != original_raw_include_lines
 	new_includes.append('\n')
@@ -203,6 +213,14 @@ parser.add_argument(
 	action = 'append')
 
 parser.add_argument(
+	'--external-begin',
+	default = 'fcppt/config/external_begin.hpp')
+
+parser.add_argument(
+	'--external-end',
+	default = 'fcppt/config/external_end.hpp')
+
+parser.add_argument(
 	'--debug',
 	action='store_true')
 
@@ -221,7 +239,7 @@ for filename in parser_result.files:
 	if parser_result.debug == True:
 		print('Looking at file {}'.format(filename))
 
-	if modify_file(filename,reserved_prefixes,parser_result.debug) == False:
+	if modify_file(filename,reserved_prefixes,parser_result.external_begin,parser_result.external_end,parser_result.debug) == False:
 		erroneous_files.append(
 			filename)
 

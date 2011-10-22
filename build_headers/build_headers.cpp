@@ -20,6 +20,7 @@
 #include <fcppt/to_std_string.hpp>
 #include <fcppt/config/external_begin.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <algorithm>
 #include <csignal>
 #include <cstdlib>
 #include <stdlib.h>
@@ -216,6 +217,18 @@ main(
 		)
 			continue;
 
+		if(
+			std::find(
+				path.begin(),
+				path.end(),
+				fcppt::string(
+					FCPPT_TEXT("impl")
+				)
+			)
+			!= path.end()
+		)
+			continue;
+
 		fcppt::filesystem::path::iterator path_it(
 			path.begin()
 		);
@@ -371,6 +384,8 @@ main(
 							log_file
 						)
 					)
+					+
+					" 1>/dev/null"
 				).c_str()
 			)
 		);

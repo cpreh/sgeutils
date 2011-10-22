@@ -7,6 +7,7 @@
 #include <fcppt/filesystem/recursive_directory_iterator.hpp>
 #include <fcppt/filesystem/remove.hpp>
 #include <fcppt/filesystem/remove_filename.hpp>
+#include <fcppt/filesystem/replace_extension.hpp>
 #include <fcppt/io/cerr.hpp>
 #include <fcppt/io/cout.hpp>
 #include <fcppt/io/ofstream.hpp>
@@ -20,6 +21,7 @@
 #include <fcppt/to_std_string.hpp>
 #include <fcppt/config/external_begin.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <algorithm>
 #include <csignal>
 #include <cstdlib>
@@ -138,11 +140,21 @@ main(
 )
 {
 	if(
+		argc <= 0
+	)
+		return EXIT_FAILURE;
+
+	if(
 		argc != 2
+		&& argc != 3
 	)
 	{
 		fcppt::io::cerr()
-			<< FCPPT_TEXT("You have to pass the build dir.\n");
+			<< FCPPT_TEXT("Usage: ")
+			<< fcppt::from_std_string(
+				argv[0]
+			)
+			<< FCPPT_TEXT(" <build_dir> [src_dir]\n");
 
 		return EXIT_FAILURE;
 	}
@@ -172,9 +184,14 @@ main(
 		log_file
 	);
 
-	fcppt::filesystem::path const source_file(
-		temp_dir
-		/ FCPPT_TEXT("main.cpp")
+	fcppt::string const source_subdir(
+		argc == 3
+		?
+			fcppt::from_std_string(
+				argv[2]
+			)
+		:
+			FCPPT_TEXT("src")
 	);
 
 	if(
@@ -267,7 +284,8 @@ main(
 		// descend into the build dir as far as possible
 		fcppt::filesystem::path make_path(
 			build_dir
-			/ FCPPT_TEXT("src")
+			/
+			source_subdir
 		);
 
 		while(
@@ -332,6 +350,21 @@ main(
 
 			continue;
 		}
+
+		fcppt::filesystem::path const source_file(
+			temp_dir
+			/
+			boost::algorithm::replace_all_copy(
+				fcppt::filesystem::path_to_string(
+					fcppt::filesystem::replace_extension(
+						include_file,
+						FCPPT_TEXT(".cpp")
+					)
+				),
+				FCPPT_TEXT("/"),
+				FCPPT_TEXT("_")
+			)
+		);
 
 		if(
 			!::write_file(

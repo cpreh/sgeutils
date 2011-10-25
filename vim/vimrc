@@ -1,0 +1,126 @@
+call pathogen#infect()
+call pathogen#helptags()
+
+" Helper functions begin, will only work if you have ConqueTerm installed
+function RunOrRaiseBash()
+	if bufexists('/bin/bash - 1')
+		buffer bash
+	else
+		ConqueTerm /bin/bash
+	endif
+endfunction
+" Helper functions end
+"
+" Global variables
+" Include stuff
+let g:paths = ['/home/philipp/projects/fcppt','/home/philipp/projects/spacegameengine','/home/philipp/projects/rucksack','/home/philipp/projects/mizuiro','/home/philipp/projects/awl','/home/philipp/projects/flake']
+
+filetype plugin on
+
+" Settings
+se tabstop=2
+se shiftwidth=2
+se enc=utf-8
+se fenc=utf-8
+se termencoding=utf-8
+" Ignore case while searching
+se ignorecase
+" Match [] with %, too
+se matchpairs=(:),{:},[:]
+" Store swap files in this directory
+se directory=~/.vim/tmp
+se smartcase
+" Searches do not wrap
+se nowrapscan
+se nosmartindent
+" Use cindent (powerful!)
+se cindent
+" This is just for gvim to surpress the menus
+se guioptions=
+se wildmenu
+se wildmode=longest,list
+se sh=/bin/bash
+se scrolloff=3
+se listchars=tab:>-,trail:·,eol:$
+se hidden
+" Somewhat sge style indentation
+se cino=g0,N-s,(s,p0,t0,)100,h0,u0
+
+" The mapleader key is used by some plugins as a shortcut in they keyboard
+" mappings. The standard is \
+let mapleader = ','
+
+" Highlight trailing whitespace and leading (non-tab) whitespace
+autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
+autocmd BufEnter * match ExtraWhitespace /\s\+$/ | 2match ExtraWhitespace /^ \+/
+
+" Color scheme
+colo desert
+
+" Mappings
+map <C-x><C-f> :FufCoverageFile<CR>
+" F keys
+map <F1> :ErrorAtCursor<CR>
+map <F2> :make!<CR>
+map <F3> :FSHere<CR>
+map <F4> :call RunOrRaiseBash()<CR>
+map <F5> :r !/home/philipp/.vim/suggest %<CR>
+map <F7> :r! /home/philipp/projects/sgeutils/build/bin/generate_includeguard %:p<CR>
+map <F9> :OpenIncludePath
+map <F10> :InsertIncludeDirective
+map <up> :cp<CR>
+map <down> :cn<CR>
+map <C-h> 5h
+map <C-j> 5j
+map <C-k> 5k
+map <C-l> 5l
+" Disable the pesky command line window
+map q: <nop>
+
+" Syntax files
+au BufNewFile,BufRead *.tex,*.latex se tw=80
+au BufNewFile,BufRead *.cl set ft=opencl
+au BufEnter *.cl setl makeprg=/home/philipp/projects/spacegameengine/build/bin/sgeopenclsyntax_checkerexample\ %:p
+
+"runtime macros/matchit.vim
+
+se makeprg=cd\ build;make\ -j3
+
+au! BufEnter *.cpp let b:fswitchdst = 'hpp,h' | let b:fswitchlocs = 'reg:/src/include/'
+au! BufEnter *.hpp let b:fswitchdst = 'cpp,c' | let b:fswitchlocs = 'reg:/include/src/'
+au VimResized * wincmd =
+
+let g:fuf_maxMenuWidth = 200
+
+" glsl stuff
+command SetGLSLFileType call SetGLSLFileType()
+function SetGLSLFileType()
+	for item in getline(1,10)
+		if item =~ "#version 400"
+			execute ':set filetype=glsl400'
+			return
+		endif
+		if item =~ "#version 330"
+			execute ':set filetype=glsl330'
+			return
+		endif
+	endfor
+
+	execute ':set filetype=glsl'
+endfunction
+
+au BufNewFile,BufRead *.frag,*.vert,*.fp,*.vp,*.glsl SetGLSLFileType
+
+augroup json_autocmd
+	autocmd!
+	autocmd FileType json set autoindent
+	autocmd FileType json set formatoptions=tcq2l
+	autocmd FileType json set textwidth=78 shiftwidth=2
+	autocmd FileType json set softtabstop=2 tabstop=8
+	autocmd FileType json set expandtab
+	autocmd FileType json set foldmethod=syntax
+augroup END
+
+au! BufRead,BufNewFile *.json set filetype=json
+
+

@@ -1,0 +1,47 @@
+Installation
+============
+
+If you're using pathogen:
+-------------------------
+
+	- Put the includehelper/ directory into your ~/.vim/bundle
+
+Without pathogen:
+-------------------------
+
+	- Copy plugin/* to your ~/.vim/plugin directory
+
+Setup
+=====
+
+Put the following line somewhere in your ~/.vimrc:
+
+let g:paths = ['/home/foobar/projects/baz','/home/foobar/projects/qux']
+
+More paths can, of course, be added. The script will do the following:
+
+- Set up the "path" variable so you can use 'gf' and C-w f properly.
+- Add two commands: OpenIncludePath and InsertIncludeDirective. The former
+  prompts for an include file and just opens it (analogous to 'gf', see above),
+  the latter will insert a #include <foobar/> directive
+
+The list of paths can be explicitly regenerated with:
+
+RegenerateIncludePaths
+
+It will be regenerated once per application start
+
+vimrc dependencies
+==================
+
+Do fully use the supplied vimrc, you need the following additional scripts:
+
+- Conque Shell: http://www.vim.org/scripts/script.php?script_id=2771
+- Fuzzy Finder: http://www.vim.org/scripts/script.php?script_id=1984
+- l9: http://www.vim.org/scripts/script.php?script_id=3252
+- json: http://www.vim.org/scripts/script.php?script_id=1945
+- fswitch: http://www.vim.org/scripts/script.php?script_id=2590
+- matchit: http://www.vim.org/scripts/script.php?script_id=39
+- OpenCL: http://www.vim.org/scripts/script.php?script_id=3157
+- Slang GLSL Syntax: http://www.vim.org/scripts/script.php?script_id=3155
+- GLSL: http://www.vim.org/scripts/script.php?script_id=1002

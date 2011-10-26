@@ -1,0 +1,4 @@
+INSTALL(
+	FILES remove_exec_bit.sh
+	DESTINATION ${INSTALL_BINARY_DIR}
+)

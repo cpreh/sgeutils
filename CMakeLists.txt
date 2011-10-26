@@ -49,13 +49,17 @@ ADD_SUBDIRECTORY(
 )
 
 ADD_SUBDIRECTORY(
+	prettify_includes
+)
+
+ADD_SUBDIRECTORY(
+	remove_exec_bit
+)
+
+ADD_SUBDIRECTORY(
 	update_license
 )
 
 ADD_SUBDIRECTORY(
 	update_cmake
-)
-
-ADD_SUBDIRECTORY(
-	prettify_includes
 )

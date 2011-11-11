@@ -56,9 +56,19 @@ ADD_SUBDIRECTORY(
 	remove_exec_bit
 )
 
-ADD_SUBDIRECTORY(
-	update_license
+OPTION(
+	ENABLE_UPDATE_LICENSE
+	"Build update_license (requires sge)"
+	ON
 )
+
+IF(
+	ENABLE_UPDATE_LICENSE
+)
+	ADD_SUBDIRECTORY(
+		update_license
+	)
+ENDIF()
 
 ADD_SUBDIRECTORY(
 	update_cmake

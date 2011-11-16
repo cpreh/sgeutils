@@ -27,29 +27,32 @@ Assertions:
 #include <sge/parse/json/object.hpp>
 #include <sge/parse/json/element_vector.hpp>
 #include <sge/parse/json/array.hpp>
-#include <fcppt/io/cerr.hpp>
-#include <fcppt/io/clog.hpp>
-#include <fcppt/text.hpp>
 #include <fcppt/exception.hpp>
 #include <fcppt/from_std_string.hpp>
+#include <fcppt/optional.hpp>
+#include <fcppt/text.hpp>
 #include <fcppt/to_std_string.hpp>
 #include <fcppt/assert/exception.hpp>
 #include <fcppt/assert/throw.hpp>
-#include <fcppt/filesystem/recursive_directory_iterator.hpp>
 #include <fcppt/filesystem/exists.hpp>
 #include <fcppt/filesystem/is_regular.hpp>
 #include <fcppt/filesystem/path_to_string.hpp>
-#include <boost/foreach.hpp>
-#include <boost/regex.hpp>
+#include <fcppt/filesystem/recursive_directory_iterator.hpp>
+#include <fcppt/io/cerr.hpp>
+#include <fcppt/io/clog.hpp>
+#include <fcppt/config/external_begin.hpp>
 #include <boost/next_prior.hpp>
-#include <iostream>
+#include <boost/regex.hpp>
 #include <algorithm>
-#include <set>
-#include <vector>
-#include <exception>
-#include <iterator>
-#include <utility>
 #include <cstdlib>
+#include <exception>
+#include <iostream>
+#include <iterator>
+#include <ostream>
+#include <set>
+#include <utility>
+#include <vector>
+#include <fcppt/config/external_end.hpp>
 
 namespace
 {
@@ -85,16 +88,22 @@ path_set;
 
 regex_set const
 extract_regexes(
-	sge::parse::json::array const &a)
+	sge::parse::json::array const &_array
+)
 {
 	regex_set rs;
-	BOOST_FOREACH(
-		sge::parse::json::element_vector::const_reference r,
-		a.elements)
+
+	for(
+		sge::parse::json::element_vector::const_iterator it(
+			_array.elements.begin()
+		);
+		it != _array.elements.end();
+		++it
+	)
 		rs.insert(
 			regex(
 				sge::parse::json::get<sge::parse::json::string>(
-					r)));
+					*it)));
 	return rs;
 }
 
@@ -104,7 +113,11 @@ extract_exceptions(
 {
 	exception_set es;
 
-	sge::parse::json::array const *const exceptions_(
+	typedef fcppt::optional<
+		sge::parse::json::array const &
+	> optional_array;
+
+	optional_array const exceptions(
 		sge::parse::json::find_member<
 			sge::parse::json::array
 		>(
@@ -114,19 +127,22 @@ extract_exceptions(
 	);
 
 	if(
-		!exceptions_
+		!exceptions
 	)
 		return es;
 
 
-	BOOST_FOREACH(
-		sge::parse::json::element_vector::const_reference r1,
-		exceptions_->elements
+	for(
+		sge::parse::json::element_vector::const_iterator r1(
+			exceptions->elements.begin()
+		);
+		r1 != exceptions->elements.end();
+		++r1
 	)
 	{
 		sge::parse::json::object const &r2 =
 			sge::parse::json::get<sge::parse::json::object>(
-				r1);
+				*r1);
 
 		es.insert(
 			exception(
@@ -141,7 +157,7 @@ extract_exceptions(
 		// The license file has to exist!
 		FCPPT_ASSERT_THROW(
 			fcppt::filesystem::exists(
-				(--es.end())->second
+				(boost::prior(es.end()))->second
 			),
 			fcppt::assert_::exception
 		);
@@ -217,33 +233,42 @@ extract_paths(
 
 path_set const
 intersection(
-	path_set const &ps,
-	regex_set const &rs)
+	path_set const &_paths,
+	regex_set const &_regexs)
 {
 	path_set ret;
-	BOOST_FOREACH(
-		path_set::const_reference p,
-		ps)
-		BOOST_FOREACH(
-			regex_set::const_reference r,
-			rs)
+
+	for(
+		path_set::const_iterator path_it(
+			_paths.begin()
+		);
+		path_it != _paths.end();
+		++path_it
+	)
+		for(
+			regex_set::const_iterator regex_it(
+				_regexs.begin()
+			);
+			regex_it != _regexs.end();
+			++regex_it
+		)
 		{
 			FCPPT_ASSERT_THROW(
-				p.string().compare(0,2,"./") == 0,
+				path_it->string().compare(0,2,"./") == 0,
 				fcppt::assert_::exception
 			);
 
 			bool const result =
 				regex_match(
 					fcppt::filesystem::path_to_string(
-						p
+						*path_it
 					).substr(2),
-					r,
+					*regex_it,
 					boost::match_default);
 
 			if(result)
 				ret.insert(
-					p);
+					*path_it);
 		}
 	return ret;
 }
@@ -266,16 +291,21 @@ intersections(
 	exception_set const &es)
 {
 	path_set_with_license_set pls;
-	BOOST_FOREACH(
-		exception_set::const_reference e,
-		es)
+
+	for(
+		exception_set::const_iterator ex_it(
+			es.begin()
+		);
+		ex_it != es.end();
+		++ex_it
+	)
 	{
 		pls.insert(
 			path_set_with_license(
 				intersection(
 					ps,
-					e.first),
-				e.second));
+					ex_it->first),
+				ex_it->second));
 	}
 	return pls;
 }
@@ -349,27 +379,32 @@ path_ref_set;
 
 path_set const
 ref_set_difference(
-	path_set a,
+	path_set _paths,
 	path_ref_set const &refs)
 {
-	BOOST_FOREACH(
-		path_ref_set::const_reference r,
-		refs)
+	for(
+		path_ref_set::const_iterator it(
+			refs.begin()
+		);
+		it != refs.end();
+		++it
+	)
 	{
 		path_set b;
+
 		std::set_difference(
-			a.begin(),
-			a.end(),
-			r->begin(),
-			r->end(),
+			_paths.begin(),
+			_paths.end(),
+			(*it)->begin(),
+			(*it)->end(),
 			std::inserter(
 				b,
 				b.begin()));
 		// H4x0r!
-		a.swap(
+		_paths.swap(
 			b);
 	}
-	return a;
+	return _paths;
 }
 
 void
@@ -483,11 +518,16 @@ try
 			exceptions);
 
 	path_ref_set path_refs;
-	BOOST_FOREACH(
-		path_set_with_license_set::const_reference r,
-		exception_paths)
+
+	for(
+		path_set_with_license_set::const_iterator ref_it(
+			exception_paths.begin()
+		);
+		ref_it != exception_paths.end();
+		++ref_it
+	)
 		path_refs.insert(
-			&(r.first));
+			&(ref_it->first));
 
 	path_refs.insert(
 		&nolicense_paths);
@@ -499,26 +539,45 @@ try
 	}
 
 	// Collect all the files which are not "excepted" and have a license
-	BOOST_FOREACH(
-		path_set::const_reference r,
-		ref_set_difference(
-			a,
-			path_refs
-		)
-	)
-		apply_license(
-			r,
-			main_license
+	{
+		path_set const difference_set(
+			ref_set_difference(
+				a,
+				path_refs
+			)
 		);
 
-	// Collect all exceptions
-	BOOST_FOREACH(
-		path_set_with_license_set::const_reference r,
-		exception_paths)
-		BOOST_FOREACH(path_set::const_reference p,r.first)
+		for(
+			path_set::const_iterator path_it(
+				difference_set.begin()
+			);
+			path_it != difference_set.end();
+			++path_it
+		)
 			apply_license(
-				p,
-				r.second
+				*path_it,
+				main_license
+			);
+	}
+
+	// Collect all exceptions
+	for(
+		path_set_with_license_set::const_iterator ex_it(
+			exception_paths.begin()
+		);
+		ex_it != exception_paths.end();
+		++ex_it
+	)
+		for(
+			path_set::const_iterator path_it(
+				ex_it->first.begin()
+			);
+			path_it != ex_it->first.end();
+			++path_it
+		)
+			apply_license(
+				*path_it,
+				ex_it->second
 			);
 }
 catch (

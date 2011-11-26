@@ -56,6 +56,10 @@ ADD_SUBDIRECTORY(
 	remove_exec_bit
 )
 
+ADD_SUBDIRECTORY(
+	replace_whitespaces
+)
+
 OPTION(
 	ENABLE_UPDATE_LICENSE
 	"Build update_license (requires sge)"

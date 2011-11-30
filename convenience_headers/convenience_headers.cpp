@@ -13,8 +13,8 @@
 #include <fcppt/from_std_string.hpp>
 #include <fcppt/string.hpp>
 #include <fcppt/text.hpp>
+#include <fcppt/config/external_begin.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
-#include <boost/foreach.hpp>
 #include <algorithm>
 #include <exception>
 #include <iosfwd>
@@ -23,6 +23,7 @@
 #include <vector>
 #include <cassert>
 #include <cstdlib>
+#include <fcppt/config/external_end.hpp>
 
 namespace
 {
@@ -249,13 +250,16 @@ try
 			<< include_guard_name
 			<< FCPPT_TEXT("\n\n");
 
-		BOOST_FOREACH(
-			string_vector::const_reference cur_name,
-			filenames
+		for(
+			string_vector::const_iterator cur_name(
+				filenames.begin()
+			);
+			cur_name != filenames.end();
+			++cur_name
 		)
 			file
 				<< FCPPT_TEXT("#include <")
-				<< cur_name
+				<< *cur_name
 				<< FCPPT_TEXT(">\n");
 
 		file

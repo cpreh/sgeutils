@@ -1,3 +1,4 @@
+#include <fcppt/config/external_begin.hpp>
 #include <boost/spirit/repository/include/qi_confix.hpp>
 #include <boost/spirit/include/qi_match.hpp>
 #include <boost/spirit/include/qi_char.hpp>
@@ -11,6 +12,7 @@
 #include <iosfwd>
 #include <cstdlib>
 #include <cstdio>
+#include <fcppt/config/external_end.hpp>
 
 int
 main(

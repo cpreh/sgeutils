@@ -10,12 +10,14 @@
 #include <fcppt/from_std_string.hpp>
 #include <fcppt/string.hpp>
 #include <fcppt/text.hpp>
+#include <fcppt/config/external_begin.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/next_prior.hpp>
 #include <iterator>
 #include <string>
 #include <cassert>
 #include <cstdlib>
+#include <fcppt/config/external_end.hpp>
 
 namespace
 {

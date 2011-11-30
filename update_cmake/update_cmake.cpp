@@ -1,3 +1,4 @@
+#include <fcppt/config/external_begin.hpp>
 #include <boost/filesystem/v3/convenience.hpp>
 #include <boost/filesystem/v3/operations.hpp>
 #include <boost/filesystem/v3/path.hpp>
@@ -10,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <cstdlib>
+#include <fcppt/config/external_end.hpp>
 
 namespace
 {

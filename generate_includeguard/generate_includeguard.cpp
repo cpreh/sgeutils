@@ -44,15 +44,15 @@ calculate_sequence(
 
 	if (!current.has_parent_path())
 		throw fcppt::exception(FCPPT_TEXT("Arrived at the root, didn't find include/"));
-	
-	directory_sequence result = 
+
+	directory_sequence result =
 		calculate_sequence(
 			current.parent_path());
-	
+
 	result.push_back(
 		fcppt::filesystem::path_to_string(
 			current.filename()));
-	
+
 	return result;
 }
 
@@ -65,22 +65,22 @@ create_guard(
 	for (directory_sequence::const_iterator i = dirs.begin(); i != dirs.end(); ++i)
 	{
 		if (i != dirs.begin())
-			guard += 
+			guard +=
 				FCPPT_TEXT('_');
 
-		guard += 
+		guard +=
 			boost::algorithm::to_upper_copy(
 				*i);
 	}
 
-	guard += 
-		FCPPT_TEXT('_') + 
+	guard +=
+		FCPPT_TEXT('_') +
 		boost::algorithm::to_upper_copy(
 			boost::algorithm::replace_all_copy(
 				fn,
 				FCPPT_TEXT("."),
 				FCPPT_TEXT("_")));
-	
+
 	return guard + FCPPT_TEXT("_INCLUDED");
 }
 
@@ -120,20 +120,20 @@ try
 	//	return EXIT_FAILURE;
 	//}
 
-	directory_sequence const s = 
+	directory_sequence const s =
 		calculate_sequence(
 			p.parent_path());
-	
-	std::pair<fcppt::string,fcppt::string> const namespaces = 
+
+	std::pair<fcppt::string,fcppt::string> const namespaces =
 		create_namespaces(
 			s);
 
-	fcppt::string const guard = 
+	fcppt::string const guard =
 		create_guard(
 			s,
 			fcppt::filesystem::path_to_string(
 				p.filename()));
-	
+
 	fcppt::io::cout()
 		<< FCPPT_TEXT("#ifndef ") << guard << FCPPT_TEXT("\n")
 		<< FCPPT_TEXT("#define ") << guard << FCPPT_TEXT("\n\n")

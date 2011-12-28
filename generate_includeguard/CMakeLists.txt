@@ -5,7 +5,8 @@ ADD_EXECUTABLE(
 
 TARGET_LINK_LIBRARIES(
 	generate_includeguard
-	${Fcppt_LIBRARIES}
+	${Fcppt_core_LIBRARIES}
+	${Fcppt_filesystem_LIBRARIES}
 )
 
 INSTALL(

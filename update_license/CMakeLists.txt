@@ -19,7 +19,7 @@ ADD_EXECUTABLE(
 
 TARGET_LINK_LIBRARIES(
 	update_license
-	${Fcppt_LIBRARIES}
+	${Fcppt_core_LIBRARIES}
 )
 
 INSTALL(
@@ -34,9 +34,10 @@ ADD_EXECUTABLE(
 
 TARGET_LINK_LIBRARIES(
 	multi_update_license
-	${Fcppt_LIBRARIES}
+	${Fcppt_core_LIBRARIES}
+	${Fcppt_filesystem_LIBRARIES}
 	${SGE_LIBRARIES}
-	${Boost_LIBRARIES}
+	${Boost_REGEX_LIBRARY}
 )
 
 INSTALL(

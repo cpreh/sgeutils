@@ -28,6 +28,14 @@ function insertlistener.onAbort()
 endfunction
 " Insert end
 
+function! AddIncludeLine()
+	call inputsave()
+	let name = input('#include <')
+	call inputrestore()
+
+	call append(0,'#include <'.name.'>')
+endfunction
+
 function! RegenerateIncludePaths()
 	let g:edited_include_paths = []
 	" Set some standard paths (strictly not 'topic' of this script, but helpful
@@ -38,10 +46,9 @@ function! RegenerateIncludePaths()
 	endfor
 endfunction
 
-let g:paths = ['/home/philipp/projects/fcppt','/home/philipp/projects/spacegameengine','/home/philipp/projects/rucksack','/home/philipp/projects/mizuiro','/home/philipp/projects/awl','/home/philipp/projects/flake']
-
 command! RegenerateIncludePaths call RegenerateIncludePaths()
 command! OpenIncludePath call fuf#callbackitem#launch('', 0, '>', openlistener, g:edited_include_paths, 0)
 command! InsertIncludeDirective call fuf#callbackitem#launch('', 0, '#include <', insertlistener, g:edited_include_paths, 0)
+command! AddIncludeLine call AddIncludeLine()
 
 RegenerateIncludePaths

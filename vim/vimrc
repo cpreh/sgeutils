@@ -18,8 +18,8 @@ let g:paths = ['/home/philipp/projects/fcppt','/home/philipp/projects/spacegamee
 filetype plugin on
 
 " Settings
-se tabstop=2
-se shiftwidth=2
+"se tabstop=2
+"se shiftwidth=2
 se enc=utf-8
 se fenc=utf-8
 se termencoding=utf-8
@@ -35,16 +35,19 @@ se nowrapscan
 se nosmartindent
 " Use cindent (powerful!)
 se cindent
-" This is just for gvim to surpress the menus
-se guioptions=
+" This is just for gvim. a autoyanks everything in the 'v' mode
+se guioptions=a
 se wildmenu
 se wildmode=longest,list
 se sh=/bin/bash
 se scrolloff=3
 se listchars=tab:>-,trail:·,eol:$
 se hidden
+" I removed 'r' because that adds an asterisk at the beginning of doxygen
+" comments
+se formatoptions=ql
 " Somewhat sge style indentation
-se cino=g0,N-s,(s,p0,t0,)100,h0,u0
+se cino=c0,C0,g0,N-s,(s,p0,t0,)100,h0,u0
 
 " The mapleader key is used by some plugins as a shortcut in they keyboard
 " mappings. The standard is \
@@ -66,14 +69,15 @@ map <F3> :FSHere<CR>
 map <F4> :call RunOrRaiseBash()<CR>
 map <F5> :r !/home/philipp/.vim/suggest %<CR>
 map <F7> :r! /home/philipp/projects/sgeutils/build/bin/generate_includeguard %:p<CR>
-map <F9> :OpenIncludePath
-map <F10> :InsertIncludeDirective
+map <F9> :OpenIncludePath<CR>
+map <F10> :InsertIncludeDirective<CR>
 map <up> :cp<CR>
 map <down> :cn<CR>
 map <C-h> 5h
 map <C-j> 5j
 map <C-k> 5k
 map <C-l> 5l
+map <C-i> :AddIncludeLine<CR>
 " Disable the pesky command line window
 map q: <nop>
 
@@ -90,7 +94,12 @@ au! BufEnter *.cpp let b:fswitchdst = 'hpp,h' | let b:fswitchlocs = 'reg:/src/in
 au! BufEnter *.hpp let b:fswitchdst = 'cpp,c' | let b:fswitchlocs = 'reg:/include/src/'
 au VimResized * wincmd =
 
+" Assume we have enough space to show more of the completion line
 let g:fuf_maxMenuWidth = 200
+" Usually when you enter 'foobar', this will not match 'foo/bar'. With this,
+" it will
+let g:fuf_splitPathMatching = 1
+let g:fuf_fuzzyRefining = 1
 
 " glsl stuff
 command SetGLSLFileType call SetGLSLFileType()
@@ -110,17 +119,5 @@ function SetGLSLFileType()
 endfunction
 
 au BufNewFile,BufRead *.frag,*.vert,*.fp,*.vp,*.glsl SetGLSLFileType
-
-augroup json_autocmd
-	autocmd!
-	autocmd FileType json set autoindent
-	autocmd FileType json set formatoptions=tcq2l
-	autocmd FileType json set textwidth=78 shiftwidth=2
-	autocmd FileType json set softtabstop=2 tabstop=8
-	autocmd FileType json set expandtab
-	autocmd FileType json set foldmethod=syntax
-augroup END
-
-au! BufRead,BufNewFile *.json set filetype=json
-
-
+au! BufRead,BufNewFile *.json se ft=json
+au! BufRead,BufNewFile *.doxygen se ft=doxygen

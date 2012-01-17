@@ -112,17 +112,31 @@ needs_header(
 	fcppt::filesystem::path const &_path
 )
 {
-	return
-		fcppt::filesystem::is_directory(
+	if(
+		!fcppt::filesystem::is_directory(
 			_path
 		)
-		&&
-		!fcppt::algorithm::contains(
-			exclusions,
-			fcppt::filesystem::stem(
-				_path
-			)
+	)
+		return false;
+
+	for(
+		string_vector::const_iterator it(
+			exclusions.begin()
 		);
+		it != exclusions.end();
+		++it
+	)
+	{
+		if(
+			fcppt::algorithm::contains(
+				_path,
+				*it
+			)
+		)
+			return false;
+	}
+
+	return true;
 }
 
 }

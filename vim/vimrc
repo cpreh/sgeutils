@@ -9,11 +9,6 @@ function RunOrRaiseBash()
 		ConqueTerm /bin/bash
 	endif
 endfunction
-" Helper functions end
-"
-" Global variables
-" Include stuff
-let g:paths = ['/home/philipp/projects/fcppt','/home/philipp/projects/spacegameengine','/home/philipp/projects/rucksack','/home/philipp/projects/mizuiro','/home/philipp/projects/awl','/home/philipp/projects/flake']
 
 filetype plugin on
 
@@ -54,8 +49,8 @@ se cino=c0,C0,g0,N-s,(s,p0,t0,)100,h0,u0
 let mapleader = ','
 
 " Highlight trailing whitespace and leading (non-tab) whitespace
-autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
-autocmd BufEnter * match ExtraWhitespace /\s\+$/ | 2match ExtraWhitespace /^ \+/
+autocmd ColorScheme c,cpp,objcpp,objcpp,sh highlight ExtraWhitespace ctermbg=red guibg=red
+autocmd BufEnter c,cpp,objcpp,objcpp,sh match ExtraWhitespace /\s\+$/ | 2match ExtraWhitespace /^ \+/
 
 " Color scheme
 colo desert
@@ -68,9 +63,9 @@ map <F2> :make!<CR>
 map <F3> :FSHere<CR>
 map <F4> :call RunOrRaiseBash()<CR>
 map <F5> :r !/home/philipp/.vim/suggest %<CR>
-map <F7> :r! /home/philipp/projects/sgeutils/build/bin/generate_includeguard %:p<CR>
-map <F9> :OpenIncludePath<CR>
-map <F10> :InsertIncludeDirective<CR>
+map <F7> :0r! /home/philipp/projects/sgeutils/build/bin/generate_includeguard %:p<CR>:1<CR>
+"map <F9> :OpenIncludePath<CR>
+"map <F10> :InsertIncludeDirective<CR>
 map <up> :cp<CR>
 map <down> :cn<CR>
 map <C-h> 5h
@@ -80,11 +75,15 @@ map <C-l> 5l
 map <C-i> :AddIncludeLine<CR>
 " Disable the pesky command line window
 map q: <nop>
+nnoremap <Leader>e :e <C-r>=expand('%:p:h')<CR>
+nnoremap <Leader>s :sp <C-r>=expand('%:p:h')<CR>
+nnoremap <Leader>v :vsp <C-r>=expand('%:p:h')<CR>
+nnoremap <Leader>r :r <C-r>=expand('%:p:h')<CR>
 
 " Syntax files
 au BufNewFile,BufRead *.tex,*.latex se tw=80
 au BufNewFile,BufRead *.cl set ft=opencl
-au BufEnter *.cl setl makeprg=/home/philipp/projects/spacegameengine/build/bin/sgeopenclsyntax_checkerexample\ %:p
+au BufEnter *.cl setl makeprg=/home/philipp/projects/spacegameengine/build/bin/sgeopencl_syntax_checkerexample\ %:p
 
 "runtime macros/matchit.vim
 
@@ -121,3 +120,12 @@ endfunction
 au BufNewFile,BufRead *.frag,*.vert,*.fp,*.vp,*.glsl SetGLSLFileType
 au! BufRead,BufNewFile *.json se ft=json
 au! BufRead,BufNewFile *.doxygen se ft=doxygen
+
+" This is supposed to be faster, but it crashes
+"let g:clang_use_library = 1
+"let g:clang_library_path = '/usr/lib64/llvm'
+let g:inccomplete_showdirs = 1
+let g:inccomplete_addclosebracket = 'never'
+let g:inccomplete_findcmd = '/usr/bin/find'
+"set completeopt=longest,menuone
+set completeopt=longest

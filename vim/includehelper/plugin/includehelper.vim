@@ -33,7 +33,9 @@ function! AddIncludeLine()
 	let name = input('#include <')
 	call inputrestore()
 
-	call append(0,'#include <'.name.'>')
+	if name != ''
+		call append(0,'#include <'.name.'>')
+	endif
 endfunction
 
 function! RegenerateIncludePaths()
@@ -46,9 +48,6 @@ function! RegenerateIncludePaths()
 	endfor
 endfunction
 
-command! RegenerateIncludePaths call RegenerateIncludePaths()
 command! OpenIncludePath call fuf#callbackitem#launch('', 0, '>', openlistener, g:edited_include_paths, 0)
 command! InsertIncludeDirective call fuf#callbackitem#launch('', 0, '#include <', insertlistener, g:edited_include_paths, 0)
 command! AddIncludeLine call AddIncludeLine()
-
-RegenerateIncludePaths

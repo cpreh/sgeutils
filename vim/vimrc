@@ -1,6 +1,8 @@
 call pathogen#infect()
 call pathogen#helptags()
 
+let g:whitespace_highlight_exclusion = ['conque_term']
+
 " Helper functions begin, will only work if you have ConqueTerm installed
 function RunOrRaiseBash()
 	if bufexists('/bin/bash - 1')
@@ -34,7 +36,6 @@ se cindent
 se guioptions=a
 se wildmenu
 se wildmode=longest,list
-se sh=/bin/bash
 se scrolloff=3
 se listchars=tab:>-,trail:·,eol:$
 se hidden
@@ -42,21 +43,24 @@ se hidden
 " comments
 se formatoptions=ql
 " Somewhat sge style indentation
-se cino=c0,C0,g0,N-s,(s,p0,t0,)100,h0,u0
+se cino=c0,C1,g0,N-s,(s,p0,t0,)100,u0
+" Adjust comments
+autocmd FileType c,cpp,objc,objcpp set comments=sl:/*,m:\ ,e:*/,://
+
 
 " The mapleader key is used by some plugins as a shortcut in they keyboard
 " mappings. The standard is \
 let mapleader = ','
 
-" Highlight trailing whitespace and leading (non-tab) whitespace
-autocmd ColorScheme c,cpp,objcpp,objcpp,sh highlight ExtraWhitespace ctermbg=red guibg=red
-autocmd BufEnter c,cpp,objcpp,objcpp,sh match ExtraWhitespace /\s\+$/ | 2match ExtraWhitespace /^ \+/
+"autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
+"autocmd BufEnter * match ExtraWhitespace /\s\+$/ | 2match ExtraWhitespace /^ \+/
+   
 
 " Color scheme
 colo desert
 
 " Mappings
-map <C-x><C-f> :FufCoverageFile<CR>
+map <C-x><C-f> :CommandT<CR>
 " F keys
 map <F1> :ErrorAtCursor<CR>
 map <F2> :make!<CR>
@@ -79,6 +83,7 @@ nnoremap <Leader>e :e <C-r>=expand('%:p:h')<CR>
 nnoremap <Leader>s :sp <C-r>=expand('%:p:h')<CR>
 nnoremap <Leader>v :vsp <C-r>=expand('%:p:h')<CR>
 nnoremap <Leader>r :r <C-r>=expand('%:p:h')<CR>
+
 
 " Syntax files
 au BufNewFile,BufRead *.tex,*.latex se tw=80
@@ -129,3 +134,6 @@ let g:inccomplete_addclosebracket = 'never'
 let g:inccomplete_findcmd = '/usr/bin/find'
 "set completeopt=longest,menuone
 set completeopt=longest
+
+" Press space to unsearch something
+noremap <silent> <Space> :silent noh<Bar>echo<CR>

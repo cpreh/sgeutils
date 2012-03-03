@@ -37,7 +37,7 @@ add_files(
 	)
 	{
 		if(
-			!boost::filesystem::is_regular(
+			!boost::filesystem::is_regular_file(
 				*_iterator
 			)
 		)

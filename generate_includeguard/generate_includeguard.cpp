@@ -1,6 +1,4 @@
 #include <fcppt/exception.hpp>
-#include <fcppt/filesystem/is_directory.hpp>
-#include <fcppt/filesystem/path.hpp>
 #include <fcppt/filesystem/path_to_string.hpp>
 #include <fcppt/from_std_string.hpp>
 #include <fcppt/io/cerr.hpp>
@@ -11,6 +9,8 @@
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
 #include <list>
 #include <iterator>
 #include <streambuf>
@@ -33,7 +33,7 @@ directory_sequence;
  */
 directory_sequence const
 calculate_sequence(
-	fcppt::filesystem::path const &current)
+	boost::filesystem::path const &current)
 {
 	if(
 		fcppt::filesystem::path_to_string(
@@ -109,12 +109,12 @@ try
 		return EXIT_FAILURE;
 	}
 
-	fcppt::filesystem::path const p(
+	boost::filesystem::path const p(
 		fcppt::from_std_string(
 			argv[1]));
 
 	// We might open a new buffer in vim to which no (saved) file is attached yet, so this test is useless
-	//if (!fcppt::filesystem::is_regular(p))
+	//if (!boost::filesystem::is_regular_file(p))
 	//{
 	//	fcppt::io::cerr() << FCPPT_TEXT("The file ") << p << FCPPT_TEXT(" is not regular\n");
 	//	return EXIT_FAILURE;

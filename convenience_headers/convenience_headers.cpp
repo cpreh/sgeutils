@@ -1,10 +1,6 @@
 #include <fcppt/algorithm/contains.hpp>
 #include <fcppt/assign/make_container.hpp>
-#include <fcppt/filesystem/directory_iterator.hpp>
-#include <fcppt/filesystem/is_directory.hpp>
-#include <fcppt/filesystem/path.hpp>
 #include <fcppt/filesystem/path_to_string.hpp>
-#include <fcppt/filesystem/recursive_directory_iterator.hpp>
 #include <fcppt/filesystem/remove_extension.hpp>
 #include <fcppt/filesystem/stem.hpp>
 #include <fcppt/io/cerr.hpp>
@@ -15,6 +11,8 @@
 #include <fcppt/text.hpp>
 #include <fcppt/config/external_begin.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
 #include <algorithm>
 #include <exception>
 #include <iosfwd>
@@ -28,13 +26,13 @@
 namespace
 {
 
-fcppt::filesystem::path const
+boost::filesystem::path const
 make_header(
-	fcppt::filesystem::path const &_path
+	boost::filesystem::path const &_path
 )
 {
 	assert(
-		fcppt::filesystem::is_directory(
+		boost::filesystem::is_directory(
 			_path
 		)
 	);
@@ -53,19 +51,19 @@ make_header(
 
 fcppt::string const
 make_include_guard(
-	fcppt::filesystem::path const &_path
+	boost::filesystem::path const &_path
 )
 {
 	fcppt::string ret;
 
-	fcppt::filesystem::path const new_path(
+	boost::filesystem::path const new_path(
 		fcppt::filesystem::remove_extension(
 			_path
 		)
 	);
 
 	for(
-		fcppt::filesystem::path::const_iterator it(
+		boost::filesystem::path::const_iterator it(
 			new_path.begin()
 		);
 		it != new_path.end();
@@ -109,11 +107,11 @@ string_vector const exclusions(
 
 bool
 needs_header(
-	fcppt::filesystem::path const &_path
+	boost::filesystem::path const &_path
 )
 {
 	if(
-		!fcppt::filesystem::is_directory(
+		!boost::filesystem::is_directory(
 			_path
 		)
 	)
@@ -160,14 +158,14 @@ try
 		return EXIT_FAILURE;
 	}
 
-	fcppt::filesystem::path const dir(
+	boost::filesystem::path const dir(
 		fcppt::from_std_string(
 			argv[1]
 		)
 	);
 
 	for(
-		fcppt::filesystem::recursive_directory_iterator dir_it(
+		boost::filesystem::recursive_directory_iterator dir_it(
 			dir
 		),
 		dir_end;
@@ -182,7 +180,7 @@ try
 		)
 			continue;
 
-		fcppt::filesystem::path const header(
+		boost::filesystem::path const header(
 			make_header(
 				dir_it->path()
 			)
@@ -208,7 +206,7 @@ try
 		}
 
 		for(
-			fcppt::filesystem::directory_iterator file_it(
+			boost::filesystem::directory_iterator file_it(
 				dir_it->path()
 			),
 			file_end;
@@ -235,7 +233,7 @@ try
 					)
 				);
 			else if(
-				!fcppt::filesystem::is_directory(
+				!boost::filesystem::is_directory(
 					file_it->path()
 				)
 			)

@@ -34,15 +34,14 @@ Assertions:
 #include <fcppt/to_std_string.hpp>
 #include <fcppt/assert/exception.hpp>
 #include <fcppt/assert/throw.hpp>
-#include <fcppt/filesystem/exists.hpp>
-#include <fcppt/filesystem/is_regular.hpp>
 #include <fcppt/filesystem/path_to_string.hpp>
-#include <fcppt/filesystem/recursive_directory_iterator.hpp>
 #include <fcppt/io/cerr.hpp>
 #include <fcppt/io/clog.hpp>
 #include <fcppt/config/external_begin.hpp>
 #include <boost/next_prior.hpp>
 #include <boost/regex.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
 #include <algorithm>
 #include <cstdlib>
 #include <exception>
@@ -71,7 +70,7 @@ typedef
 std::pair
 <
 	regex_set,
-	fcppt::filesystem::path
+	boost::filesystem::path
 >
 exception;
 
@@ -83,7 +82,7 @@ std::set
 exception_set;
 
 typedef
-std::set<fcppt::filesystem::path>
+std::set<boost::filesystem::path>
 path_set;
 
 regex_set const
@@ -156,7 +155,7 @@ extract_exceptions(
 
 		// The license file has to exist!
 		FCPPT_ASSERT_THROW(
-			fcppt::filesystem::exists(
+			boost::filesystem::exists(
 				(boost::prior(es.end()))->second
 			),
 			fcppt::assert_::exception
@@ -167,20 +166,20 @@ extract_exceptions(
 
 bool
 has_hidden_components(
-	fcppt::filesystem::path const &path_
+	boost::filesystem::path const &_path
 )
 {
-	if(path_.empty())
+	if(_path.empty())
 		return false;
 
 	// skip the first entry because it starts with "./"
 	for(
-		fcppt::filesystem::path::iterator next(
+		boost::filesystem::path::iterator next(
 			boost::next(
-				path_.begin()
+				_path.begin()
 			)
 		);
-		next != path_.end();
+		next != _path.end();
 		++next
 	)
 		if(
@@ -197,7 +196,7 @@ extract_paths(
 {
 	path_set s;
 	for(
-		fcppt::filesystem::recursive_directory_iterator
+		boost::filesystem::recursive_directory_iterator
 			i(
 				FCPPT_TEXT(".")),
 			end;
@@ -205,12 +204,12 @@ extract_paths(
 		++i
 	)
 	{
-		fcppt::filesystem::path const &path_(
+		boost::filesystem::path const &path_(
 			i->path()
 		);
 
 		if(
-			fcppt::filesystem::is_regular(
+			boost::filesystem::is_regular_file(
 				path_
 			)
 			&&
@@ -277,7 +276,7 @@ typedef
 std::pair
 <
 	path_set,
-	fcppt::filesystem::path
+	boost::filesystem::path
 >
 path_set_with_license;
 
@@ -409,8 +408,8 @@ ref_set_difference(
 
 void
 apply_license(
-	fcppt::filesystem::path const &file,
-	fcppt::filesystem::path const &license
+	boost::filesystem::path const &file,
+	boost::filesystem::path const &license
 )
 {
 	if(
@@ -476,7 +475,7 @@ try
 		<< json_file_name
 		<< FCPPT_TEXT("\"\n");
 
-	fcppt::filesystem::path const main_license =
+	boost::filesystem::path const main_license =
 		sge::parse::json::find_member_exn<sge::parse::json::string>(
 			json_file.members,
 			FCPPT_TEXT("main_license"));
@@ -487,7 +486,7 @@ try
 			FCPPT_TEXT("standard_match")));
 
 	FCPPT_ASSERT_THROW(
-		fcppt::filesystem::exists(
+		boost::filesystem::exists(
 			main_license
 		),
 		fcppt::assert_::exception

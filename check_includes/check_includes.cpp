@@ -1,8 +1,5 @@
 #include <fcppt/filesystem/extension_without_dot.hpp>
-#include <fcppt/filesystem/is_regular.hpp>
-#include <fcppt/filesystem/path.hpp>
 #include <fcppt/filesystem/path_to_string.hpp>
-#include <fcppt/filesystem/recursive_directory_iterator.hpp>
 #include <fcppt/filesystem/remove_extension.hpp>
 #include <fcppt/io/cerr.hpp>
 #include <fcppt/io/cout.hpp>
@@ -12,6 +9,8 @@
 #include <fcppt/text.hpp>
 #include <fcppt/config/external_begin.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
 #include <boost/next_prior.hpp>
 #include <iterator>
 #include <string>
@@ -22,12 +21,12 @@
 namespace
 {
 
-fcppt::filesystem::path::iterator::difference_type
+boost::filesystem::path::iterator::difference_type
 path_levels(
-	fcppt::filesystem::path const &_base_path
+	boost::filesystem::path const &_base_path
 )
 {
-	fcppt::filesystem::path::iterator::difference_type ret(
+	boost::filesystem::path::iterator::difference_type ret(
 		std::distance(
 			_base_path.begin(),
 			_base_path.end()
@@ -50,13 +49,13 @@ path_levels(
 
 fcppt::string const
 make_include_guard(
-	fcppt::filesystem::path::iterator::difference_type const _base_level,
-	fcppt::filesystem::path const &_path
+	boost::filesystem::path::iterator::difference_type const _base_level,
+	boost::filesystem::path const &_path
 )
 {
 	fcppt::string ret;
 
-	fcppt::filesystem::path const without_extension(
+	boost::filesystem::path const without_extension(
 		fcppt::filesystem::remove_extension(
 			_path
 		)
@@ -72,7 +71,7 @@ make_include_guard(
 	);
 
 	for(
-		fcppt::filesystem::path::const_iterator it(
+		boost::filesystem::path::const_iterator it(
 			boost::next(
 				without_extension.begin(),
 				_base_level
@@ -132,32 +131,32 @@ main(
 			fcppt::string()
 	);
 
-	fcppt::filesystem::path const base_path(
+	boost::filesystem::path const base_path(
 		fcppt::from_std_string(
 			argv[1]
 		)
 	);
 
-	fcppt::filesystem::path::iterator::difference_type const base_levels(
+	boost::filesystem::path::iterator::difference_type const base_levels(
 		::path_levels(
 			base_path
 		)
 	);
 
 	for(
-		fcppt::filesystem::recursive_directory_iterator it(
+		boost::filesystem::recursive_directory_iterator it(
 			base_path
 		), end;
 		it != end;
 		++it
 	)
 	{
-		fcppt::filesystem::path const &path(
+		boost::filesystem::path const &path(
 			it->path()
 		);
 
 		if(
-			!fcppt::filesystem::is_regular(
+			!boost::filesystem::is_regular_file(
 				path
 			)
 		)

@@ -1,11 +1,5 @@
-#include <fcppt/filesystem/create_directory.hpp>
-#include <fcppt/filesystem/directory_iterator.hpp>
-#include <fcppt/filesystem/exists.hpp>
 #include <fcppt/filesystem/extension.hpp>
-#include <fcppt/filesystem/path.hpp>
 #include <fcppt/filesystem/path_to_string.hpp>
-#include <fcppt/filesystem/recursive_directory_iterator.hpp>
-#include <fcppt/filesystem/remove.hpp>
 #include <fcppt/filesystem/remove_filename.hpp>
 #include <fcppt/filesystem/replace_extension.hpp>
 #include <fcppt/io/cerr.hpp>
@@ -22,6 +16,8 @@
 #include <fcppt/config/external_begin.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/replace.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
 #include <algorithm>
 #include <csignal>
 #include <cstdlib>
@@ -33,16 +29,16 @@ namespace
 {
 
 typedef fcppt::optional<
-	fcppt::filesystem::path
+	boost::filesystem::path
 > optional_path;
 
 optional_path const
 find_cmake_dir(
-	fcppt::filesystem::path const &_path
+	boost::filesystem::path const &_path
 )
 {
 	for(
-		fcppt::filesystem::directory_iterator
+		boost::filesystem::directory_iterator
 			build_dir_it(
 				_path
 			),
@@ -71,7 +67,7 @@ find_cmake_dir(
 
 bool
 write_file(
-	fcppt::filesystem::path const &_file,
+	boost::filesystem::path const &_file,
 	fcppt::string const &_content
 )
 {
@@ -113,13 +109,13 @@ write_file(
 	return true;
 }
 
-fcppt::filesystem::path const
+boost::filesystem::path const
 make_path_from_iter(
-	fcppt::filesystem::path::iterator _beg,
-	fcppt::filesystem::path::iterator const _end
+	boost::filesystem::path::iterator _beg,
+	boost::filesystem::path::iterator const _end
 )
 {
-	fcppt::filesystem::path ret;
+	boost::filesystem::path ret;
 
 	for(
 		;
@@ -159,28 +155,28 @@ main(
 		return EXIT_FAILURE;
 	}
 
-	fcppt::filesystem::path const build_dir(
+	boost::filesystem::path const build_dir(
 		fcppt::from_std_string(
 			argv[1]
 		)
 	);
 
-	fcppt::filesystem::path const temp_dir(
+	boost::filesystem::path const temp_dir(
 		build_dir
 		/ FCPPT_TEXT("temp_make_headers")
 	);
 
-	fcppt::filesystem::path const make_file(
+	boost::filesystem::path const make_file(
 		temp_dir
 		/ FCPPT_TEXT("Makefile")
 	);
 
-	fcppt::filesystem::path const log_file(
+	boost::filesystem::path const log_file(
 		temp_dir
 		/ FCPPT_TEXT("log.txt")
 	);
 
-	fcppt::filesystem::remove(
+	boost::filesystem::remove(
 		log_file
 	);
 
@@ -195,11 +191,11 @@ main(
 	);
 
 	if(
-		!fcppt::filesystem::exists(
+		!boost::filesystem::exists(
 			temp_dir
 		)
 		&&
-		!fcppt::filesystem::create_directory(
+		!boost::filesystem::create_directory(
 			temp_dir
 		)
 	)
@@ -213,7 +209,7 @@ main(
 	}
 
 	for(
-		fcppt::filesystem::recursive_directory_iterator
+		boost::filesystem::recursive_directory_iterator
 			dir_it(
 				FCPPT_TEXT("include")
 			),
@@ -222,7 +218,7 @@ main(
 		++dir_it
 	)
 	{
-		fcppt::filesystem::path const &path(
+		boost::filesystem::path const &path(
 			dir_it->path()
 		);
 
@@ -246,7 +242,7 @@ main(
 		)
 			continue;
 
-		fcppt::filesystem::path::iterator path_it(
+		boost::filesystem::path::iterator path_it(
 			path.begin()
 		);
 
@@ -265,7 +261,7 @@ main(
 		)
 			continue;
 
-		fcppt::filesystem::path const include_file(
+		boost::filesystem::path const include_file(
 			::make_path_from_iter(
 				path_it,
 				path.end()
@@ -282,14 +278,14 @@ main(
 			continue;
 
 		// descend into the build dir as far as possible
-		fcppt::filesystem::path make_path(
+		boost::filesystem::path make_path(
 			build_dir
 			/
 			source_subdir
 		);
 
 		while(
-			fcppt::filesystem::exists(
+			boost::filesystem::exists(
 				make_path
 			)
 		)
@@ -303,7 +299,7 @@ main(
 			FCPPT_TEXT("CMakeFiles");
 
 		if(
-			!fcppt::filesystem::exists(
+			!boost::filesystem::exists(
 				make_path
 			)
 		)
@@ -333,13 +329,13 @@ main(
 			continue;
 		}
 
-		fcppt::filesystem::path const flags_file(
+		boost::filesystem::path const flags_file(
 			*cmake_dir
 			/ FCPPT_TEXT("flags.make")
 		);
 
 		if(
-			!fcppt::filesystem::exists(
+			!boost::filesystem::exists(
 				flags_file
 			)
 		)
@@ -351,14 +347,14 @@ main(
 			continue;
 		}
 
-		fcppt::filesystem::path const source_file(
+		boost::filesystem::path const source_file(
 			temp_dir
 			/
 			boost::algorithm::replace_all_copy(
 				fcppt::filesystem::path_to_string(
 					fcppt::filesystem::replace_extension(
 						include_file,
-						FCPPT_TEXT(".cpp")
+						FCPPT_TEXT("cpp")
 					)
 				),
 				FCPPT_TEXT("/"),

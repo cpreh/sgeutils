@@ -1,6 +1,5 @@
 #include <fcppt/filesystem/extension.hpp>
 #include <fcppt/filesystem/path_to_string.hpp>
-#include <fcppt/filesystem/remove_filename.hpp>
 #include <fcppt/filesystem/replace_extension.hpp>
 #include <fcppt/io/cerr.hpp>
 #include <fcppt/io/cout.hpp>
@@ -292,9 +291,7 @@ main(
 			make_path /= *path_it++;
 
 		make_path =
-			fcppt::filesystem::remove_filename(
-				make_path
-			)
+			make_path.parent_path()
 			/
 			FCPPT_TEXT("CMakeFiles");
 

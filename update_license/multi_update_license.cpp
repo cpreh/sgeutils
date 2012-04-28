@@ -431,9 +431,12 @@ apply_license(
 		)
 		!= EXIT_SUCCESS
 	)
-		throw fcppt::exception(
-			FCPPT_TEXT("update_license returned an error")
-		);
+		fcppt::io::cerr()
+			<< FCPPT_TEXT("update_license failed for ")
+			<< fcppt::filesystem::path_to_string(
+				file
+			)
+			<< FCPPT_TEXT('\n');
 }
 
 }

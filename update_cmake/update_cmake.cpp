@@ -1,7 +1,7 @@
 #include <fcppt/config/external_begin.hpp>
-#include <boost/filesystem/v3/convenience.hpp>
-#include <boost/filesystem/v3/operations.hpp>
-#include <boost/filesystem/v3/path.hpp>
+#include <boost/filesystem/convenience.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
 #include <boost/regex.hpp>
 #include <algorithm>
 #include <exception>

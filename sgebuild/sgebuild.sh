@@ -77,6 +77,6 @@ cmake \
 	"${SGEBUILD_PROJECT_TARGET_CMAKE_SETTINGS[@]}" \
 	.. || die "cmake failed"
 
-"${SGEBUILD_BUILD_COMMAND}" ${@:2} || die "Building failed"
+"${SGEBUILD_BUILD_COMMAND}" "${@:2}" || die "Building failed"
 
 popd > /dev/null

@@ -28,5 +28,5 @@ SGEBUILD_ALL_TARGETS=(
 )
 
 for target in "${SGEBUILD_ALL_TARGETS[@]}" ; do
-	"${CURRENT_DIR}/sgebuild.sh" "${target}" $@ || die "Aborted"
+	"${CURRENT_DIR}/sgebuild.sh" "${target}" "$@" || die "Aborted"
 done

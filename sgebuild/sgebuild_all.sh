@@ -28,5 +28,14 @@ SGEBUILD_ALL_TARGETS=(
 )
 
 for target in "${SGEBUILD_ALL_TARGETS[@]}" ; do
-	"${CURRENT_DIR}/sgebuild.sh" "${target}" "$@" || die "Aborted"
+	ignore=false
+	for ignore_target in "${SGEBUILD_ALL_PROJECT_IGNORE_TARGETS[@]}" ; do
+		if [[ "${target}" = "${ignore_target}" ]] ; then
+			ignore=true
+		fi
+	done
+
+	if ! ${ignore} ; then
+		"${CURRENT_DIR}/sgebuild.sh" "${target}" "$@" || die "Aborted"
+	fi
 done

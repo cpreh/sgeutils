@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CURRENT_DIR="$(dirname $(readlink -f $0))"
+CURRENT_DIR="$(dirname "$(readlink -f "$0")")"
 
 source "${CURRENT_DIR}/common.sh"
 

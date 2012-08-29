@@ -46,6 +46,10 @@ check_file "${SGEBUILD_TARGET_CONFIG}"
 
 source "${SGEBUILD_TARGET_CONFIG}"
 
+# The generator can be overwritten in target files
+
+[[ -n "${SGEBUILD_TARGET_CMAKE_GENERATOR}" ]] && SGEBUILD_CMAKE_GENERATOR="${SGEBUILD_TARGET_CMAKE_GENERATOR}"
+
 
 # Read possible additional config for this target and project
 

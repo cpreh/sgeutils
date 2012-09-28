@@ -170,6 +170,8 @@ def modify_file(filename,reserved_prefixes,external_begin,external_end,debug):
 
 	if len(rest_groups) != 0 or '' in groups:
 		new_includes.append('#include <'+external_begin+'>')
+		rest_groups = list(rest_groups)
+		rest_groups.sort()
 		for group in rest_groups:
 			new_includes += list(
 					map(

@@ -17,6 +17,7 @@
 #include <fcppt/optional.hpp>
 #include <fcppt/string.hpp>
 #include <fcppt/assert/pre.hpp>
+#include <fcppt/to_std_string.hpp>
 #include <sge/parse/json/parse_string_exn.hpp>
 #include <sge/parse/json/object.hpp>
 #include <sge/parse/json/find_member_exn.hpp>
@@ -95,10 +96,11 @@ entry_from_json(
 						_json.members,
 						fcppt::string(
 							FCPPT_TEXT("directory"))))),
-			sge::parse::json::find_member_exn<sge::parse::json::string const>(
-				_json.members,
-				fcppt::string(
-					FCPPT_TEXT("command"))),
+			fcppt::to_std_string(
+				sge::parse::json::find_member_exn<sge::parse::json::string const>(
+					_json.members,
+					fcppt::string(
+						FCPPT_TEXT("command")))),
 			boost::filesystem::path(
 				fcppt::string(
 					sge::parse::json::find_member_exn<sge::parse::json::string const>(

@@ -154,11 +154,13 @@ find_build_directory(
 	boost::filesystem::path _path,
 	build_directory_name const &_build_directory)
 {
-	if(_path.empty())
-		return optional_path();
-
 	while(!boost::filesystem::is_directory(_path / _build_directory.get()))
+	{
+		if(_path.empty())
+			return optional_path();
+
 		_path = _path.parent_path();
+	}
 
 	return
 		optional_path(

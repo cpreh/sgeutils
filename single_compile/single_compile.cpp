@@ -18,6 +18,7 @@
 #include <fcppt/string.hpp>
 #include <fcppt/assert/pre.hpp>
 #include <fcppt/to_std_string.hpp>
+#include <fcppt/from_std_string.hpp>
 #include <sge/parse/json/parse_string_exn.hpp>
 #include <sge/parse/json/object.hpp>
 #include <sge/parse/json/find_member_exn.hpp>
@@ -183,10 +184,11 @@ parse_compile_commands_file(
 
 	return
 		sge::parse::json::parse_string_exn(
-			"{ \"content\" : "+
-			fcppt::io::stream_to_string(
-				file_stream)+
-			" }");
+			fcppt::from_std_string(
+				"{ \"content\" : "+
+				fcppt::io::stream_to_string(
+					file_stream)+
+				" }"));
 }
 }
 

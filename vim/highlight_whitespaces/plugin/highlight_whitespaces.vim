@@ -16,7 +16,7 @@ function! s:HighlightWhitespacesIfPossible()
 	if count(g:whitespace_highlight_exclusion,&filetype) == 0
 		highlight ExtraWhitespace ctermbg=red guibg=red
 		match ExtraWhitespace /\s\+$/
-		2match ExtraWhitespace /^ \+/
+"		2match ExtraWhitespace /^ \+/
 	else
 		match
 	endif

@@ -61,6 +61,20 @@ ADD_SUBDIRECTORY(
 )
 
 OPTION(
+	ENABLE_SINGLE_COMPILE
+	"Build single_compile (requires sge)"
+	ON
+)
+
+IF(
+	ENABLE_SINGLE_COMPILE
+)
+	ADD_SUBDIRECTORY(
+		single_compile
+	)
+ENDIF()
+
+OPTION(
 	ENABLE_UPDATE_LICENSE
 	"Build update_license (requires sge)"
 	ON

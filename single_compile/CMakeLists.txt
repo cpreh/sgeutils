@@ -1,0 +1,31 @@
+FIND_PACKAGE(
+	SGE REQUIRED
+	COMPONENTS core parse
+)
+
+INCLUDE_DIRECTORIES(
+	${SGE_INCLUDE_DIRS}
+)
+
+FIND_PACKAGE(
+	Boost 1.40.0 REQUIRED
+	COMPONENTS program_options
+)
+
+ADD_EXECUTABLE(
+	single_compile
+	single_compile.cpp
+)
+
+TARGET_LINK_LIBRARIES(
+	single_compile
+	${Fcppt_core_LIBRARIES}
+	${Fcppt_filesystem_LIBRARIES}
+	${SGE_LIBRARIES}
+	${Boost_PROGRAM_OPTIONS_LIBRARIES}
+)
+
+INSTALL(
+	TARGETS single_compile
+	DESTINATION ${INSTALL_BINARY_DIR}
+)

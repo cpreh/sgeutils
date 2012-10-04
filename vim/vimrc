@@ -1,16 +1,6 @@
 call pathogen#infect()
 call pathogen#helptags()
 
-let g:whitespace_highlight_exclusion = ['conque_term']
-
-" Helper functions begin, will only work if you have ConqueTerm installed
-function RunOrRaiseBash()
-	if bufexists('/bin/bash - 1')
-		buffer bash
-	else
-		ConqueTerm /bin/bash
-	endif
-endfunction
 
 filetype plugin on
 
@@ -43,7 +33,8 @@ se hidden
 " comments
 se formatoptions=ql
 " Somewhat sge style indentation
-se cino=c0,C1,g0,N-s,(s,p0,t0,)100,u0
+se cino=c0,C1,g0,N-s,(s,p0,t0,)100,u0,+0
+se cinkeys=0{,0},0),:,0#,!^F,o,O,e,0<,0>
 " Adjust comments
 autocmd FileType c,cpp,objc,objcpp set comments=sl:/*,m:\ ,e:*/,://
 
@@ -52,12 +43,6 @@ autocmd FileType c,cpp,objc,objcpp set comments=sl:/*,m:\ ,e:*/,://
 " mappings. The standard is \
 let mapleader = ','
 
-"autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
-"autocmd BufEnter * match ExtraWhitespace /\s\+$/ | 2match ExtraWhitespace /^ \+/
-   
-
-" Color scheme
-colo desert
 
 " Mappings
 map <C-x><C-f> :CommandT<CR>
@@ -65,9 +50,9 @@ map <C-x><C-f> :CommandT<CR>
 map <F1> :ErrorAtCursor<CR>
 map <F2> :make!<CR>
 map <F3> :FSHere<CR>
-map <F4> :call RunOrRaiseBash()<CR>
+map <F4> :!xterm<CR>
 map <F5> :r !/home/philipp/.vim/suggest %<CR>
-map <F7> :0r! /home/philipp/projects/sgeutils/build/bin/generate_includeguard %:p<CR>:1<CR>
+map <F7> :0r! /home/philipp/projects/sgeutils/sgebuild_clang/bin/generate_includeguard %:p<CR>:1<CR>
 "map <F9> :OpenIncludePath<CR>
 "map <F10> :InsertIncludeDirective<CR>
 map <up> :cp<CR>
@@ -84,56 +69,55 @@ nnoremap <Leader>s :sp <C-r>=expand('%:p:h')<CR>
 nnoremap <Leader>v :vsp <C-r>=expand('%:p:h')<CR>
 nnoremap <Leader>r :r <C-r>=expand('%:p:h')<CR>
 
-
 " Syntax files
 au BufNewFile,BufRead *.tex,*.latex se tw=80
 au BufNewFile,BufRead *.cl set ft=opencl
-au BufEnter *.cl setl makeprg=/home/philipp/projects/spacegameengine/build/bin/sgeopencl_syntax_checkerexample\ %:p
 
-"runtime macros/matchit.vim
+au BufNewFile,BufRead *.cg se ft=cg
 
-se makeprg=cd\ build;make\ -j3
+se makeprg=ninja
 
 au! BufEnter *.cpp let b:fswitchdst = 'hpp,h' | let b:fswitchlocs = 'reg:/src/include/'
 au! BufEnter *.hpp let b:fswitchdst = 'cpp,c' | let b:fswitchlocs = 'reg:/include/src/'
 au VimResized * wincmd =
 
-" Assume we have enough space to show more of the completion line
-let g:fuf_maxMenuWidth = 200
-" Usually when you enter 'foobar', this will not match 'foo/bar'. With this,
-" it will
-let g:fuf_splitPathMatching = 1
-let g:fuf_fuzzyRefining = 1
-
-" glsl stuff
-command SetGLSLFileType call SetGLSLFileType()
-function SetGLSLFileType()
-	for item in getline(1,10)
-		if item =~ "#version 400"
-			execute ':set filetype=glsl400'
-			return
-		endif
-		if item =~ "#version 330"
-			execute ':set filetype=glsl330'
-			return
-		endif
-	endfor
-
-	execute ':set filetype=glsl'
-endfunction
-
-au BufNewFile,BufRead *.frag,*.vert,*.fp,*.vp,*.glsl SetGLSLFileType
+"au BufNewFile,BufRead *.frag,*.vert,*.fp,*.vp,*.glsl SetGLSLFileType
 au! BufRead,BufNewFile *.json se ft=json
 au! BufRead,BufNewFile *.doxygen se ft=doxygen
 
 " This is supposed to be faster, but it crashes
-"let g:clang_use_library = 1
+"let g:clang_use_library = 0
+let g:clang_library_path = '/home/philipp/Programming/research/llvm/build/lib/'
+let g:clang_complete_copen = 1
+let g:clang_snippets = 1
+let g:clang_snippets_engine = 'snipmate'
 "let g:clang_library_path = '/usr/lib64/llvm'
+"let g:clang_library_path = '/home/philipp/.vim/bundle/clang_complete_new/'
 let g:inccomplete_showdirs = 1
-let g:inccomplete_addclosebracket = 'never'
+"let g:inccomplete_addclosebracket = 'never'
 let g:inccomplete_findcmd = '/usr/bin/find'
 "set completeopt=longest,menuone
 set completeopt=longest
 
 " Press space to unsearch something
 noremap <silent> <Space> :silent noh<Bar>echo<CR>
+
+let g:ideone_open_browser_after_post = 1
+let g:ideone_browser_command = 'firefox %URL%'
+
+" Highlight trailing whitespace and leading (non-tab) whitespace
+autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
+"autocmd BufEnter * match ExtraWhitespace /\s\+$/ | 2match ExtraWhitespace /^ \+/
+autocmd BufEnter * match ExtraWhitespace /\s\+$/
+
+set background=dark
+colorscheme zenburn
+
+let g:QSMatchFn = "fuzzy"
+
+au BufNewFile,BufRead *.cpp set syntax=cpp11
+
+noremap <leader>y "*y
+noremap <leader>yy "*Y
+
+noremap <leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>

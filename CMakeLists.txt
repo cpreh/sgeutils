@@ -28,14 +28,6 @@ ADD_DEFINITIONS(${Fcppt_DEFINITIONS})
 
 INCLUDE_DIRECTORIES(${Fcppt_INCLUDE_DIRS})
 
-IF(
-	UNIX
-)
-	ADD_SUBDIRECTORY(
-		build_headers
-	)
-ENDIF()
-
 ADD_SUBDIRECTORY(
 	check_includes
 )

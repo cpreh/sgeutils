@@ -1,5 +1,9 @@
 #include <fcppt/config/external_begin.hpp>
 #include <unistd.h>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/join.hpp>
+#include <boost/next_prior.hpp>
+#include <boost/algorithm/string/classification.hpp>
 #include <iostream>
 #include <ostream>
 #include <cstdlib>
@@ -192,6 +196,49 @@ parse_compile_commands_file(
 					file_stream)+
 				" }"));
 }
+
+void
+make_syntax_only(
+	std::string &_compile_command)
+{
+	typedef
+	std::vector<std::string>
+	string_sequence;
+
+	string_sequence parts;
+
+	boost::algorithm::split(
+		parts,
+		_compile_command,
+		boost::algorithm::is_space(),
+		boost::algorithm::token_compress_on);
+
+	for(
+		string_sequence::iterator it =
+			parts.begin();
+		it != parts.end();)
+	{
+		if(*it == "-o")
+		{
+			it =
+				parts.erase(
+					it,
+					it+2);
+		}
+		else
+		{
+			++it;
+		}
+	}
+
+	parts.push_back("-fsyntax-only");
+
+	_compile_command =
+		boost::algorithm::join(
+			parts,
+			std::string(
+				" "));
+}
 }
 
 int
@@ -207,6 +254,9 @@ try
 		(
 			"help",
 			"produce help message")
+		(
+			"syntax-only",
+			"Do not output anything, just check the syntax")
 		(
 			"file-name",
 			boost::program_options::value<std::string>(&input_file_name)->required(),
@@ -268,17 +318,23 @@ try
 			fcppt::string(
 				FCPPT_TEXT("content"))));
 
-	optional_compile_command_entry const compile_command(
+	optional_compile_command_entry const optional_compile_command(
 		find_compile_command(
 			contents,
 			input_file_path));
 
-	if(!compile_command)
+	if(!optional_compile_command)
 	{
 		std::cerr << "Couldn't find compile command entry for the file!\n";
 		return EXIT_FAILURE;
 	}
 
+	std::string compile_command =
+		optional_compile_command->command();
+
+	if(compiled_options.count("syntax-only"))
+		make_syntax_only(
+			compile_command);
 	/*
 	std::cout
 		<< compile_command->command()
@@ -288,12 +344,15 @@ try
 	*/
 	check_posix_command_result(
 		::chdir(
-			compile_command->directory().string<std::string>().c_str()),
+			optional_compile_command->directory().string<std::string>().c_str()),
 		"chdir");
 
-	return
+	int command_exit_status =
 		std::system(
-			compile_command->command().c_str());
+			compile_command.c_str());
+
+	return
+		WEXITSTATUS(command_exit_status);
 }
 catch(std::exception const &e)
 {

@@ -5,18 +5,9 @@ CURRENT_DIR="$(dirname "$(readlink -f "$0")")"
 source "${CURRENT_DIR}/common.sh"
 
 
-# Read the main config
+# Setup main config
 
 SGEBUILD_CONFIG="${SGEBUILD_CONFIG_PATH}/config.sh"
-
-check_file "${SGEBUILD_CONFIG}"
-
-source "${SGEBUILD_CONFIG}"
-
-check_variable "SGEBUILD_CMAKE_GENERATOR" "${SGEBUILD_CONFIG}"
-
-check_variable "SGEBUILD_BUILD_COMMAND" "${SGEBUILD_CONFIG}"
-
 
 SGEBUILD_TARGET_TYPE="$1"
 
@@ -113,6 +104,17 @@ SGEBUILD_BUILD_DIR:
 exit
 
 fi
+
+# Read main config
+
+check_file "${SGEBUILD_CONFIG}"
+
+source "${SGEBUILD_CONFIG}"
+
+check_variable "SGEBUILD_CMAKE_GENERATOR" "${SGEBUILD_CONFIG}"
+
+check_variable "SGEBUILD_BUILD_COMMAND" "${SGEBUILD_CONFIG}"
+
 
 # Set build variables, which can be used in the sourced files below
 

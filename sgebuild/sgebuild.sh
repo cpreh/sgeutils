@@ -43,7 +43,7 @@ current working directory.
 All of the above files can be used to set anything that might be needed for
 calling cmake. What comes last overwrites what comes first.
 
-The following variables are read from the config files and passed to cmake:
+The following variables are read from the config files:
 
 sgebuild config (mandatory):
   SGEBUILD_CMAKE_GENERATOR:

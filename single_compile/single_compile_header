@@ -38,9 +38,9 @@ current_file_number=0
 while IFS= read -r -d $'\0' file; do
 
 	current_file_number=$((current_file_number+1));
-	readonly absolute_file_name=$(pimiddy_absolutize_file_name "${file}")
+	absolute_file_name=$(pimiddy_absolutize_file_name "${file}")
 	# For an optional percent display
-	readonly percent=$(( current_file_number * 100 / number_of_files ))
+	percent=$(( current_file_number * 100 / number_of_files ))
 
 	pimiddy_carriage_return_with_clear
 	echo -n "[$current_file_number/$number_of_files] "

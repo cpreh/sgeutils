@@ -22,8 +22,8 @@ echo "
 Usage: $0 <target> [parameters]
 
 sgebuild tries to unify the build process for different compilers, cmake
-generators, build options, and so on. They are collectively called targets
-here.
+generators, build options, and so on. A collection of such build settings is
+called a target here.
 
 Parameters:
   - target: The target to build
@@ -134,10 +134,6 @@ SGEBUILD_PROJECT_TARGET_CONFIG="${SGEBUILD_PROJECT_CONFIG_PATH}/${SGEBUILD_TARGE
 check_file "${SGEBUILD_TARGET_CONFIG}"
 
 source "${SGEBUILD_TARGET_CONFIG}"
-
-# The generator can be overwritten in target files
-
-[[ -n "${SGEBUILD_TARGET_CMAKE_GENERATOR}" ]] && SGEBUILD_CMAKE_GENERATOR="${SGEBUILD_TARGET_CMAKE_GENERATOR}"
 
 
 # Read the project config

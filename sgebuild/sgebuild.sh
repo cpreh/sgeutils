@@ -11,6 +11,8 @@ SGEBUILD_CONFIG="${SGEBUILD_CONFIG_PATH}/config.sh"
 
 SGEBUILD_TARGET_TYPE="$1"
 
+SGEBUILD_PARAMETERS=( "${@:2}" )
+
 [[ -z "${SGEBUILD_TARGET_TYPE}" ]] && die "You have to provide a build type as first parameter!"
 
 
@@ -85,6 +87,9 @@ config files:
 
 SGEBUILD_TARGET_TYPE:
   The same as <target>.
+
+SGEBUILD_PARAMETERS:
+  The same as [parameters].
 
 SGEBUILD_BUILD_DIR_PREFIX:
   The prefix sgebuild uses to name build dirs.
@@ -167,6 +172,6 @@ cmake \
 	"${SGEBUILD_PROJECT_TARGET_CMAKE_SETTINGS[@]}" \
 	.. || die "cmake failed"
 
-"${SGEBUILD_BUILD_COMMAND}" "${@:2}" || die "Building failed"
+"${SGEBUILD_BUILD_COMMAND}" "${SGEBUILD_PARAMETERS[@]}" || die "Building failed"
 
 popd > /dev/null

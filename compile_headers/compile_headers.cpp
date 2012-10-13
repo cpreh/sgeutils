@@ -3,7 +3,6 @@
 #include <fcppt/text.hpp>
 #include <fcppt/to_std_string.hpp>
 #include <fcppt/algorithm/contains.hpp>
-#include <fcppt/error/strerrno.hpp>
 #include <fcppt/io/cerr.hpp>
 #include <fcppt/io/cout.hpp>
 #include <fcppt/preprocessor/disable_gcc_warning.hpp>
@@ -16,7 +15,6 @@
 #include <sge/parse/json/parse_file_exn.hpp>
 #include <sge/parse/json/start.hpp>
 #include <fcppt/config/external_begin.hpp>
-#include <unistd.h>
 #include <boost/next_prior.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/join.hpp>
@@ -27,7 +25,6 @@
 #include <exception>
 #include <iostream>
 #include <ostream>
-#include <string>
 #include <vector>
 #include <fcppt/config/external_end.hpp>
 
@@ -107,38 +104,18 @@ make_syntax_only(
 int
 main(
 	int argc,
-	char **argv
+	char **
 )
 try
 {
 	if(
-		argc != 2
+		argc != 1
 	)
 	{
 		fcppt::io::cerr()
-			<< FCPPT_TEXT("You need to pass the relative build directory as first parameter!\n");
+			<< FCPPT_TEXT("This command takes no parameters!\n");
 
 		return EXIT_FAILURE;
-	}
-
-	{
-		std::string const build_dir(
-			argv[1]
-		);
-
-		if(
-			::chdir(
-				build_dir.c_str()
-			)
-			!= 0
-		)
-		{
-			fcppt::io::cerr()
-				<< "Unable to change directory: "
-				<< fcppt::error::strerrno();
-
-			return EXIT_FAILURE;
-		}
 	}
 
 	sge::parse::json::array const build_commands(

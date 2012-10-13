@@ -33,6 +33,10 @@ ADD_SUBDIRECTORY(
 )
 
 ADD_SUBDIRECTORY(
+	compile_headers
+)
+
+ADD_SUBDIRECTORY(
 	convenience_headers
 )
 

@@ -1,32 +1,30 @@
 #include <fcppt/config/external_begin.hpp>
 #include <unistd.h>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/join.hpp>
 #include <boost/next_prior.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/filesystem/operations.hpp>
 #include <iostream>
 #include <ostream>
 #include <cstdlib>
 #include <stdexcept>
 #include <cerrno>
 #include <cstring>
-#include <cstdlib>
 #include <string>
 #include <boost/program_options.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/fstream.hpp>
 #include <fcppt/config/external_end.hpp>
 #include <fcppt/strong_typedef.hpp>
 #include <fcppt/optional.hpp>
 #include <fcppt/string.hpp>
-#include <fcppt/assert/pre.hpp>
 #include <fcppt/to_std_string.hpp>
 #include <fcppt/from_std_string.hpp>
 #include <fcppt/preprocessor/disable_gcc_warning.hpp>
 #include <fcppt/preprocessor/pop_warning.hpp>
 #include <fcppt/preprocessor/push_warning.hpp>
-#include <sge/parse/json/parse_string_exn.hpp>
+#include <sge/parse/json/parse_file_exn.hpp>
 #include <sge/parse/json/object.hpp>
 #include <sge/parse/json/find_member_exn.hpp>
 #include <sge/parse/json/get.hpp>
@@ -186,19 +184,20 @@ sge::parse::json::array const
 parse_compile_commands_file(
 	boost::filesystem::path const &_path)
 {
-	boost::filesystem::ifstream file_stream(
-		_path);
-
-	FCPPT_ASSERT_PRE(
-		file_stream.is_open());
+	if(
+		!boost::filesystem::exists(
+			_path))
+		throw
+			std::runtime_error(
+				_path.string()
+				+
+				" does not exist!"
+			);
 
 	return
-		sge::parse::json::parse_string_exn(
-			fcppt::from_std_string(
-				"{ \"content\" : "+
-				fcppt::io::stream_to_string(
-					file_stream)+
-				" }")).array();
+		sge::parse::json::parse_file_exn(
+			_path
+		).array();
 }
 
 void

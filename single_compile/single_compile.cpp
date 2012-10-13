@@ -23,11 +23,15 @@
 #include <fcppt/assert/pre.hpp>
 #include <fcppt/to_std_string.hpp>
 #include <fcppt/from_std_string.hpp>
+#include <fcppt/preprocessor/disable_gcc_warning.hpp>
+#include <fcppt/preprocessor/pop_warning.hpp>
+#include <fcppt/preprocessor/push_warning.hpp>
 #include <sge/parse/json/parse_string_exn.hpp>
 #include <sge/parse/json/object.hpp>
 #include <sge/parse/json/find_member_exn.hpp>
 #include <sge/parse/json/get.hpp>
 #include <sge/parse/json/array.hpp>
+#include <sge/parse/json/start.hpp>
 #include <fcppt/io/stream_to_string.hpp>
 
 namespace
@@ -178,7 +182,7 @@ compile_commands_file_name()
 		std::string("compile_commands.json");
 }
 
-sge::parse::json::object const
+sge::parse::json::array const
 parse_compile_commands_file(
 	boost::filesystem::path const &_path)
 {
@@ -194,7 +198,7 @@ parse_compile_commands_file(
 				"{ \"content\" : "+
 				fcppt::io::stream_to_string(
 					file_stream)+
-				" }"));
+				" }")).array();
 }
 
 void
@@ -308,15 +312,9 @@ try
 		return EXIT_FAILURE;
 	}
 
-	sge::parse::json::object const json_content(
+	sge::parse::json::array const contents(
 		parse_compile_commands_file(
 			compile_commands_file));
-
-	sge::parse::json::array const &contents(
-		sge::parse::json::find_member_exn<sge::parse::json::array const>(
-			json_content.members,
-			fcppt::string(
-				FCPPT_TEXT("content"))));
 
 	optional_compile_command_entry const optional_compile_command(
 		find_compile_command(
@@ -351,8 +349,11 @@ try
 		std::system(
 			compile_command.c_str());
 
+FCPPT_PP_PUSH_WARNING
+FCPPT_PP_DISABLE_GCC_WARNING(-Wold-style-cast)
 	return
 		WEXITSTATUS(command_exit_status);
+FCPPT_PP_POP_WARNING
 }
 catch(std::exception const &e)
 {

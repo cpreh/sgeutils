@@ -27,6 +27,7 @@ Assertions:
 #include <sge/parse/json/object.hpp>
 #include <sge/parse/json/element_vector.hpp>
 #include <sge/parse/json/array.hpp>
+#include <sge/parse/json/start.hpp>
 #include <fcppt/exception.hpp>
 #include <fcppt/from_std_string.hpp>
 #include <fcppt/optional.hpp>
@@ -459,7 +460,10 @@ try
 		fcppt::from_std_string(
 			_argv[1]);
 
-	sge::parse::json::object json_file;
+	sge::parse::json::start json_file;
+
+	sge::parse::json::object const &json_object(
+		json_file.object());
 
 	if (
 		!sge::parse::json::parse_file(
@@ -480,12 +484,12 @@ try
 
 	boost::filesystem::path const main_license =
 		sge::parse::json::find_member_exn<sge::parse::json::string>(
-			json_file.members,
+			json_object.members,
 			FCPPT_TEXT("main_license"));
 
 	regex const standard_regex(
 		sge::parse::json::find_member_exn<sge::parse::json::string>(
-			json_file.members,
+			json_object.members,
 			FCPPT_TEXT("standard_match")));
 
 	FCPPT_ASSERT_THROW(
@@ -497,12 +501,12 @@ try
 
 	exception_set const exceptions =
 		extract_exceptions(
-			json_file);
+			json_object);
 
 	regex_set const nolicense =
 		extract_regexes(
 			sge::parse::json::find_member_exn<sge::parse::json::array>(
-				json_file.members,
+				json_object.members,
 				FCPPT_TEXT("nolicense")));
 
 	path_set const a =

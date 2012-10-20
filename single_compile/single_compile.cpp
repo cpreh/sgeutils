@@ -1,5 +1,8 @@
 #include <fcppt/config/external_begin.hpp>
-#include <unistd.h>
+//#include <unistd.h>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/join.hpp>
+#include <boost/regex.hpp>
 #include <boost/next_prior.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/join.hpp>
@@ -34,6 +37,7 @@
 
 namespace
 {
+/*
 void
 check_posix_command_result(
 	int const result,
@@ -47,6 +51,7 @@ check_posix_command_result(
 				std::strerror(
 					errno));
 }
+*/
 
 class compile_command_entry
 {
@@ -200,6 +205,61 @@ parse_compile_commands_file(
 		).array();
 }
 
+std::string const
+make_include_paths_absolute(
+	std::string const &_compile_command,
+	boost::filesystem::path const &_working_directory)
+{
+	typedef
+	std::vector<std::string>
+	string_sequence;
+
+	string_sequence parts;
+
+	boost::algorithm::split(
+		parts,
+		_compile_command,
+		boost::algorithm::is_space(),
+		boost::algorithm::token_compress_on);
+
+	for(
+		string_sequence::iterator it =
+			parts.begin();
+		it != parts.end();
+		++it)
+	{
+		if(*it == "-I" || *it == "-isystem")
+		{
+			boost::filesystem::path const current_path(
+				*(it+1));
+
+			if(current_path.is_relative())
+				*(it+1) =
+					boost::filesystem::canonical(
+						_working_directory /
+						current_path).string<std::string>();
+		}
+		else if (it->substr(0,2) == "-I")
+		{
+			boost::filesystem::path const current_path(
+				it->substr(2));
+
+			if(current_path.is_relative())
+				*it =
+					"-I"+
+					boost::filesystem::canonical(
+						_working_directory /
+						current_path).string<std::string>();
+		}
+	}
+
+	return
+		boost::algorithm::join(
+			parts,
+			std::string(
+				" "));
+}
+
 void
 make_syntax_only(
 	std::string &_compile_command)
@@ -242,6 +302,38 @@ make_syntax_only(
 			std::string(
 				" "));
 }
+
+std::string const
+extract_include_paths(
+	std::string const &_command,
+	boost::filesystem::path const &_working_directory)
+{
+	boost::regex e("(?:-I ?|-isystem )([^ ]+)");
+	boost::smatch what;
+
+	std::string result;
+
+	for(
+		boost::sregex_iterator
+			m1(
+				_command.begin(),
+				_command.end(),
+				e),
+		m2;
+		m1 != m2;
+		++m1)
+	{
+		boost::filesystem::path current_path(
+			(*m1)[1]);
+
+		if(current_path.is_relative())
+			current_path = _working_directory / current_path;
+
+		result += boost::filesystem::canonical(current_path).string<std::string>()+"\n";
+	}
+
+	return result;
+}
 }
 
 int
@@ -260,6 +352,12 @@ try
 		(
 			"syntax-only",
 			"Do not output anything, just check the syntax")
+		(
+			"ignore-compiler-return",
+			"Ignore the compiler's return status, always succeed")
+		(
+			"dump-include-paths",
+			"Just dump the include paths, do not compile")
 		(
 			"file-name",
 			boost::program_options::value<std::string>(&input_file_name)->required(),
@@ -326,12 +424,28 @@ try
 		return EXIT_FAILURE;
 	}
 
-	std::string compile_command =
-		optional_compile_command->command();
+	std::string this_compile_command(
+		optional_compile_command->command());
+
+	this_compile_command =
+		make_include_paths_absolute(
+			this_compile_command,
+			optional_compile_command->directory());
+
+	if(compiled_options.count("dump-include-paths"))
+	{
+		std::cout
+			<<
+				extract_include_paths(
+					this_compile_command,
+					optional_compile_command->directory());
+		return
+			EXIT_SUCCESS;
+	}
 
 	if(compiled_options.count("syntax-only"))
 		make_syntax_only(
-			compile_command);
+			this_compile_command);
 	/*
 	std::cout
 		<< compile_command->command()
@@ -339,14 +453,21 @@ try
 		<< compile_command->directory().string<std::string>()
 		<< "\n";
 	*/
+	/*
 	check_posix_command_result(
 		::chdir(
 			optional_compile_command->directory().string<std::string>().c_str()),
 		"chdir");
+	*/
+
+	std::cout << "Executing " << this_compile_command << "\n";
 
 	int command_exit_status =
 		std::system(
-			compile_command.c_str());
+			this_compile_command.c_str());
+
+	if(compiled_options.count("ignore-compiler-return"))
+		return EXIT_SUCCESS;
 
 FCPPT_PP_PUSH_WARNING
 FCPPT_PP_DISABLE_GCC_WARNING(-Wold-style-cast)

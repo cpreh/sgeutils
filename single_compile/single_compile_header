@@ -4,7 +4,7 @@ set -o nounset
 set -o errexit
 
 readonly header_pattern="*.hpp"
-readonly search_directories="src include"
+readonly search_directories="../src ../include"
 readonly number_of_files=$(find $search_directories -type f -name "$header_pattern" | wc -l)
 readonly exclusion_patterns=( "/impl/" )
 readonly build_dir_name="sgebuild_compile_headers"

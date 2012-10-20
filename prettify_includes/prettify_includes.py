@@ -84,7 +84,7 @@ def modify_file(filename,reserved_prefixes,external_begin,external_end,debug):
 	include_lines = []
 
 	# Precompile regex (will be faster!)
-	compiled_include_regex = re.compile(r'\s*#include\s+<(([^/]+)(/[^>]*)?)>')
+	compiled_include_regex = re.compile(r'^\s*#include\s+<(([^/]+)(/[^>]*)?)>')
 
 	line_counter = 0
 	for line in lines:

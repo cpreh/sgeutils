@@ -41,6 +41,10 @@ ADD_SUBDIRECTORY(
 )
 
 ADD_SUBDIRECTORY(
+	file_switch
+)
+
+ADD_SUBDIRECTORY(
 	generate_includeguard
 )
 

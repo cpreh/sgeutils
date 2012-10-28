@@ -462,9 +462,6 @@ try
 
 	sge::parse::json::start json_file;
 
-	sge::parse::json::object const &json_object(
-		json_file.object());
-
 	if (
 		!sge::parse::json::parse_file(
 			json_file_name,
@@ -476,6 +473,9 @@ try
 			<< FCPPT_TEXT("\"\n");
 		return EXIT_FAILURE;
 	}
+
+	sge::parse::json::object const &json_object(
+		json_file.object());
 
 	fcppt::io::clog()
 		<< FCPPT_TEXT("Successfully parsed the file \"")

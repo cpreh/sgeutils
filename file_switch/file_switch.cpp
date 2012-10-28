@@ -100,6 +100,12 @@ try
 		namespace_path = *(boost::prior(input_directory.end())) / namespace_path;
 		input_directory = input_directory.parent_path();
 
+		if(input_directory.empty())
+		{
+			std::cerr << "error: no directory found where include/ and src/ lie below. Exiting...\n";
+			return EXIT_FAILURE;
+		}
+
 		if(debug_mode)
 		{
 			std::cout << "input_directory: " << input_directory << "\n";
@@ -169,11 +175,11 @@ try
 
 	if(is_header)
 	{
-		std::cout << (input_directory / "src" / trimmed_namespace_path / input_file_with_extension.stem().replace_extension(".cpp")).string<std::string>() << "\n";
+		std::cout << (input_directory / "src" / trimmed_namespace_path / input_file_with_extension.stem().replace_extension(".cpp")).string<std::string>();
 	}
 	else
 	{
-		std::cout << (input_directory / "include" / namespace_name / trimmed_namespace_path / input_file_with_extension.stem().replace_extension(".hpp")).string<std::string>() << "\n";
+		std::cout << (input_directory / "include" / namespace_name / trimmed_namespace_path / input_file_with_extension.stem().replace_extension(".hpp")).string<std::string>();
 	}
 
 	return EXIT_SUCCESS;

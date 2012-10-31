@@ -21,6 +21,7 @@ Assertions:
 -The search path is always the current working directory (else the path specifications make no sense)
 */
 
+#include <sge/parse/result.hpp>
 #include <sge/parse/json/parse_file.hpp>
 #include <sge/parse/json/find_member_exn.hpp>
 #include <sge/parse/json/find_member.hpp>
@@ -462,15 +463,20 @@ try
 
 	sge::parse::json::start json_file;
 
-	if (
-		!sge::parse::json::parse_file(
+	sge::parse::result const result(
+		sge::parse::json::parse_file(
 			json_file_name,
-			json_file))
+			json_file));
+
+	if(
+		result.result_code()
+		!=
+		sge::parse::result_code::ok
+	)
 	{
 		fcppt::io::cerr()
-			<< FCPPT_TEXT("Couldn't parse file \"")
-			<< json_file_name
-			<< FCPPT_TEXT("\"\n");
+			<< *result.error_string()
+			<< FCPPT_TEXT('\n');
 		return EXIT_FAILURE;
 	}
 

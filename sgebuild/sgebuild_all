@@ -28,8 +28,8 @@ if [[ -n "$1" ]] ; then
 echo "
 Usage: $0
 
-This command builds all sgebuild configs in one go. It relies on sgebuild.sh,
-therefore see sgebuild.sh --help, too.
+This command builds all sgebuild configs in one go. It relies on sgebuild,
+therefore see sgebuild --help, too.
 
 Two additional config files are read to determine which targets to build in the
 following order:
@@ -92,6 +92,6 @@ for target in "${SGEBUILD_ALL_TARGETS[@]}" ; do
 	done
 
 	if ! ${ignore} ; then
-		"${CURRENT_DIR}/sgebuild.sh" "${target}" "$@" || die "Aborted"
+		"${CURRENT_DIR}/sgebuild" "${target}" "$@" || die "Aborted"
 	fi
 done

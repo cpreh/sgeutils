@@ -1,4 +1,3 @@
-#include <fcppt/filesystem/remove_extension.hpp>
 #include <fcppt/assert/error_message.hpp>
 #include <fcppt/text.hpp>
 #include <fcppt/config/external_begin.hpp>

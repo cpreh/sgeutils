@@ -10,8 +10,8 @@ ADD_EXECUTABLE(
 
 TARGET_LINK_LIBRARIES(
 	file_switch
-	${Boost_LIBRARIES}
-	${Fcppt_filesystem_LIBRARIES}
+	${fcppt_core_TARGET}
+	${Boost_FILESYSTEM_LIBRARIES}
 )
 
 INSTALL(

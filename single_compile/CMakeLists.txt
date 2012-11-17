@@ -1,10 +1,9 @@
 FIND_PACKAGE(
-	SGE REQUIRED
-	COMPONENTS core parse
+	sge REQUIRED
 )
 
 INCLUDE_DIRECTORIES(
-	${SGE_INCLUDE_DIRS}
+	${sge_INCLUDE_DIRS}
 )
 
 FIND_PACKAGE(
@@ -19,9 +18,10 @@ ADD_EXECUTABLE(
 
 TARGET_LINK_LIBRARIES(
 	single_compile
-	${Fcppt_core_LIBRARIES}
-	${Fcppt_filesystem_LIBRARIES}
-	${SGE_LIBRARIES}
+	${fcppt_core_TARGET}
+	${sgecore_TARGET}
+	${sgeparse_TARGET}
+	${Boost_FILESYSTEM_LIBRARIES}
 	${Boost_PROGRAM_OPTIONS_LIBRARIES}
 	${Boost_REGEX_LIBRARIES}
 )

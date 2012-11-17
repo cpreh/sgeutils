@@ -1,10 +1,9 @@
 FIND_PACKAGE(
-	SGE REQUIRED
-	COMPONENTS core parse
+	sge REQUIRED
 )
 
 INCLUDE_DIRECTORIES(
-	${SGE_INCLUDE_DIRS}
+	${sge_INCLUDE_DIRS}
 )
 
 ADD_EXECUTABLE(
@@ -14,9 +13,10 @@ ADD_EXECUTABLE(
 
 TARGET_LINK_LIBRARIES(
 	compile_headers
-	${Fcppt_core_LIBRARIES}
-	${Fcppt_filesystem_LIBRARIES}
-	${SGE_LIBRARIES}
+	${fcppt_core_TARGET}
+	${fcppt_filesystem_TARGET}
+	${sgecore_TARGET}
+	${sgeparse_TARGET}
 )
 
 INSTALL(

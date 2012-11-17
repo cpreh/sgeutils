@@ -5,8 +5,8 @@ ADD_EXECUTABLE(
 
 TARGET_LINK_LIBRARIES(
 	check_includes
-	${Fcppt_core_LIBRARIES}
-	${Fcppt_filesystem_LIBRARIES}
+	${fcppt_core_TARGET}
+	${fcppt_filesystem_TARGET}
 )
 
 INSTALL(

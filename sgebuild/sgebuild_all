@@ -9,27 +9,19 @@ source "${CURRENT_DIR}/common.sh"
 
 SGEBUILD_ALL_CONFIG="${SGEBUILD_CONFIG_PATH}/all_config.sh"
 
-function parameter_error() {
-	echo "Either pass --help or nothing"
-	exit -1
-}
-
-if [[ $# > 1 ]] ; then
-	parameter_error
-fi
-
 # Display help message
 
-if [[ -n "$1" ]] ; then
-	if [[ "$1" != "--help" ]] ; then
-		parameter_error
-	fi
+if [[ "$1" == "--help" ]] ; then
 
 echo "
-Usage: $0
+Usage: $0 [parameters]
 
 This command builds all sgebuild configs in one go. It relies on sgebuild,
 therefore see sgebuild --help, too.
+
+Parameters:
+  - parameters: Additional parameters that are passed to the sgebuild
+    invocations
 
 Two additional config files are read to determine which targets to build in the
 following order:

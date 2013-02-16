@@ -1,17 +1,19 @@
 #include <fcppt/config/external_begin.hpp>
 #include <boost/filesystem/convenience.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/regex.hpp>
 #include <algorithm>
 #include <exception>
-#include <fstream>
+#include <ios>
 #include <iostream>
 #include <ostream>
 #include <string>
 #include <vector>
 #include <cstdlib>
 #include <fcppt/config/external_end.hpp>
+
 
 namespace
 {
@@ -27,7 +29,8 @@ void
 add_files(
 	Iterator _iterator,
 	boost::regex const &_regex,
-	file_vector &_files
+	file_vector &_files,
+	boost::filesystem::path const &_out_file
 )
 {
 	for(
@@ -36,6 +39,14 @@ add_files(
 		++_iterator
 	)
 	{
+		if(
+			boost::filesystem::equivalent(
+				_out_file,
+				*_iterator
+			)
+		)
+			continue;
+
 		if(
 			!boost::filesystem::is_regular_file(
 				*_iterator
@@ -82,12 +93,12 @@ try
 		return EXIT_FAILURE;
 	}
 
-	std::string const cmake_file(
+	boost::filesystem::path const cmake_file(
 		argv[1]
 	);
 
-	std::ifstream ifs(
-		cmake_file.c_str()
+	boost::filesystem::ifstream ifs(
+		cmake_file
 	);
 
 	if(
@@ -101,13 +112,14 @@ try
 		return EXIT_FAILURE;
 	}
 
-	std::string const out_file(
-		cmake_file
-		+ ".new"
+	boost::filesystem::path const out_file(
+		cmake_file.string()
+		+
+		".new"
 	);
 
-	std::ofstream ofs(
-		out_file.c_str(),
+	boost::filesystem::ofstream ofs(
+		out_file,
 		std::ios_base::binary
 	);
 
@@ -202,7 +214,8 @@ try
 					arg_string
 				),
 				fileregex,
-				files
+				files,
+				out_file
 			);
 		else if(
 			mode == "n"
@@ -212,7 +225,8 @@ try
 					arg_string
 				),
 				fileregex,
-				files
+				files,
+				out_file
 			);
 		else
 		{

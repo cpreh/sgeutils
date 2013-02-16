@@ -332,6 +332,13 @@ try
 			<< line
 			<< '\n';
 
+	ofs.close();
+
+	boost::filesystem::rename(
+		out_file,
+		cmake_file
+	);
+
 	return EXIT_SUCCESS;
 }
 catch(

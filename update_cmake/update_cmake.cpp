@@ -1,3 +1,4 @@
+#include <fcppt/noncopyable.hpp>
 #include <fcppt/config/external_begin.hpp>
 #include <boost/filesystem/convenience.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -68,6 +69,47 @@ add_files(
 	}
 }
 
+class out_remover
+{
+	FCPPT_NONCOPYABLE(
+		out_remover
+	);
+public:
+	explicit
+	out_remover(
+		boost::filesystem::path const &_file
+	)
+	:
+		file_(
+			_file
+		),
+		remove_(
+			true
+		)
+	{
+	}
+
+	~out_remover()
+	{
+		if(
+			remove_
+		)
+			boost::filesystem::remove(
+				file_
+			);
+	}
+
+	void
+	commit()
+	{
+		remove_ = false;
+	}
+private:
+	boost::filesystem::path const file_;
+
+	bool remove_;
+};
+
 }
 
 int
@@ -118,6 +160,10 @@ try
 		".new"
 	);
 
+	out_remover remove_ofs(
+		out_file
+	);
+
 	boost::filesystem::ofstream ofs(
 		out_file,
 		std::ios_base::binary
@@ -127,6 +173,8 @@ try
 		!ofs.is_open()
 	)
 	{
+		remove_ofs.commit();
+
 		std::cerr
 			<< "Cannot open "
 			<< out_file
@@ -333,6 +381,8 @@ try
 			<< '\n';
 
 	ofs.close();
+
+	remove_ofs.commit();
 
 	boost::filesystem::rename(
 		out_file,

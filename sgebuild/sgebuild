@@ -36,8 +36,8 @@ files. Assuming your target is called MYTARGET, the following files are
 sourced in the following order:
   - The sgebuild config file: ${SGEBUILD_CONFIG}
   - The target config file: ${SGEBUILD_CONFIG_PATH}/MYTARGET.sh
-  - The project config file: ${SGEBUILD_PROJECT_CONFIG_PATH}/config.sh
   - The project target config file: ${SGEBUILD_PROJECT_CONFIG_PATH}/MYTARGET.sh
+  - The project config file: ${SGEBUILD_PROJECT_CONFIG_PATH}/config.sh
 
 Notice, that the project (target) config files are searched for relative to the
 current working directory.
@@ -55,7 +55,7 @@ sgebuild config (mandatory):
     The default build command to use (for example make). Everything in
     [parameters] is passed to this command.
 
-target config (mandatory):
+target config (optional):
   SGEBUILD_TARGET_CMAKE_SETTINGS:
     An array of cmake settings to apply on a target wide basis, for example:
 
@@ -134,11 +134,21 @@ SGEBUILD_TARGET_CONFIG="${SGEBUILD_CONFIG_PATH}/${SGEBUILD_TARGET_TYPE}.sh"
 SGEBUILD_PROJECT_TARGET_CONFIG="${SGEBUILD_PROJECT_CONFIG_PATH}/${SGEBUILD_TARGET_TYPE}.sh"
 
 
+# Check that at least one of the global target config and the per project
+# target config exists
+
+[[ ! -e "${SGEBUILD_TARGET_CONFIG}" && ! -e "${SGEBUILD_PROJECT_TARGET_CONFIG}" ]] && \
+	die "Neither of ${SGEBUILD_TARGET_CONFIG} and ${SGEBUILD_PROJECT_TARGET_CONFIG} exist"
+
+
 # Read the target config
 
-check_file "${SGEBUILD_TARGET_CONFIG}"
+[[ -e "${SGEBUILD_TARGET_CONFIG}" ]] && source "${SGEBUILD_TARGET_CONFIG}"
 
-source "${SGEBUILD_TARGET_CONFIG}"
+
+# Read possible additional config for this target and project
+
+[[ -e "${SGEBUILD_PROJECT_TARGET_CONFIG}" ]] && source "${SGEBUILD_PROJECT_TARGET_CONFIG}"
 
 
 # Read the project config
@@ -148,11 +158,6 @@ check_file "${SGEBUILD_PROJECT_CONFIG}"
 source "${SGEBUILD_PROJECT_CONFIG}"
 
 check_variable "SGEBUILD_PROJECT_CMAKE_SETTINGS" "${SGEBUILD_PROJECT_CONFIG}"
-
-
-# Read possible additional config for this target and project
-
-[[ -e "${SGEBUILD_PROJECT_TARGET_CONFIG}" ]] && source "${SGEBUILD_PROJECT_TARGET_CONFIG}"
 
 
 # Start the build process

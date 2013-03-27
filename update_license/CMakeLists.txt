@@ -16,11 +16,6 @@ ADD_EXECUTABLE(
 	update_license.cpp
 )
 
-TARGET_LINK_LIBRARIES(
-	update_license
-	${Fcppt_core_LIBRARIES}
-)
-
 INSTALL(
 	TARGETS update_license
 	DESTINATION ${INSTALL_BINARY_DIR}

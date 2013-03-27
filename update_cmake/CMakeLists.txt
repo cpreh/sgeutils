@@ -1,20 +1,21 @@
-FIND_PACKAGE(
+find_package(
 	Boost REQUIRED
 	filesystem
 	regex
 )
 
-ADD_EXECUTABLE(
+add_executable(
 	update_cmake
 	update_cmake.cpp
 )
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
 	update_cmake
-	${Boost_LIBRARIES}
+	${Boost_FILESYSTEM_LIBRARY}
+	${Boost_REGEX_LIBRARY}
 )
 
-INSTALL(
+install(
 	TARGETS update_cmake
 	DESTINATION ${INSTALL_BINARY_DIR}
 )

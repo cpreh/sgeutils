@@ -1,5 +1,11 @@
 #!/bin/sh
 find \( \
+	\( \
+		! -path './sgebuild_*' \
+		-a -type f \
+	\) \
+	-a  \
+	\( \
 	-name '*.?pp' \
 	-o -name '*.txt' \
 	-o -name '*.sh' \
@@ -8,5 +14,8 @@ find \( \
 	-o -name '*.html' \
 	-o -name '*.xml' \
 	-o -name '*.css' \
+	\) \
 \) \
--type f -exec sed -i 's/[[:space:]]*$//' '{}' \;
+-exec grep -q '[[:space:]]\+$' '{}' \; \
+-exec echo "Replacing " '{}' \; \
+-exec sed -i 's/[[:space:]]*$//' '{}' \;

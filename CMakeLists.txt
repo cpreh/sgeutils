@@ -1,91 +1,115 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3)
-
-PROJECT (sgeutils)
-
-INCLUDE(FcpptCMakeUtils)
-
-# Find Boost
-FIND_PACKAGE(
-	Boost 1.40.0 REQUIRED
+cmake_minimum_required(
+	VERSION
+	2.8.3
 )
 
-INCLUDE_DIRECTORIES(
+project(
+	sgeutils
+)
+
+include(
+	FcpptCMakeUtils
+)
+
+# Find Boost
+find_package(
+	Boost 1.48.0
+	REQUIRED
+	filesystem
+	program_options
+	regex
+)
+
+include_directories(
 	SYSTEM ${Boost_INCLUDE_DIRS}
 )
 
-LINK_DIRECTORIES(
+link_directories(
 	${Boost_LIBRARY_DIRS}
 )
 
 # Find fcppt
-FIND_PACKAGE(
+find_package(
 	fcppt REQUIRED
 )
 
-ADD_DEFINITIONS(${fcppt_DEFINITIONS})
+add_definitions(
+	${fcppt_DEFINITIONS}
+)
 
-INCLUDE_DIRECTORIES(${fcppt_INCLUDE_DIRS})
+include_directories(
+	${fcppt_INCLUDE_DIRS}
+)
 
-ADD_SUBDIRECTORY(
+option(
+	ENABLE_SGE
+	"Use SGE and build utils that require it"
+	ON
+)
+
+if(
+	ENABLE_SGE
+)
+	find_package(
+		sge
+		REQUIRED
+		COMPONENTS
+		parse
+	)
+endif()
+
+add_subdirectory(
 	check_includes
 )
 
-ADD_SUBDIRECTORY(
-	compile_headers
+if(
+	ENABLE_SGE
 )
+	add_subdirectory(
+		compile_headers
+	)
+endif()
 
-ADD_SUBDIRECTORY(
+add_subdirectory(
 	convenience_headers
 )
 
-ADD_SUBDIRECTORY(
+add_subdirectory(
 	file_switch
 )
 
-ADD_SUBDIRECTORY(
+add_subdirectory(
 	generate_includeguard
 )
 
-ADD_SUBDIRECTORY(
+add_subdirectory(
 	prettify_includes
 )
 
-ADD_SUBDIRECTORY(
+add_subdirectory(
 	remove_exec_bit
 )
 
-ADD_SUBDIRECTORY(
+add_subdirectory(
 	replace_whitespaces
 )
 
-OPTION(
-	ENABLE_SINGLE_COMPILE
-	"Build single_compile (requires sge)"
-	ON
+if(
+	ENABLE_SGE
 )
-
-IF(
-	ENABLE_SINGLE_COMPILE
-)
-	ADD_SUBDIRECTORY(
+	add_subdirectory(
 		single_compile
 	)
-ENDIF()
+endif()
 
-OPTION(
-	ENABLE_UPDATE_LICENSE
-	"Build update_license (requires sge)"
-	ON
+if(
+	ENABLE_SGE
 )
-
-IF(
-	ENABLE_UPDATE_LICENSE
-)
-	ADD_SUBDIRECTORY(
+	add_subdirectory(
 		update_license
 	)
-ENDIF()
+endif()
 
-ADD_SUBDIRECTORY(
+add_subdirectory(
 	update_cmake
 )

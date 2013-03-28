@@ -1,17 +1,13 @@
-FIND_PACKAGE(
-	sge REQUIRED
-)
-
-INCLUDE_DIRECTORIES(
+include_directories(
 	${sge_INCLUDE_DIRS}
 )
 
-ADD_EXECUTABLE(
+add_executable(
 	compile_headers
 	compile_headers.cpp
 )
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
 	compile_headers
 	${fcppt_core_TARGET}
 	${fcppt_filesystem_TARGET}
@@ -19,7 +15,7 @@ TARGET_LINK_LIBRARIES(
 	${sgeparse_TARGET}
 )
 
-INSTALL(
+install(
 	TARGETS compile_headers
 	DESTINATION ${INSTALL_BINARY_DIR}
 )

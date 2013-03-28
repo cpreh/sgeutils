@@ -1,14 +1,5 @@
-find_package(
-	sge REQUIRED
-)
-
 include_directories(
 	${sge_INCLUDE_DIRS}
-)
-
-find_package(
-	Boost 1.40.0 REQUIRED
-	COMPONENTS program_options regex
 )
 
 add_executable(

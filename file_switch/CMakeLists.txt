@@ -1,20 +1,15 @@
-FIND_PACKAGE(
-	Boost REQUIRED
-	filesystem
-)
-
-ADD_EXECUTABLE(
+add_executable(
 	file_switch
 	file_switch.cpp
 )
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
 	file_switch
 	${fcppt_core_TARGET}
 	${Boost_FILESYSTEM_LIBRARY}
 )
 
-INSTALL(
+install(
 	TARGETS file_switch
 	DESTINATION ${INSTALL_BINARY_DIR}
 )

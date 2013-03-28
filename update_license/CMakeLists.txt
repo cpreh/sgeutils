@@ -1,32 +1,23 @@
-FIND_PACKAGE(
-	sge REQUIRED
-)
-
-INCLUDE_DIRECTORIES(
+include_directories(
 	${sge_INCLUDE_DIRS}
 )
 
-FIND_PACKAGE(
-	Boost 1.40.0 REQUIRED
-	COMPONENTS regex
-)
-
-ADD_EXECUTABLE(
+add_executable(
 	update_license
 	update_license.cpp
 )
 
-INSTALL(
+install(
 	TARGETS update_license
 	DESTINATION ${INSTALL_BINARY_DIR}
 )
 
-ADD_EXECUTABLE(
+add_executable(
 	multi_update_license
 	multi_update_license.cpp
 )
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
 	multi_update_license
 	${fcppt_core_TARGET}
 	${fcppt_filesystem_TARGET}
@@ -35,7 +26,7 @@ TARGET_LINK_LIBRARIES(
 	${Boost_REGEX_LIBRARY}
 )
 
-INSTALL(
+install(
 	TARGETS multi_update_license
 	DESTINATION ${INSTALL_BINARY_DIR}
 )

@@ -1,9 +1,3 @@
-find_package(
-	Boost REQUIRED
-	filesystem
-	regex
-)
-
 add_executable(
 	update_cmake
 	update_cmake.cpp

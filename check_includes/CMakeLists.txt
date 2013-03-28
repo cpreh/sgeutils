@@ -1,15 +1,15 @@
-ADD_EXECUTABLE(
+add_executable(
 	check_includes
 	check_includes.cpp
 )
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
 	check_includes
 	${fcppt_core_TARGET}
 	${fcppt_filesystem_TARGET}
 )
 
-INSTALL(
+install(
 	TARGETS check_includes
 	DESTINATION ${INSTALL_BINARY_DIR}
 )

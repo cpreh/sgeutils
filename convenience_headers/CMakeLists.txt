@@ -1,15 +1,15 @@
-ADD_EXECUTABLE(
+add_executable(
 	convenience_headers
 	convenience_headers.cpp
 )
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
 	convenience_headers
 	${fcppt_core_TARGET}
 	${fcppt_filesystem_TARGET}
 )
 
-INSTALL(
+install(
 	TARGETS convenience_headers
 	DESTINATION ${INSTALL_BINARY_DIR}
 )

@@ -382,6 +382,8 @@ try
 
 	ofs.close();
 
+	ifs.close();
+
 	remove_ofs.commit();
 
 	boost::filesystem::rename(

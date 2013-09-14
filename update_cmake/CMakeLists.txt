@@ -6,6 +6,7 @@ add_executable(
 target_link_libraries(
 	update_cmake
 	${Boost_FILESYSTEM_LIBRARY}
+	${Boost_SYSTEM_LIBRARY}
 	${Boost_REGEX_LIBRARY}
 )
 

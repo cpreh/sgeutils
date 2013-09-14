@@ -5,8 +5,9 @@ add_executable(
 
 target_link_libraries(
 	file_switch
-	${fcppt_core_TARGET}
 	${Boost_FILESYSTEM_LIBRARY}
+	${Boost_SYSTEM_LIBRARY}
+	${fcppt_core_TARGET}
 )
 
 install(

@@ -18,6 +18,7 @@ find_package(
 	filesystem
 	program_options
 	regex
+	system
 )
 
 include_directories(

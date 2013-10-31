@@ -140,7 +140,8 @@ try
 	);
 
 	boost::filesystem::ifstream ifs(
-		cmake_file
+		cmake_file,
+		std::ios_base::binary
 	);
 
 	if(

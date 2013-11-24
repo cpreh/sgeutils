@@ -163,12 +163,20 @@ main(
 		)
 			continue;
 
-		if(
+		fcppt::string const extension(
 			fcppt::filesystem::extension_without_dot(
 				path
 			)
+		);
+
+		if(
+			extension
 			!=
 			FCPPT_TEXT("hpp")
+			&&
+			extension
+			!=
+			FCPPT_TEXT("h")
 		)
 			continue;
 

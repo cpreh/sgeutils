@@ -25,7 +25,10 @@ Usage: $0 <target> [parameters]
 
 sgebuild tries to unify the build process for different compilers, cmake
 generators, build options, and so on. A collection of such build settings is
-called a target here. To force sgebuild to rerun cmake, remove the CMakeCache.
+called a target here.
+
+To force sgebuild to rerun cmake, remove the CMakeCache or set
+SGEBUILD_RERUN_CMAKE.
 
 Parameters:
   - target: The target to build
@@ -170,6 +173,7 @@ export CFLAGS="${CFLAGS} ${SGEBUILD_C_FLAGS}"
 
 export CXXFLAGS="${CXXFLAGS} ${SGEBUILD_CXX_FLAGS}"
 
+[[ -z ${SGEBUILD_RERUN_CMAKE} ]] && \
 [[ -f CMakeCache.txt ]] || \
 cmake \
 	-G "${SGEBUILD_CMAKE_GENERATOR}" \

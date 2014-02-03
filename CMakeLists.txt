@@ -56,6 +56,7 @@ if(
 		REQUIRED
 		COMPONENTS
 		parse
+		parsejson
 	)
 endif()
 

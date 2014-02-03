@@ -11,7 +11,7 @@ target_link_libraries(
 	single_compile
 	${fcppt_core_TARGET}
 	${sgecore_TARGET}
-	${sgeparse_TARGET}
+	${sgeparsejson_TARGET}
 	${Boost_FILESYSTEM_LIBRARY}
 	${Boost_PROGRAM_OPTIONS_LIBRARY}
 	${Boost_REGEX_LIBRARY}

@@ -23,6 +23,7 @@ target_link_libraries(
 	${fcppt_filesystem_TARGET}
 	${sgecore_TARGET}
 	${sgeparse_TARGET}
+	${sgeparsejson_TARGET}
 	${Boost_REGEX_LIBRARY}
 )
 

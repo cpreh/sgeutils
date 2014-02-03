@@ -12,7 +12,7 @@ target_link_libraries(
 	${fcppt_core_TARGET}
 	${fcppt_filesystem_TARGET}
 	${sgecore_TARGET}
-	${sgeparse_TARGET}
+	${sgeparsejson_TARGET}
 )
 
 install(

@@ -1,6 +1,6 @@
 cmake_minimum_required(
 	VERSION
-	2.8.3
+	2.8.12
 )
 
 project(
@@ -22,7 +22,7 @@ find_package(
 )
 
 include_directories(
-	SYSTEM ${Boost_INCLUDE_DIRS}
+	${Boost_INCLUDE_DIRS}
 )
 
 link_directories(
@@ -32,14 +32,6 @@ link_directories(
 # Find fcppt
 find_package(
 	fcppt REQUIRED
-)
-
-add_definitions(
-	${fcppt_DEFINITIONS}
-)
-
-include_directories(
-	${fcppt_INCLUDE_DIRS}
 )
 
 option(
@@ -59,6 +51,35 @@ if(
 		parsejson
 	)
 endif()
+
+function(
+	sge_utils_add_program
+	PROGRAM_NAME
+	SOURCES
+	LIBS
+)
+	add_executable(
+		${PROGRAM_NAME}
+		${SOURCES}
+	)
+
+	fcppt_utils_set_target_compiler_flags(
+		${PROGRAM_NAME}
+	)
+
+	target_link_libraries(
+		${PROGRAM_NAME}
+		PRIVATE
+		${LIBS}
+	)
+
+	install(
+		TARGETS
+		${PROGRAM_NAME}
+		DESTINATION
+		${INSTALL_BINARY_DIR}
+	)
+endfunction()
 
 add_subdirectory(
 	check_includes

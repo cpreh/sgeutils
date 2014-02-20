@@ -1,16 +1,5 @@
-add_executable(
+sge_utils_add_program(
 	file_switch
-	file_switch.cpp
-)
-
-target_link_libraries(
-	file_switch
-	${Boost_FILESYSTEM_LIBRARY}
-	${Boost_SYSTEM_LIBRARY}
-	${fcppt_core_TARGET}
-)
-
-install(
-	TARGETS file_switch
-	DESTINATION ${INSTALL_BINARY_DIR}
+	"file_switch.cpp"
+	"${Boost_FILESYSTEM_LIBRARY};${Boost_SYSTEM_LIBRARY};${fcppt_core_TARGET}"
 )

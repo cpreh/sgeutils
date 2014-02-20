@@ -1,16 +1,11 @@
-add_executable(
+sge_utils_add_program(
 	update_cmake
-	update_cmake.cpp
+	"update_cmake.cpp"
+	"${Boost_FILESYSTEM_LIBRARY};${Boost_SYSTEM_LIBRARY};${Boost_REGEX_LIBRARY}"
 )
 
-target_link_libraries(
+target_include_directories(
 	update_cmake
-	${Boost_FILESYSTEM_LIBRARY}
-	${Boost_SYSTEM_LIBRARY}
-	${Boost_REGEX_LIBRARY}
-)
-
-install(
-	TARGETS update_cmake
-	DESTINATION ${INSTALL_BINARY_DIR}
+	PRIVATE
+	"${fcppt_INCLUDE_DIRS}"
 )

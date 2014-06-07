@@ -160,8 +160,6 @@ check_file "${SGEBUILD_PROJECT_CONFIG}"
 
 source "${SGEBUILD_PROJECT_CONFIG}"
 
-check_variable "SGEBUILD_PROJECT_CMAKE_SETTINGS" "${SGEBUILD_PROJECT_CONFIG}"
-
 
 # Start the build process
 

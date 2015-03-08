@@ -52,25 +52,51 @@ if(
 	)
 endif()
 
+include(
+	CMakeParseArguments
+)
+
 function(
 	sge_utils_add_program
 	PROGRAM_NAME
-	SOURCES
-	LIBS
 )
+	set(
+		MULTI_ARGS
+		COMPILE_FLAGS
+		INCLUDE_DIRS
+		LINK_LIBS
+		SOURCES
+	)
+
+	cmake_parse_arguments(
+		""
+		""
+		""
+		"${MULTI_ARGS}"
+		${ARGN}
+	)
+
 	add_executable(
 		${PROGRAM_NAME}
-		${SOURCES}
+		${_SOURCES}
 	)
 
 	fcppt_utils_set_target_compiler_flags(
 		${PROGRAM_NAME}
+		ADDITIONAL_FLAGS
+		${_COMPILE_FLAGS}
+	)
+
+	target_include_directories(
+		${PROGRAM_NAME}
+		PRIVATE
+		${_INCLUDE_DIRS}
 	)
 
 	target_link_libraries(
 		${PROGRAM_NAME}
 		PRIVATE
-		${LIBS}
+		${_LINK_LIBS}
 	)
 
 	install(

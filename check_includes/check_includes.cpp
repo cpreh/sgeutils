@@ -103,6 +103,29 @@ make_include_guard(
 		FCPPT_TEXT("_INCLUDED");
 }
 
+bool
+is_reserved_identifier(
+	fcppt::string const &_identifier
+)
+{
+	return
+		!_identifier.empty()
+		&&
+		(
+			_identifier[
+				0
+			]
+			==
+			FCPPT_TEXT('_')
+			||
+			_identifier.find(
+				FCPPT_TEXT("__")
+			)
+			!=
+			fcppt::string::npos
+		);
+}
+
 }
 
 int
@@ -254,6 +277,17 @@ main(
 				break;
 			}
 		}
+
+		if(
+			is_reserved_identifier(
+				include_guard
+			)
+		)
+			fcppt::io::cout()
+				<< path
+				<< FCPPT_TEXT(": Include guard ")
+				<< include_guard
+				<< FCPPT_TEXT(" is a reserved identifier.\n");
 
 		if(
 			!guard_found

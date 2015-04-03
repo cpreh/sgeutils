@@ -12,6 +12,7 @@
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
+#include <boost/range/iterator_range_core.hpp>
 #include <cassert>
 #include <cstdlib>
 #include <iterator>
@@ -72,19 +73,20 @@ make_include_guard(
 	);
 
 	for(
-		boost::filesystem::path::const_iterator it(
+		boost::filesystem::path const &path
+		:
+		boost::make_iterator_range(
 			std::next(
 				without_extension.begin(),
 				_base_level
-			)
-		);
-		it != without_extension.end();
-		++it
+			),
+			without_extension.end()
+		)
 	)
 		ret +=
 			boost::algorithm::to_upper_copy(
 				fcppt::filesystem::path_to_string(
-					*it
+					path
 				)
 			)
 			+ FCPPT_TEXT('_');
@@ -149,17 +151,15 @@ main(
 	);
 
 	for(
-		boost::filesystem::recursive_directory_iterator it(
-			base_path
-		), end;
-		it != end;
-		++it
+		boost::filesystem::path const &path
+		:
+		boost::make_iterator_range(
+			boost::filesystem::recursive_directory_iterator(
+				base_path
+			)
+		)
 	)
 	{
-		boost::filesystem::path const &path(
-			it->path()
-		);
-
 		if(
 			!boost::filesystem::is_regular_file(
 				path

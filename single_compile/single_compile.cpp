@@ -29,7 +29,7 @@
 #include <sge/parse/json/parse_file_exn.hpp>
 #include <sge/parse/json/object.hpp>
 #include <sge/parse/json/find_member_exn.hpp>
-#include <sge/parse/json/get.hpp>
+#include <sge/parse/json/get_exn.hpp>
 #include <sge/parse/json/array.hpp>
 #include <sge/parse/json/start.hpp>
 #include <fcppt/io/stream_to_string.hpp>
@@ -125,21 +125,21 @@ typedef
 fcppt::optional<compile_command_entry>
 optional_compile_command_entry;
 
-optional_compile_command_entry const
+optional_compile_command_entry
 find_compile_command(
 	sge::parse::json::array const &_array,
 	boost::filesystem::path const &_input_file_path)
 {
 	for(
-		sge::parse::json::element_vector::const_iterator current_file =
-			_array.elements.begin();
-		current_file != _array.elements.end();
-		++current_file)
+		auto const &current_file
+		:
+		_array.elements
+	)
 	{
 		compile_command_entry const current_entry(
 			entry_from_json(
-				sge::parse::json::get<sge::parse::json::object const>(
-					*current_file)));
+				sge::parse::json::get_exn<sge::parse::json::object const>(
+					current_file)));
 
 		if(current_entry.file() == _input_file_path)
 			return
@@ -159,7 +159,7 @@ typedef
 fcppt::optional<boost::filesystem::path>
 optional_path;
 
-optional_path const
+optional_path
 find_build_directory(
 	boost::filesystem::path _path,
 	build_directory_name const &_build_directory)
@@ -393,6 +393,7 @@ try
 			build_directory_name(
 				build_dir_name)));
 
+	// TODO: Change this
 	if(!build_dir)
 	{
 		std::cerr << "Build directory not found!\n";
@@ -400,7 +401,7 @@ try
 	}
 
 	boost::filesystem::path const compile_commands_file(
-		*(build_dir) / compile_commands_file_name());
+		build_dir.get_unsafe() / compile_commands_file_name());
 
 	if(!boost::filesystem::exists(compile_commands_file))
 	{
@@ -417,6 +418,7 @@ try
 			contents,
 			input_file_path));
 
+	// TODO: Change this
 	if(!optional_compile_command)
 	{
 		std::cerr << "Couldn't find compile command entry for the file!\n";
@@ -424,12 +426,12 @@ try
 	}
 
 	std::string this_compile_command(
-		optional_compile_command->command());
+		optional_compile_command.get_unsafe().command());
 
 	this_compile_command =
 		make_include_paths_absolute(
 			this_compile_command,
-			optional_compile_command->directory());
+			optional_compile_command.get_unsafe().directory());
 
 	if(compiled_options.count("dump-include-paths"))
 	{
@@ -437,7 +439,7 @@ try
 			<<
 				extract_include_paths(
 					this_compile_command,
-					optional_compile_command->directory());
+					optional_compile_command.get_unsafe().directory());
 		return
 			EXIT_SUCCESS;
 	}

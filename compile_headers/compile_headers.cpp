@@ -6,7 +6,7 @@
 #include <sge/parse/json/start.hpp>
 #include <fcppt/exception.hpp>
 #include <fcppt/extract_from_string.hpp>
-#include <fcppt/optional_impl.hpp>
+#include <fcppt/optional_to_exception.hpp>
 #include <fcppt/string.hpp>
 #include <fcppt/text.hpp>
 #include <fcppt/to_std_string.hpp>
@@ -112,9 +112,11 @@ worker(
 )
 {
 	sge::parse::json::object const &json_object(
-		_element.get<
+		sge::parse::json::get_exn<
 			sge::parse::json::object
-		>()
+		>(
+			_element
+		)
 	);
 
 	{
@@ -224,31 +226,22 @@ extract_threads(
 				FCPPT_TEXT("Invalid parameter!")
 			);
 
-	typedef
-	fcppt::optional<
-		unsigned
-	>
-	unsigned_optional;
-
-	unsigned_optional const result(
-		fcppt::extract_from_string<
-			unsigned
-		>(
-			arg.substr(
-				2u
-			)
-		)
-	);
-
-	if(
-		!result
-	)
-		throw fcppt::exception(
-			FCPPT_TEXT("-j takes an int parameter")
-		);
-
 	return
-		*result;
+		fcppt::optional_to_exception(
+			fcppt::extract_from_string<
+				unsigned
+			>(
+				arg.substr(
+					2u
+				)
+			),
+			[]{
+				return
+					fcppt::exception{
+						FCPPT_TEXT("-j takes an int parameter")
+					};
+			}
+		);
 }
 
 }

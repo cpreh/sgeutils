@@ -21,149 +21,177 @@ Assertions:
 -The search path is always the current working directory (else the path specifications make no sense)
 */
 
+#include <sge/parse/make_error_string.hpp>
 #include <sge/parse/result.hpp>
-#include <sge/parse/json/parse_file.hpp>
-#include <sge/parse/json/find_member_exn.hpp>
-#include <sge/parse/json/find_member.hpp>
-#include <sge/parse/json/object.hpp>
-#include <sge/parse/json/element_vector.hpp>
 #include <sge/parse/json/array.hpp>
+#include <sge/parse/json/get_exn.hpp>
+#include <sge/parse/json/find_member.hpp>
+#include <sge/parse/json/find_member_exn.hpp>
+#include <sge/parse/json/object.hpp>
+#include <sge/parse/json/parse_file.hpp>
 #include <sge/parse/json/start.hpp>
+#include <sge/parse/json/value.hpp>
 #include <fcppt/exception.hpp>
 #include <fcppt/from_std_string.hpp>
+#include <fcppt/maybe.hpp>
 #include <fcppt/optional.hpp>
 #include <fcppt/text.hpp>
 #include <fcppt/to_std_string.hpp>
+#include <fcppt/algorithm/contains_if.hpp>
+#include <fcppt/algorithm/map.hpp>
+#include <fcppt/algorithm/map_optional.hpp>
 #include <fcppt/assert/exception.hpp>
 #include <fcppt/assert/throw.hpp>
 #include <fcppt/filesystem/path_to_string.hpp>
 #include <fcppt/io/cerr.hpp>
 #include <fcppt/io/clog.hpp>
 #include <fcppt/config/external_begin.hpp>
-#include <boost/next_prior.hpp>
-#include <boost/regex.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
+#include <boost/range/iterator_range_core.hpp>
 #include <algorithm>
 #include <cstdlib>
 #include <exception>
 #include <iostream>
 #include <iterator>
 #include <ostream>
+#include <regex>
 #include <set>
 #include <utility>
 #include <vector>
 #include <fcppt/config/external_end.hpp>
 
+
 namespace
 {
+
 typedef
-boost::basic_regex<fcppt::char_type>
+std::basic_regex<
+	fcppt::char_type
+>
 regex;
 
 typedef
-std::set
-<
+std::vector<
 	regex
 >
 regex_set;
 
 typedef
-std::pair
-<
+std::pair<
 	regex_set,
 	boost::filesystem::path
 >
 exception;
 
 typedef
-std::set
-<
+std::vector<
 	exception
 >
 exception_set;
 
 typedef
-std::set<boost::filesystem::path>
+std::set<
+	boost::filesystem::path
+>
 path_set;
 
-regex_set const
+regex_set
 extract_regexes(
 	sge::parse::json::array const &_array
 )
 {
-	regex_set rs;
-
-	for(
-		sge::parse::json::element_vector::const_iterator it(
-			_array.elements.begin()
+	return
+		fcppt::algorithm::map<
+			regex_set
+		>(
+			_array.elements,
+			[](
+				sge::parse::json::value const &_value
+			)
+			{
+				return
+					regex(
+						sge::parse::json::get_exn<
+							sge::parse::json::string
+						>(
+							_value
+						)
+					);
+			}
 		);
-		it != _array.elements.end();
-		++it
-	)
-		rs.insert(
-			regex(
-				sge::parse::json::get<sge::parse::json::string>(
-					*it)));
-	return rs;
 }
 
-exception_set const
+exception_set
 extract_exceptions(
-	sge::parse::json::object const &o)
+	sge::parse::json::object const &_object
+)
 {
-	exception_set es;
-
-	typedef fcppt::optional<
-		sge::parse::json::array const &
-	> optional_array;
-
-	optional_array const exceptions(
-		sge::parse::json::find_member<
-			sge::parse::json::array
-		>(
-			o.members,
-			FCPPT_TEXT("exceptions")
-		)
-	);
-
-	if(
-		!exceptions
-	)
-		return es;
-
-
-	for(
-		sge::parse::json::element_vector::const_iterator r1(
-			exceptions->elements.begin()
-		);
-		r1 != exceptions->elements.end();
-		++r1
-	)
-	{
-		sge::parse::json::object const &r2 =
-			sge::parse::json::get<sge::parse::json::object>(
-				*r1);
-
-		es.insert(
-			exception(
-				extract_regexes(
-					sge::parse::json::find_member_exn<sge::parse::json::array>(
-						r2.members,
-						FCPPT_TEXT("files"))),
-				sge::parse::json::find_member_exn<sge::parse::json::string>(
-					r2.members,
-					FCPPT_TEXT("license"))));
-
-		// The license file has to exist!
-		FCPPT_ASSERT_THROW(
-			boost::filesystem::exists(
-				(boost::prior(es.end()))->second
+	return
+		fcppt::maybe(
+			sge::parse::json::find_member<
+				sge::parse::json::array
+			>(
+				_object.members,
+				FCPPT_TEXT("exceptions")
 			),
-			fcppt::assert_::exception
+			[]{
+				return
+					exception_set();
+			},
+			[](
+				sge::parse::json::array const &_array
+			)
+			{
+				return
+					fcppt::algorithm::map<
+						exception_set
+					>(
+						_array.elements,
+						[](
+							sge::parse::json::value const &_value
+						)
+						{
+							sge::parse::json::object const &r2(
+								sge::parse::json::get_exn<
+									sge::parse::json::object
+								>(
+									_value
+								)
+							);
+
+							boost::filesystem::path license_file(
+								sge::parse::json::find_member_exn<
+									sge::parse::json::string
+								>(
+									r2.members,
+									FCPPT_TEXT("license")
+								)
+							);
+
+							FCPPT_ASSERT_THROW(
+								boost::filesystem::exists(
+									license_file
+								),
+								fcppt::assert_::exception
+							);
+
+							return
+								exception(
+									extract_regexes(
+										sge::parse::json::find_member_exn<
+											sge::parse::json::array
+										>(
+											r2.members,
+											FCPPT_TEXT("files")
+										)
+									),
+									license_file
+								);
+						}
+					);
+			}
 		);
-	}
-	return es;
 }
 
 bool
@@ -171,68 +199,88 @@ has_hidden_components(
 	boost::filesystem::path const &_path
 )
 {
-	if(_path.empty())
-		return false;
+	if(
+		_path.empty()
+	)
+		return
+			false;
 
-	// skip the first entry because it starts with "./"
-	for(
-		boost::filesystem::path::iterator next(
-			boost::next(
+	return
+		fcppt::algorithm::contains_if(
+			// skip the first entry because it starts with "./"
+			std::next(
 				_path.begin()
+			),
+			_path.end(),
+			[](
+				boost::filesystem::path const &_entry
 			)
+			{
+				return
+					fcppt::filesystem::path_to_string(
+						_entry
+					).at(
+						0
+					)
+					==
+					FCPPT_TEXT('.');
+			}
 		);
-		next != _path.end();
-		++next
-	)
-		if(
-			next->string().at(0) == FCPPT_TEXT('.')
-		)
-			return true;
-
-	return false;
 }
 
-path_set const
+path_set
 extract_paths(
-	regex const &_standard_regex)
+	regex const &_standard_regex
+)
 {
-	path_set s;
-	for(
-		boost::filesystem::recursive_directory_iterator
-			i(
-				FCPPT_TEXT(".")),
-			end;
-		i != end;
-		++i
-	)
-	{
-		boost::filesystem::path const &path_(
-			i->path()
-		);
+	return
+		fcppt::algorithm::map_optional<
+			path_set
+		>(
+			boost::make_iterator_range(
+				boost::filesystem::recursive_directory_iterator(
+					FCPPT_TEXT(".")
+				)
+			),
+			[
+				&_standard_regex
+			](
+				boost::filesystem::path const &_path
+			)
+			{
+				typedef
+				fcppt::optional<
+					boost::filesystem::path
+				>
+				optional_path;
 
-		if(
-			boost::filesystem::is_regular_file(
-				path_
-			)
-			&&
-			!has_hidden_components(
-				path_
-			)
-			&&
-			boost::regex_match(
-				fcppt::filesystem::path_to_string(
-					path_
-				),
-				_standard_regex)
-		)
-			s.insert(
-				path_
-			);
-	}
-	return s;
+				return
+					boost::filesystem::is_regular_file(
+						_path
+					)
+					&&
+					!has_hidden_components(
+						_path
+					)
+					&&
+					std::regex_match(
+						fcppt::filesystem::path_to_string(
+							_path
+						),
+						_standard_regex
+					)
+					?
+						optional_path(
+							_path
+						)
+					:
+						optional_path()
+					;
+			}
+		);
 }
 
-path_set const
+path_set
 intersection(
 	path_set const &_paths,
 	regex_set const &_regexs)
@@ -265,7 +313,7 @@ intersection(
 						*path_it
 					).substr(2),
 					*regex_it,
-					boost::match_default);
+					std::regex_constants::match_default);
 
 			if(result)
 				ret.insert(
@@ -360,12 +408,13 @@ is_pairwise_disjoint(
 	set::const_iterator
 	const_iterator;
 
+	// TODO: This is wrong
 	for(
 		const_iterator i = ts.begin();
-		i != boost::prior(ts.end());
+		i != std::prev(ts.end());
 		++i)
 		for (
-			const_iterator j = boost::next(i);
+			const_iterator j = std::next(i);
 			j != ts.end();
 			++j)
 			if (!is_disjoint(**i,**j))
@@ -378,7 +427,7 @@ typedef
 std::set<path_set const *>
 path_ref_set;
 
-path_set const
+path_set
 ref_set_difference(
 	path_set _paths,
 	path_ref_set const &refs)
@@ -475,7 +524,9 @@ try
 	)
 	{
 		fcppt::io::cerr()
-			<< *result.error_string()
+			<< sge::parse::make_error_string(
+				result
+			)
 			<< FCPPT_TEXT('\n');
 		return EXIT_FAILURE;
 	}

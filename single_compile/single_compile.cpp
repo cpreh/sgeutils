@@ -394,7 +394,7 @@ try
 				build_dir_name)));
 
 	// TODO: Change this
-	if(!build_dir)
+	if(!build_dir.has_value())
 	{
 		std::cerr << "Build directory not found!\n";
 		return EXIT_FAILURE;
@@ -419,7 +419,7 @@ try
 			input_file_path));
 
 	// TODO: Change this
-	if(!optional_compile_command)
+	if(!optional_compile_command.has_value())
 	{
 		std::cerr << "Couldn't find compile command entry for the file!\n";
 		return EXIT_FAILURE;

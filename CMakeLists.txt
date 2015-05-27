@@ -17,7 +17,6 @@ find_package(
 	REQUIRED
 	filesystem
 	program_options
-	regex
 	system
 )
 

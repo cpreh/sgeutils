@@ -4,12 +4,12 @@
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
-#include <boost/regex.hpp>
 #include <algorithm>
 #include <exception>
 #include <ios>
 #include <iostream>
 #include <ostream>
+#include <regex>
 #include <string>
 #include <vector>
 #include <cstdlib>
@@ -29,7 +29,7 @@ template<
 void
 add_files(
 	Iterator _iterator,
-	boost::regex const &_regex,
+	std::regex const &_regex,
 	file_vector &_files,
 	boost::filesystem::path const &_out_file
 )
@@ -56,7 +56,7 @@ add_files(
 			continue;
 
 		if(
-			!boost::regex_match(
+			!std::regex_match(
 				_iterator->path().filename().string(),
 				_regex
 			)
@@ -190,7 +190,7 @@ try
 		"r"
 	);
 
-	boost::regex fileregex(
+	std::regex fileregex(
 		".*\\..pp"
 	);
 

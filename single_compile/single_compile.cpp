@@ -2,7 +2,6 @@
 //#include <unistd.h>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/join.hpp>
-#include <boost/regex.hpp>
 #include <boost/next_prior.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/join.hpp>
@@ -32,6 +31,7 @@
 #include <sge/parse/json/get_exn.hpp>
 #include <sge/parse/json/array.hpp>
 #include <sge/parse/json/start.hpp>
+#include <regex>
 #include <fcppt/io/stream_to_string.hpp>
 
 namespace
@@ -307,13 +307,12 @@ extract_include_paths(
 	std::string const &_command,
 	boost::filesystem::path const &_working_directory)
 {
-	boost::regex e("(?:-I ?|-isystem )([^ ]+)");
-	boost::smatch what;
+	std::regex e("(?:-I ?|-isystem )([^ ]+)");
 
 	std::string result;
 
 	for(
-		boost::sregex_iterator
+		std::sregex_iterator
 			m1(
 				_command.begin(),
 				_command.end(),

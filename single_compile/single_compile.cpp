@@ -20,6 +20,7 @@
 #include <fcppt/strong_typedef.hpp>
 #include <fcppt/optional.hpp>
 #include <fcppt/string.hpp>
+#include <fcppt/strong_typedef_output.hpp>
 #include <fcppt/to_std_string.hpp>
 #include <fcppt/from_std_string.hpp>
 #include <fcppt/preprocessor/disable_gcc_warning.hpp>

@@ -35,6 +35,7 @@ Assertions:
 #include <fcppt/from_std_string.hpp>
 #include <fcppt/maybe.hpp>
 #include <fcppt/optional.hpp>
+#include <fcppt/strong_typedef_output.hpp>
 #include <fcppt/text.hpp>
 #include <fcppt/to_std_string.hpp>
 #include <fcppt/algorithm/contains_if.hpp>

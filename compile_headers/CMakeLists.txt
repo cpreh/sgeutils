@@ -3,6 +3,15 @@ find_package(
 	REQUIRED
 )
 
+if(
+	WIN32
+)
+	set(
+		ASIO_LIBS
+		WS2_32
+	)
+endif()
+
 sge_utils_add_program(
 	compile_headers
 	SOURCES
@@ -15,4 +24,5 @@ sge_utils_add_program(
 		${fcppt_filesystem_TARGET}
 		${sgecore_TARGET}
 		${sgeparsejson_TARGET}
+		${ASIO_LIBS}
 )

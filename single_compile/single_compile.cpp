@@ -17,12 +17,14 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <fcppt/config/external_end.hpp>
+#include <fcppt/from_std_string.hpp>
 #include <fcppt/strong_typedef.hpp>
 #include <fcppt/optional.hpp>
 #include <fcppt/string.hpp>
 #include <fcppt/strong_typedef_output.hpp>
 #include <fcppt/to_std_string.hpp>
 #include <fcppt/from_std_string.hpp>
+#include <fcppt/config/platform.hpp>
 #include <fcppt/preprocessor/disable_gcc_warning.hpp>
 #include <fcppt/preprocessor/pop_warning.hpp>
 #include <fcppt/preprocessor/push_warning.hpp>
@@ -323,7 +325,10 @@ extract_include_paths(
 		++m1)
 	{
 		boost::filesystem::path current_path(
-			(*m1)[1]);
+			fcppt::from_std_string(
+				(*m1)[1]
+			)
+		);
 
 		if(current_path.is_relative())
 			current_path = _working_directory / current_path;
@@ -470,11 +475,16 @@ try
 	if(compiled_options.count("ignore-compiler-return"))
 		return EXIT_SUCCESS;
 
+#if defined(FCPPT_CONFIG_POSIX_PLATFORM)
 FCPPT_PP_PUSH_WARNING
 FCPPT_PP_DISABLE_GCC_WARNING(-Wold-style-cast)
 	return
 		WEXITSTATUS(command_exit_status);
 FCPPT_PP_POP_WARNING
+#else
+	return
+		command_exit_status;
+#endif
 }
 catch(std::exception const &e)
 {

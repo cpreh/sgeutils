@@ -11,6 +11,7 @@
 #include <fcppt/text.hpp>
 #include <fcppt/to_std_string.hpp>
 #include <fcppt/algorithm/contains.hpp>
+#include <fcppt/config/platform.hpp>
 #include <fcppt/io/cerr.hpp>
 #include <fcppt/io/cout.hpp>
 #include <fcppt/preprocessor/disable_gcc_warning.hpp>
@@ -175,6 +176,7 @@ worker(
 
 		return;
 	}
+#if defined(FCPPT_CONFIG_POSIX_PLATFORM)
 FCPPT_PP_PUSH_WARNING
 FCPPT_PP_DISABLE_GCC_WARNING(-Wcast-qual)
 FCPPT_PP_DISABLE_GCC_WARNING(-Wold-style-cast)
@@ -190,6 +192,7 @@ FCPPT_PP_POP_WARNING
 
 		_io_service.stop();
 	}
+#endif
 }
 
 unsigned

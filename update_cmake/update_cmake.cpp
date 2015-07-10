@@ -6,7 +6,6 @@
 #include <boost/filesystem/path.hpp>
 #include <algorithm>
 #include <exception>
-#include <ios>
 #include <iostream>
 #include <ostream>
 #include <regex>
@@ -140,8 +139,7 @@ try
 	);
 
 	boost::filesystem::ifstream ifs(
-		cmake_file,
-		std::ios_base::binary
+		cmake_file
 	);
 
 	if(
@@ -166,8 +164,7 @@ try
 	);
 
 	boost::filesystem::ofstream ofs(
-		out_file,
-		std::ios_base::binary
+		out_file
 	);
 
 	if(

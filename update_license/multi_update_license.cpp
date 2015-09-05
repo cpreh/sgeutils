@@ -208,11 +208,13 @@ has_hidden_components(
 
 	return
 		fcppt::algorithm::contains_if(
-			// skip the first entry because it starts with "./"
-			std::next(
-				_path.begin()
+			boost::make_iterator_range(
+				// skip the first entry because it starts with "./"
+				std::next(
+					_path.begin()
+				),
+				_path.end()
 			),
-			_path.end(),
 			[](
 				boost::filesystem::path const &_entry
 			)

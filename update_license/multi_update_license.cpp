@@ -33,8 +33,8 @@ Assertions:
 #include <sge/parse/json/value.hpp>
 #include <fcppt/exception.hpp>
 #include <fcppt/from_std_string.hpp>
-#include <fcppt/maybe.hpp>
-#include <fcppt/optional.hpp>
+#include <fcppt/optional/maybe.hpp>
+#include <fcppt/optional/object.hpp>
 #include <fcppt/strong_typedef_output.hpp>
 #include <fcppt/text.hpp>
 #include <fcppt/to_std_string.hpp>
@@ -129,7 +129,7 @@ extract_exceptions(
 )
 {
 	return
-		fcppt::maybe(
+		fcppt::optional::maybe(
 			sge::parse::json::find_member<
 				sge::parse::json::array
 			>(
@@ -252,7 +252,7 @@ extract_paths(
 			)
 			{
 				typedef
-				fcppt::optional<
+				fcppt::optional::object<
 					boost::filesystem::path
 				>
 				optional_path;

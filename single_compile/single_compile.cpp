@@ -19,7 +19,7 @@
 #include <fcppt/config/external_end.hpp>
 #include <fcppt/from_std_string.hpp>
 #include <fcppt/strong_typedef.hpp>
-#include <fcppt/optional.hpp>
+#include <fcppt/optional/object.hpp>
 #include <fcppt/string.hpp>
 #include <fcppt/strong_typedef_output.hpp>
 #include <fcppt/to_std_string.hpp>
@@ -125,7 +125,7 @@ entry_from_json(
 
 
 typedef
-fcppt::optional<compile_command_entry>
+fcppt::optional::object<compile_command_entry>
 optional_compile_command_entry;
 
 optional_compile_command_entry
@@ -159,7 +159,7 @@ FCPPT_MAKE_STRONG_TYPEDEF(
 	build_directory_name);
 
 typedef
-fcppt::optional<boost::filesystem::path>
+fcppt::optional::object<boost::filesystem::path>
 optional_path;
 
 optional_path

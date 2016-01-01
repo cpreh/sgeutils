@@ -6,7 +6,7 @@
 #include <sge/parse/json/start.hpp>
 #include <fcppt/exception.hpp>
 #include <fcppt/extract_from_string.hpp>
-#include <fcppt/optional_to_exception.hpp>
+#include <fcppt/optional/to_exception.hpp>
 #include <fcppt/string.hpp>
 #include <fcppt/text.hpp>
 #include <fcppt/to_std_string.hpp>
@@ -230,7 +230,7 @@ extract_threads(
 			);
 
 	return
-		fcppt::optional_to_exception(
+		fcppt::optional::to_exception(
 			fcppt::extract_from_string<
 				unsigned
 			>(

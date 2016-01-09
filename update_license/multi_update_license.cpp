@@ -33,6 +33,7 @@ Assertions:
 #include <sge/parse/json/value.hpp>
 #include <fcppt/exception.hpp>
 #include <fcppt/from_std_string.hpp>
+#include <fcppt/reference_wrapper_impl.hpp>
 #include <fcppt/optional/maybe.hpp>
 #include <fcppt/optional/object.hpp>
 #include <fcppt/strong_typedef_output.hpp>
@@ -141,14 +142,16 @@ extract_exceptions(
 					exception_set();
 			},
 			[](
-				sge::parse::json::array const &_array
+				fcppt::reference_wrapper<
+					sge::parse::json::array const
+				> const &_array
 			)
 			{
 				return
 					fcppt::algorithm::map<
 						exception_set
 					>(
-						_array.elements,
+						_array.get().elements,
 						[](
 							sge::parse::json::value const &_value
 						)

@@ -58,6 +58,9 @@ sgebuild config (mandatory):
     The default build command to use (for example make). Everything in
     [parameters] is passed to this command.
 
+  SGEBUILD_BUILD_DIR_PREFIX (optional):
+    The prefix sgebuild uses to name build dirs. Defaults to \"sgebuild_\".
+
 target config (optional):
   SGEBUILD_TARGET_CMAKE_SETTINGS:
     An array of cmake settings to apply on a target wide basis, for example:
@@ -94,9 +97,6 @@ SGEBUILD_TARGET_TYPE:
 SGEBUILD_PARAMETERS:
   The same as [parameters].
 
-SGEBUILD_BUILD_DIR_PREFIX:
-  The prefix sgebuild uses to name build dirs.
-
 SGEBUILD_BUILD_DIR:
   The build directory for the current target, which is
   \"\${SGEBUILD_BUILD_DIR_PREFIX}\${SGEBUILD_TARGET_TYPE}\"
@@ -126,7 +126,7 @@ check_variable "SGEBUILD_BUILD_COMMAND" "${SGEBUILD_CONFIG}"
 
 # Set build variables, which can be used in the sourced files below
 
-SGEBUILD_BUILD_DIR_PREFIX="sgebuild_"
+SGEBUILD_BUILD_DIR_PREFIX="${SGEBUILD_BUILD_DIR_PREFIX:-sgebuild_}"
 
 SGEBUILD_BUILD_DIR="${SGEBUILD_BUILD_DIR_PREFIX}${SGEBUILD_TARGET_TYPE}"
 
@@ -165,6 +165,8 @@ source "${SGEBUILD_PROJECT_CONFIG}"
 
 mkdir -p "${SGEBUILD_BUILD_DIR}" || die "mkdir ${SGEBUILD_BUILD_DIR} failed"
 
+SGEBUILD_SOURCE_DIR="$(pwd)"
+
 pushd "${SGEBUILD_BUILD_DIR}" >> /dev/null
 
 export CFLAGS="${CFLAGS} ${SGEBUILD_C_FLAGS}"
@@ -178,7 +180,8 @@ cmake \
 	"${SGEBUILD_TARGET_CMAKE_SETTINGS[@]}" \
 	"${SGEBUILD_PROJECT_CMAKE_SETTINGS[@]}" \
 	"${SGEBUILD_PROJECT_TARGET_CMAKE_SETTINGS[@]}" \
-	.. || die "cmake failed"
+	"${SGEBUILD_SOURCE_DIR}" \
+	|| die "cmake failed"
 
 "${SGEBUILD_BUILD_COMMAND}" "${SGEBUILD_PARAMETERS[@]}" || die "Building failed"
 

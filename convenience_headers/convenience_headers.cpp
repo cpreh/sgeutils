@@ -1,5 +1,4 @@
 #include <fcppt/algorithm/contains.hpp>
-#include <fcppt/assign/make_container.hpp>
 #include <fcppt/filesystem/path_to_string.hpp>
 #include <fcppt/filesystem/remove_extension.hpp>
 #include <fcppt/filesystem/stem.hpp>
@@ -94,16 +93,14 @@ typedef std::vector<
 	fcppt::string
 > string_vector;
 
-string_vector const exclusions(
-	fcppt::assign::make_container<
-		string_vector
-	>(
+string_vector const exclusions{
+	fcppt::string(
 		FCPPT_TEXT("detail")
-	)
-	(
+	),
+	fcppt::string(
 		FCPPT_TEXT("impl")
 	)
-);
+};
 
 bool
 needs_header(

@@ -20,14 +20,6 @@ find_package(
 	system
 )
 
-include_directories(
-	${Boost_INCLUDE_DIRS}
-)
-
-link_directories(
-	${Boost_LIBRARY_DIRS}
-)
-
 # Find fcppt
 find_package(
 	fcppt REQUIRED
@@ -62,7 +54,6 @@ function(
 	set(
 		MULTI_ARGS
 		COMPILE_FLAGS
-		INCLUDE_DIRS
 		LINK_LIBS
 		SOURCES
 	)
@@ -75,6 +66,18 @@ function(
 		${ARGN}
 	)
 
+	if(
+		NOT
+		"${_UNPARSED_ARGUMENTS}"
+		STREQUAL
+		""
+	)
+		message(
+			FATAL_ERROR
+			"Invalid parameters ${_UNPARSED_ARGUMENTS}"
+		)
+	endif()
+
 	add_executable(
 		${PROGRAM_NAME}
 		${_SOURCES}
@@ -84,12 +87,6 @@ function(
 		${PROGRAM_NAME}
 		ADDITIONAL_FLAGS
 		${_COMPILE_FLAGS}
-	)
-
-	target_include_directories(
-		${PROGRAM_NAME}
-		PRIVATE
-		${_INCLUDE_DIRS}
 	)
 
 	target_link_libraries(

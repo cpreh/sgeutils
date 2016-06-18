@@ -2,8 +2,8 @@ sge_utils_add_program(
 	update_license
 	SOURCES
 		update_license.cpp
-	INCLUDE_DIRS
-		${fcppt_INCLUDE_DIRS}
+	LINK_LIBS
+		fcppt_core_interface
 )
 
 sge_utils_add_program(

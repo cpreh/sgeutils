@@ -1,3 +1,4 @@
+#include <fcppt/exception.hpp>
 #include <fcppt/from_std_string.hpp>
 #include <fcppt/string.hpp>
 #include <fcppt/text.hpp>
@@ -15,6 +16,8 @@
 #include <boost/range/iterator_range_core.hpp>
 #include <cassert>
 #include <cstdlib>
+#include <exception>
+#include <iostream>
 #include <iterator>
 #include <string>
 #include <fcppt/config/external_end.hpp>
@@ -133,6 +136,7 @@ main(
 	int argc,
 	char **argv
 )
+try
 {
 	if(
 		argc < 2
@@ -298,4 +302,24 @@ main(
 				<< include_guard
 				<< FCPPT_TEXT('\n');
 	}
+}
+catch(
+	fcppt::exception const &_error
+)
+{
+	fcppt::io::cerr()
+		<<
+		_error.string()
+		<<
+		FCPPT_TEXT('\n');
+}
+catch(
+	std::exception const &_error
+)
+{
+	std::cerr
+		<<
+		_error.what()
+		<<
+		'\n';
 }

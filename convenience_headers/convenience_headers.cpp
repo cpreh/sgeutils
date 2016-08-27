@@ -1,9 +1,9 @@
 #include <fcppt/algorithm/contains.hpp>
+#include <fcppt/filesystem/ofstream.hpp>
 #include <fcppt/filesystem/path_to_string.hpp>
 #include <fcppt/filesystem/remove_extension.hpp>
 #include <fcppt/filesystem/stem.hpp>
 #include <fcppt/io/cerr.hpp>
-#include <fcppt/io/ofstream.hpp>
 #include <fcppt/exception.hpp>
 #include <fcppt/from_std_string.hpp>
 #include <fcppt/string.hpp>
@@ -22,10 +22,11 @@
 #include <cstdlib>
 #include <fcppt/config/external_end.hpp>
 
+
 namespace
 {
 
-boost::filesystem::path const
+boost::filesystem::path
 make_header(
 	boost::filesystem::path const &_path
 )
@@ -48,7 +49,7 @@ make_header(
 
 }
 
-fcppt::string const
+fcppt::string
 make_include_guard(
 	boost::filesystem::path const &_path
 )
@@ -183,7 +184,7 @@ try
 			)
 		);
 
-		fcppt::io::ofstream file(
+		fcppt::filesystem::ofstream file(
 			header,
 			std::ios_base::trunc
 		);

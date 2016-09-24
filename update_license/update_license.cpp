@@ -1,3 +1,7 @@
+#include <fcppt/config/compiler.hpp>
+#include <fcppt/preprocessor/disable_gcc_warning.hpp>
+#include <fcppt/preprocessor/pop_warning.hpp>
+#include <fcppt/preprocessor/push_warning.hpp>
 #include <fcppt/config/external_begin.hpp>
 #include <boost/spirit/repository/include/qi_confix.hpp>
 #include <boost/spirit/include/qi_match.hpp>
@@ -59,6 +63,11 @@ main(
 		using boost::spirit::qi::eol;
 		using encoding::char_;
 
+FCPPT_PP_PUSH_WARNING
+#if defined(FCPPT_CONFIG_GNU_GCC_COMPILER)
+FCPPT_PP_DISABLE_GCC_WARNING(-Wzero-as-null-pointer-constant)
+#endif
+
 		ifs
 			>> std::noskipws
 			>> boost::spirit::qi::match(
@@ -79,6 +88,9 @@ main(
 				)
 				>> *eol
 			);
+
+FCPPT_PP_POP_WARNING
+
 	}
 
 	ifs.unget(); // FIXME

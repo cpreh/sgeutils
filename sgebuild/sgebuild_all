@@ -7,7 +7,7 @@ source "${CURRENT_DIR}/common.sh"
 
 # Setup main config
 
-SGEBUILD_ALL_CONFIG="${SGEBUILD_CONFIG_PATH}/all_config.sh"
+SGEBUILD_ALL_CONFIG="${SGEBUILD_CONFIG_DIR}/all_config.sh"
 
 # Display help message
 
@@ -26,10 +26,7 @@ Parameters:
 Two additional config files are read to determine which targets to build in the
 following order:
   - The sgebuild all config file: ${SGEBUILD_ALL_CONFIG}
-  - The project all config file: ${SGEBUILD_PROJECT_CONFIG_PATH}/all_config.sh
-
-Notice, that the project config files are searched for relative to the current
-working directory.
+  - The project all config file: \${SGEBUILD_PROJECT_CONFIG_DIR}/all_config.sh
 
 The following variables are read from the config files:
 
@@ -66,7 +63,7 @@ check_variable "SGEBUILD_ALL_TARGETS" "${SGEBUILD_ALL_CONFIG}"
 
 # Read the project config
 
-SGEBUILD_PROJECT_ALL_CONFIG="${SGEBUILD_PROJECT_CONFIG_PATH}/all_config.sh"
+SGEBUILD_PROJECT_ALL_CONFIG="${SGEBUILD_PROJECT_CONFIG_DIR}/all_config.sh"
 
 [[ -e "${SGEBUILD_PROJECT_ALL_CONFIG}" ]] && source "${SGEBUILD_PROJECT_ALL_CONFIG}"
 

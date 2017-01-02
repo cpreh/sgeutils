@@ -7,7 +7,7 @@ source "${CURRENT_DIR}/common.sh"
 
 # Setup main config
 
-SGEBUILD_CONFIG="${SGEBUILD_CONFIG_PATH}/config.sh"
+SGEBUILD_CONFIG="${SGEBUILD_CONFIG_DIR}/config.sh"
 
 SGEBUILD_TARGET_TYPE="$1"
 
@@ -15,6 +15,7 @@ SGEBUILD_PARAMETERS=( "${@:2}" )
 
 [[ -z "${SGEBUILD_TARGET_TYPE}" ]] && die "You have to provide a build type as first parameter!"
 
+SGEBUILD_BUILD_DIR_PREFIX_DEFAULT="sgebuild_"
 
 # Display help message
 
@@ -31,39 +32,43 @@ To force sgebuild to rerun cmake, remove the CMakeCache or set
 SGEBUILD_RERUN_CMAKE.
 
 Parameters:
-  - target: The target to build
-  - parameters: Additional parameters that are passed to the build command
+  - target: The target to build.
+  - parameters: Additional parameters that are passed to the build command.
 
-To assist in the building process, sgebuild tries to source several config
-files. Assuming your target is called MYTARGET, the following files are
-sourced in the following order:
-  - The sgebuild config file: ${SGEBUILD_CONFIG}
-  - The target config file: ${SGEBUILD_CONFIG_PATH}/MYTARGET.sh
-  - The project target config file: ${SGEBUILD_PROJECT_CONFIG_PATH}/MYTARGET.sh
-  - The project config file: ${SGEBUILD_PROJECT_CONFIG_PATH}/config.sh
+sgebuilds first looks for a directory called ${SGEBUILD_PROJECT_CONFIG_PREFIX},
+starting from the current working directory, going upwards (similary to how
+git searches for the .git directory). The directory that contains ${SGEBUILD_PROJECT_CONFIG_PREFIX}
+is stored in SGEBUILD_PROJECT_SOURCE_DIR, which is expected to contain the top-level CMakeLists.txt.
+The path of the ${SGEBUILD_PROJECT_CONFIG_PREFIX} directory is stored in SGEBUILD_PROJECT_CONFIG_DIR.
 
-Notice, that the project (target) config files are searched for relative to the
-current working directory.
+sgebuild tries to source several config files, where <target> is stored in
+SGEBUILD_TARGET_TYPE. The following files are sourced in the order they are listed:
+  - The sgebuild config file: ${SGEBUILD_CONFIG} (mandatory).
+  - The target config file: ${SGEBUILD_CONFIG_DIR}/\${SGEBUILD_TARGET_TYPE}.sh (optional).
+  - The project target config file: \${SGEBUILD_PROJECT_CONFIG_DIR}/\${SGEBUILD_TARGET_TYPE}.sh (optional).
+  - The project config file: \${SGEBUILD_PROJECT_CONFIG_DIR}/config.sh (mandatory).
 
-All of the above files can be used to set anything that might be needed for
-calling cmake. What comes last overwrites what comes first.
+All of the above files can be used to configure what will be passed to
+invocations of cmake. What comes last overwrites what comes first, so for
+example, a project target config file can overwrite settings from a target
+config file.
 
 The following variables are read from the config files:
 
 sgebuild config (mandatory):
   SGEBUILD_CMAKE_GENERATOR:
-    The default cmake generator to use (see cmake -G)
+    The default cmake generator to use (for example Ninja). See cmake -G.
 
-  SGEBUILD_BUILD_COMMAND:
-    The default build command to use (for example make). Everything in
+  SGEBUILD_BUILD_COMMAND (mandatory):
+    The default build command to use (for example ninja). Everything in
     [parameters] is passed to this command.
 
   SGEBUILD_BUILD_DIR_PREFIX (optional):
-    The prefix sgebuild uses to name build dirs. Defaults to \"sgebuild_\".
+    The prefix sgebuild uses to name build directories which defaults to \"${SGEBUILD_BUILD_DIR_PREFIX_DEFAULT}\".
 
 target config (optional):
   SGEBUILD_TARGET_CMAKE_SETTINGS:
-    An array of cmake settings to apply on a target wide basis, for example:
+    An array of cmake settings to apply on a target-wide basis, for example:
 
     SGEBUILD_TARGET_CMAKE_SETTINGS=(
       \"-DCMAKE_C_COMPILER=/usr/bin/gcc\"
@@ -72,11 +77,11 @@ target config (optional):
 
 project config (mandatory):
   SGEBUILD_PROJECT_CMAKE_SETTINGS:
-    An array of cmake settings to apply on a project wide basis, for example:
+    An array of cmake settings to apply on a project-wide basis, for example:
 
     SGEBUILD_PROJECT_CMAKE_SETTINGS=(
       \"-DENABLE_FOO=ON\"
-      \"-DFoo_INCLUDE_DIR=\"\${HOME}/foo/include\"
+      \"-Dfoo_DIR=\"\${HOME}/foo/build\"
     )
 
 project target config (optional):
@@ -97,15 +102,23 @@ SGEBUILD_TARGET_TYPE:
 SGEBUILD_PARAMETERS:
   The same as [parameters].
 
-SGEBUILD_BUILD_DIR:
-  The build directory for the current target, which is
+SGEBUILD_PROJECT_SOURCE_DIR:
+  The ancestor directory of pwd where ${SGEBUILD_PROJECT_CONFIG_PREFIX} was found.
+  This directory is also expected to contain the top-level CMakeLists.txt.
+
+SGEBUILD_PROJECT_CONFIG_DIR:
+  The directory in which the project config is stored, which is set to
+  "\${SGEBUILD_PROJECT_SOURCE_DIR}/${SGEBUILD_PROJECT_CONFIG_PREFIX}".
+
+SGEBUILD_TARGET_BUILD_DIR_PREFIX:
+  The build directory prefix for the current target, which is
   \"\${SGEBUILD_BUILD_DIR_PREFIX}\${SGEBUILD_TARGET_TYPE}\"
 
-  For example, to refer to another project that is also built using sgebuild,
+  For example, to refer to another project that is also built using sgebuild
   you could use:
 
   SGEBUILD_PROJECT_CMAKE_SETTINGS=(
-    \"-DFoo_LIBRARY_DIR=\"\${HOME}/foo/\${SGEBUILD_BUILD_DIR}/lib\"
+    \"-Dfoo_DIR=\"\${HOME}/foo/\${SGEBUILD_TARGET_BUILD_DIR_PREFIX}\"
   )
 "
 
@@ -126,15 +139,17 @@ check_variable "SGEBUILD_BUILD_COMMAND" "${SGEBUILD_CONFIG}"
 
 # Set build variables, which can be used in the sourced files below
 
-SGEBUILD_BUILD_DIR_PREFIX="${SGEBUILD_BUILD_DIR_PREFIX:-sgebuild_}"
+SGEBUILD_BUILD_DIR_PREFIX="${SGEBUILD_BUILD_DIR_PREFIX:-${SGEBUILD_BUILD_DIR_PREFIX_DEFAULT}}"
 
-SGEBUILD_BUILD_DIR="${SGEBUILD_BUILD_DIR_PREFIX}${SGEBUILD_TARGET_TYPE}"
+SGEBUILD_TARGET_BUILD_DIR_PREFIX="${SGEBUILD_BUILD_DIR_PREFIX}${SGEBUILD_TARGET_TYPE}"
 
-SGEBUILD_PROJECT_CONFIG="${SGEBUILD_PROJECT_CONFIG_PATH}/config.sh"
+SGEBUILD_BUILD_DIR="${SGEBUILD_PROJECT_SOURCE_DIR}/${SGEBUILD_TARGET_BUILD_DIR_PREFIX}"
 
-SGEBUILD_TARGET_CONFIG="${SGEBUILD_CONFIG_PATH}/${SGEBUILD_TARGET_TYPE}.sh"
+SGEBUILD_PROJECT_CONFIG="${SGEBUILD_PROJECT_CONFIG_DIR}/config.sh"
 
-SGEBUILD_PROJECT_TARGET_CONFIG="${SGEBUILD_PROJECT_CONFIG_PATH}/${SGEBUILD_TARGET_TYPE}.sh"
+SGEBUILD_TARGET_CONFIG="${SGEBUILD_CONFIG_DIR}/${SGEBUILD_TARGET_TYPE}.sh"
+
+SGEBUILD_PROJECT_TARGET_CONFIG="${SGEBUILD_PROJECT_CONFIG_DIR}/${SGEBUILD_TARGET_TYPE}.sh"
 
 
 # Check that at least one of the global target config and the per project
@@ -165,8 +180,6 @@ source "${SGEBUILD_PROJECT_CONFIG}"
 
 mkdir -p "${SGEBUILD_BUILD_DIR}" || die "mkdir ${SGEBUILD_BUILD_DIR} failed"
 
-SGEBUILD_SOURCE_DIR="$(pwd)"
-
 pushd "${SGEBUILD_BUILD_DIR}" >> /dev/null
 
 export CFLAGS="${CFLAGS} ${SGEBUILD_C_FLAGS}"
@@ -180,7 +193,7 @@ cmake \
 	"${SGEBUILD_TARGET_CMAKE_SETTINGS[@]}" \
 	"${SGEBUILD_PROJECT_CMAKE_SETTINGS[@]}" \
 	"${SGEBUILD_PROJECT_TARGET_CMAKE_SETTINGS[@]}" \
-	"${SGEBUILD_SOURCE_DIR}" \
+	"${SGEBUILD_PROJECT_SOURCE_DIR}" \
 	|| die "cmake failed"
 
 "${SGEBUILD_BUILD_COMMAND}" "${SGEBUILD_PARAMETERS[@]}" || die "Building failed"

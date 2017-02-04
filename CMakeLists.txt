@@ -16,7 +16,6 @@ find_package(
 	Boost 1.48.0
 	REQUIRED
 	filesystem
-	program_options
 	system
 )
 
@@ -138,14 +137,6 @@ add_subdirectory(
 add_subdirectory(
 	replace_whitespaces
 )
-
-if(
-	ENABLE_SGE
-)
-	add_subdirectory(
-		single_compile
-	)
-endif()
 
 if(
 	ENABLE_SGE

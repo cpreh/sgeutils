@@ -131,6 +131,10 @@ add_subdirectory(
 )
 
 add_subdirectory(
+	sgebuild
+)
+
+add_subdirectory(
 	remove_exec_bit
 )
 

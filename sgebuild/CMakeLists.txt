@@ -1,0 +1,53 @@
+function(
+	sgebuild_configure_file
+	FILENAME
+)
+	set(
+		SGEBUILD_COMMON_DIR
+		${CMAKE_CURRENT_SOURCE_DIR}
+	)
+
+	configure_file(
+		${FILENAME}
+		${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FILENAME}
+		@ONLY
+	)
+
+	set(
+		SGEBUILD_COMMON_DIR
+		${INSTALL_LIBRARY_DIR}
+	)
+
+	set(
+		INSTALL_FILE
+		${CMAKE_CURRENT_BINARY_DIR}/install/${FILENAME}
+	)
+
+	configure_file(
+		${FILENAME}
+		${INSTALL_FILE}
+		@ONLY
+	)
+
+	install(
+		PROGRAMS
+		${INSTALL_FILE}
+		DESTINATION
+		${INSTALL_BINARY_DIR}
+	)
+endfunction()
+
+sgebuild_configure_file(
+	sgebuild
+)
+
+sgebuild_configure_file(
+	sgebuild_all
+)
+
+install(
+	FILES
+	sgebuild-common
+	DESTINATION
+	${INSTALL_LIBRARY_DIR}
+)

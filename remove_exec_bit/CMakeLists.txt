@@ -1,4 +1,6 @@
 install(
-	FILES remove_exec_bit.sh
-	DESTINATION ${INSTALL_BINARY_DIR}
+	PROGRAMS
+	remove_exec_bit.sh
+	DESTINATION
+	${CMAKE_INSTALL_BINDIR}
 )

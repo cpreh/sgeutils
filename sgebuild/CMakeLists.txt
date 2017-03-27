@@ -1,3 +1,8 @@
+set(
+	SGEBUILD_INSTALL_COMMON_DIR
+	${CMAKE_INSTALL_LIBEXECDIR}
+)
+
 function(
 	sgebuild_configure_file
 	FILENAME
@@ -15,7 +20,7 @@ function(
 
 	set(
 		SGEBUILD_COMMON_DIR
-		${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}
+		${CMAKE_INSTALL_PREFIX}/${SGEBUILD_INSTALL_COMMON_DIR}
 	)
 
 	set(
@@ -33,7 +38,7 @@ function(
 		PROGRAMS
 		${INSTALL_FILE}
 		DESTINATION
-		${INSTALL_BINARY_DIR}
+		${CMAKE_INSTALL_BINDIR}
 	)
 endfunction()
 
@@ -49,5 +54,5 @@ install(
 	FILES
 	sgebuild-common
 	DESTINATION
-	${INSTALL_LIBRARY_DIR}
+	${SGEBUILD_INSTALL_COMMON_DIR}
 )

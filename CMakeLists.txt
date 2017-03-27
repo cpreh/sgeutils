@@ -8,7 +8,7 @@ project(
 )
 
 include(
-	FcpptCMakeUtils
+	GNUInstallDirs
 )
 
 # Find Boost
@@ -21,7 +21,12 @@ find_package(
 
 # Find fcppt
 find_package(
-	fcppt REQUIRED
+	fcppt
+	REQUIRED
+)
+
+include(
+	FcpptCMakeUtils
 )
 
 option(
@@ -98,7 +103,7 @@ function(
 		TARGETS
 		${PROGRAM_NAME}
 		DESTINATION
-		${INSTALL_BINARY_DIR}
+		${CMAKE_INSTALL_BINDIR}
 	)
 endfunction()
 

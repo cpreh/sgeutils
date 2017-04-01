@@ -11,7 +11,7 @@ SGEBUILD_ALL_CONFIG="${SGEBUILD_CONFIG_DIR}/all_config.sh"
 
 # Display help message
 
-if [[ "$1" == "--help" ]] ; then
+if [[ $# == 1 && "$1" == "--help" ]] ; then
 
 echo "
 Usage: $0 [parameters]
@@ -81,6 +81,6 @@ for target in "${SGEBUILD_ALL_TARGETS[@]}" ; do
 	done
 
 	if ! ${ignore} ; then
-		"${CURRENT_DIR}/sgebuild" "${target}" "$@" || die "Aborted"
+		"@SGEBUILD_BIN_DIR@/sgebuild" "${target}" "$@" || die "Aborted"
 	fi
 done

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -u
+
 source "@SGEBUILD_COMMON_DIR@/sgebuild-common"
 
 

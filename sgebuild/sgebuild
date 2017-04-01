@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -u
+
 source "@SGEBUILD_COMMON_DIR@/sgebuild-common"
 
 
@@ -180,11 +182,11 @@ mkdir -p "${SGEBUILD_BUILD_DIR}" || die "mkdir ${SGEBUILD_BUILD_DIR} failed"
 
 pushd "${SGEBUILD_BUILD_DIR}" >> /dev/null
 
-export CFLAGS="${CFLAGS} ${SGEBUILD_C_FLAGS}"
+export CFLAGS+=" ${SGEBUILD_C_FLAGS:-}"
 
-export CXXFLAGS="${CXXFLAGS} ${SGEBUILD_CXX_FLAGS}"
+export CXXFLAGS+=" ${SGEBUILD_CXX_FLAGS:-}"
 
-[[ -z ${SGEBUILD_RERUN_CMAKE} ]] && \
+[[ -z "${SGEBUILD_RERUN_CMAKE:-}" ]] && \
 [[ -f CMakeCache.txt ]] || \
 cmake \
 	-G "${SGEBUILD_CMAKE_GENERATOR}" \

@@ -11,23 +11,33 @@ include(
 	GNUInstallDirs
 )
 
-# Find Boost
-find_package(
-	Boost 1.48.0
-	REQUIRED
-	filesystem
-	system
+option(
+	BUILD_APPS
+	"Build applications which requires fcppt and Boost"
+	ON
 )
 
-# Find fcppt
-find_package(
-	fcppt
-	REQUIRED
+if(
+	BUILD_APPS
 )
+	# Find Boost
+	find_package(
+		Boost 1.48.0
+		REQUIRED
+		filesystem
+		system
+	)
 
-include(
-	FcpptCMakeUtils
-)
+	# Find fcppt
+	find_package(
+		fcppt
+		REQUIRED
+	)
+
+	include(
+		FcpptCMakeUtils
+	)
+endif()
 
 option(
 	ENABLE_SGE
@@ -36,7 +46,7 @@ option(
 )
 
 if(
-	ENABLE_SGE
+	ENABLE_SGE AND BUILD_APPS
 )
 	find_package(
 		sge
@@ -55,6 +65,12 @@ function(
 	sge_utils_add_program
 	PROGRAM_NAME
 )
+	if(
+		NOT BUILD_APPS
+	)
+		return()
+	endif()
+
 	set(
 		MULTI_ARGS
 		COMPILE_FLAGS

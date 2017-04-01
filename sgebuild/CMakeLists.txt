@@ -14,7 +14,7 @@ function(
 
 	configure_file(
 		${FILENAME}
-		${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FILENAME}
+		"${${PROJECT_NAME}_BINARY_DIR}/bin/${FILENAME}"
 		@ONLY
 	)
 

@@ -1,9 +1,9 @@
+#include <fcppt/char_type.hpp>
 #include <fcppt/exception.hpp>
 #include <fcppt/from_std_string.hpp>
 #include <fcppt/string.hpp>
 #include <fcppt/text.hpp>
 #include <fcppt/filesystem/extension_without_dot.hpp>
-#include <fcppt/filesystem/ifstream.hpp>
 #include <fcppt/filesystem/normalize.hpp>
 #include <fcppt/filesystem/path_to_string.hpp>
 #include <fcppt/filesystem/remove_extension.hpp>
@@ -11,6 +11,7 @@
 #include <fcppt/io/cout.hpp>
 #include <fcppt/config/external_begin.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/range/iterator_range_core.hpp>
@@ -211,7 +212,9 @@ try
 		)
 			continue;
 
-		fcppt::filesystem::ifstream stream(
+		boost::filesystem::basic_ifstream<
+			fcppt::char_type
+		> stream(
 			path
 		);
 

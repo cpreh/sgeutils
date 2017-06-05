@@ -1,5 +1,6 @@
 #include <fcppt/algorithm/contains.hpp>
 #include <fcppt/filesystem/ofstream.hpp>
+#include <fcppt/filesystem/open_exn.hpp>
 #include <fcppt/filesystem/path_to_string.hpp>
 #include <fcppt/filesystem/remove_extension.hpp>
 #include <fcppt/filesystem/stem.hpp>
@@ -185,23 +186,15 @@ try
 		);
 
 		fcppt::filesystem::ofstream file(
-			header,
-			std::ios_base::trunc
+			fcppt::filesystem::open_exn<
+				fcppt::filesystem::ofstream
+			>(
+				header,
+				std::ios_base::trunc
+			)
 		);
 
 		string_vector filenames;
-
-		if(
-			!file.is_open()
-		)
-		{
-			fcppt::io::cerr()
-				<< FCPPT_TEXT("Failed to open ")
-				<< header
-				<< FCPPT_TEXT('\n');
-
-			return EXIT_FAILURE;
-		}
 
 		for(
 			boost::filesystem::directory_iterator file_it(

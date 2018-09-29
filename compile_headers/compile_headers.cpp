@@ -23,6 +23,7 @@
 #include <fcppt/io/cerr.hpp>
 #include <fcppt/io/cout.hpp>
 #include <fcppt/optional/make.hpp>
+#include <fcppt/optional/to_exception.hpp>
 #include <fcppt/options/apply.hpp>
 #include <fcppt/options/error.hpp>
 #include <fcppt/options/make_default_value.hpp>
@@ -176,17 +177,25 @@ worker(
 	}
 
 	std::string const command{
-		fcppt::to_std_string(
-			make_syntax_only(
-				sge::parse::json::find_member_exn<
-					sge::parse::json::string const
-				>(
-					json_object.members,
-					fcppt::string(
-						FCPPT_TEXT("command")
+		fcppt::optional::to_exception(
+			fcppt::to_std_string(
+				make_syntax_only(
+					sge::parse::json::find_member_exn<
+						sge::parse::json::string const
+					>(
+						json_object.members,
+						fcppt::string(
+							FCPPT_TEXT("command")
+						)
 					)
 				)
-			)
+			),
+			[]{
+				return
+					fcppt::exception{
+						FCPPT_TEXT("Failed to convert command!")
+					};
+			}
 		)
 	};
 

@@ -38,7 +38,6 @@ Assertions:
 #include <fcppt/optional/object.hpp>
 #include <fcppt/strong_typedef_output.hpp>
 #include <fcppt/text.hpp>
-#include <fcppt/to_std_string.hpp>
 #include <fcppt/algorithm/contains_if.hpp>
 #include <fcppt/algorithm/map.hpp>
 #include <fcppt/algorithm/map_optional.hpp>
@@ -340,7 +339,7 @@ typedef
 std::set<path_set_with_license>
 path_set_with_license_set;
 
-path_set_with_license_set const
+path_set_with_license_set
 intersections(
 	path_set const &ps,
 	exception_set const &es)
@@ -473,17 +472,12 @@ apply_license(
 		std::system(
 			(
 				"update_license "
-				+ fcppt::to_std_string(
-					fcppt::filesystem::path_to_string(
-						file
-					)
-				)
-				+ " "
-				+ fcppt::to_std_string(
-					fcppt::filesystem::path_to_string(
-						license
-					)
-				)
+				+
+				file.string()
+				+
+				" "
+				+
+				license.string()
 			).c_str()
 		)
 		!= EXIT_SUCCESS

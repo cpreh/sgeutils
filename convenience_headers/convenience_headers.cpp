@@ -9,6 +9,9 @@
 #include <fcppt/from_std_string.hpp>
 #include <fcppt/string.hpp>
 #include <fcppt/text.hpp>
+#include <fcppt/preprocessor/disable_clang_warning.hpp>
+#include <fcppt/preprocessor/pop_warning.hpp>
+#include <fcppt/preprocessor/push_warning.hpp>
 #include <fcppt/config/external_begin.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -95,6 +98,10 @@ typedef std::vector<
 	fcppt::string
 > string_vector;
 
+FCPPT_PP_PUSH_WARNING
+FCPPT_PP_DISABLE_CLANG_WARNING(-Wglobal-constructors)
+FCPPT_PP_DISABLE_CLANG_WARNING(-Wexit-time-destructors)
+
 string_vector const exclusions{
 	fcppt::string(
 		FCPPT_TEXT("detail")
@@ -103,6 +110,8 @@ string_vector const exclusions{
 		FCPPT_TEXT("impl")
 	)
 };
+
+FCPPT_PP_POP_WARNING
 
 bool
 needs_header(

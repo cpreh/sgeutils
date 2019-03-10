@@ -21,18 +21,19 @@ Assertions:
 -The search path is always the current working directory (else the path specifications make no sense)
 */
 
-#include <sge/parse/make_error_string.hpp>
-#include <sge/parse/result.hpp>
+#include <sge/charconv/utf8_char.hpp>
+#include <sge/charconv/utf8_string.hpp>
 #include <sge/parse/json/array.hpp>
 #include <sge/parse/json/get_exn.hpp>
 #include <sge/parse/json/find_member.hpp>
 #include <sge/parse/json/find_member_exn.hpp>
 #include <sge/parse/json/object.hpp>
-#include <sge/parse/json/parse_file.hpp>
+#include <sge/parse/json/parse_file_exn.hpp>
 #include <sge/parse/json/start.hpp>
 #include <sge/parse/json/value.hpp>
 #include <fcppt/exception.hpp>
 #include <fcppt/from_std_string.hpp>
+#include <fcppt/recursive_impl.hpp>
 #include <fcppt/reference_impl.hpp>
 #include <fcppt/optional/maybe.hpp>
 #include <fcppt/optional/object.hpp>
@@ -68,7 +69,7 @@ namespace
 
 typedef
 std::basic_regex<
-	fcppt::char_type
+	sge::charconv::utf8_char
 >
 regex;
 
@@ -108,15 +109,17 @@ extract_regexes(
 		>(
 			_array.elements,
 			[](
-				sge::parse::json::value const &_value
+				fcppt::recursive<
+					sge::parse::json::value
+				> const &_value
 			)
 			{
 				return
 					regex(
 						sge::parse::json::get_exn<
-							sge::parse::json::string
+							sge::charconv::utf8_string
 						>(
-							_value
+							_value.get()
 						)
 					);
 			}
@@ -134,7 +137,9 @@ extract_exceptions(
 				sge::parse::json::array
 			>(
 				_object.members,
-				FCPPT_TEXT("exceptions")
+				sge::charconv::utf8_string{
+					"exceptions"
+				}
 			),
 			[]{
 				return
@@ -152,23 +157,27 @@ extract_exceptions(
 					>(
 						_array.get().elements,
 						[](
-							sge::parse::json::value const &_value
+							fcppt::recursive<
+								sge::parse::json::value
+							> const &_value
 						)
 						{
 							sge::parse::json::object const &r2(
 								sge::parse::json::get_exn<
 									sge::parse::json::object
 								>(
-									_value
+									_value.get()
 								)
 							);
 
 							boost::filesystem::path license_file(
 								sge::parse::json::find_member_exn<
-									sge::parse::json::string
+									sge::charconv::utf8_string
 								>(
 									r2.members,
-									FCPPT_TEXT("license")
+									sge::charconv::utf8_string{
+										"license"
+									}
 								)
 							);
 
@@ -186,7 +195,9 @@ extract_exceptions(
 											sge::parse::json::array
 										>(
 											r2.members,
-											FCPPT_TEXT("files")
+											sge::charconv::utf8_string{
+												"files"
+											}
 										)
 									),
 									license_file
@@ -269,9 +280,7 @@ extract_paths(
 					)
 					&&
 					std::regex_match(
-						fcppt::filesystem::path_to_string(
-							_path
-						),
+						_path.string(),
 						_standard_regex
 					)
 					?
@@ -314,9 +323,7 @@ intersection(
 
 			bool const result =
 				regex_match(
-					fcppt::filesystem::path_to_string(
-						*path_it
-					).substr(2),
+					path_it->string().substr(2),
 					*regex_it,
 					std::regex_constants::match_default);
 
@@ -490,64 +497,35 @@ apply_license(
 			<< FCPPT_TEXT('\n');
 }
 
-}
-
-int main(
-	int const _argc,
-	char *_argv[])
-try
+int
+main_function(
+	sge::parse::json::start const &json_file
+)
 {
-	if (_argc != 2)
-	{
-		fcppt::io::cerr()
-			<< FCPPT_TEXT("usage: ")
-			<< fcppt::from_std_string(_argv[0])
-			<< FCPPT_TEXT(" <json file>\n");
-		return EXIT_FAILURE;
-	}
-
-	fcppt::string const json_file_name =
-		fcppt::from_std_string(
-			_argv[1]);
-
-	sge::parse::json::start json_file;
-
-	sge::parse::result const result(
-		sge::parse::json::parse_file(
-			json_file_name,
-			json_file));
-
-	if(
-		result.result_code()
-		!=
-		sge::parse::result_code::ok
-	)
-	{
-		fcppt::io::cerr()
-			<< sge::parse::make_error_string(
-				result
-			)
-			<< FCPPT_TEXT('\n');
-		return EXIT_FAILURE;
-	}
-
 	sge::parse::json::object const &json_object(
 		json_file.object());
 
-	fcppt::io::clog()
-		<< FCPPT_TEXT("Successfully parsed the file \"")
-		<< json_file_name
-		<< FCPPT_TEXT("\"\n");
-
-	boost::filesystem::path const main_license =
-		sge::parse::json::find_member_exn<sge::parse::json::string>(
+	boost::filesystem::path const main_license{
+		sge::parse::json::find_member_exn<
+			sge::charconv::utf8_string
+		>(
 			json_object.members,
-			FCPPT_TEXT("main_license"));
+			sge::charconv::utf8_string{
+				"main_license"
+			}
+		)
+	};
 
 	regex const standard_regex(
-		sge::parse::json::find_member_exn<sge::parse::json::string>(
+		sge::parse::json::find_member_exn<
+			sge::charconv::utf8_string
+		>(
 			json_object.members,
-			FCPPT_TEXT("standard_match")));
+			sge::charconv::utf8_string{
+				"standard_match"
+			}
+		)
+	);
 
 	FCPPT_ASSERT_THROW(
 		boost::filesystem::exists(
@@ -560,11 +538,18 @@ try
 		extract_exceptions(
 			json_object);
 
-	regex_set const nolicense =
+	regex_set const nolicense{
 		extract_regexes(
-			sge::parse::json::find_member_exn<sge::parse::json::array>(
+			sge::parse::json::find_member_exn<
+				sge::parse::json::array
+			>(
 				json_object.members,
-				FCPPT_TEXT("nolicense")));
+				sge::charconv::utf8_string{
+					"nolicense"
+				}
+			)
+		)
+	};
 
 	path_set const a =
 		extract_paths(
@@ -642,6 +627,46 @@ try
 				*path_it,
 				ex_it->second
 			);
+
+	return
+		EXIT_SUCCESS;
+}
+
+}
+
+int main(
+	int const _argc,
+	char *_argv[])
+try
+{
+	if (_argc != 2)
+	{
+		fcppt::io::cerr()
+			<< FCPPT_TEXT("usage: ")
+			<< fcppt::from_std_string(_argv[0])
+			<< FCPPT_TEXT(" <json file>\n");
+		return EXIT_FAILURE;
+	}
+
+	fcppt::string const json_file_name =
+		fcppt::from_std_string(
+			_argv[1]);
+
+	sge::parse::json::start const result{
+		sge::parse::json::parse_file_exn(
+			json_file_name
+		)
+	};
+
+	fcppt::io::clog()
+		<< FCPPT_TEXT("Successfully parsed the file \"")
+		<< json_file_name
+		<< FCPPT_TEXT("\"\n");
+
+	return
+		main_function(
+			result
+		);
 }
 catch (
 	fcppt::exception const &_e)

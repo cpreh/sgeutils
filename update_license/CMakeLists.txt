@@ -13,6 +13,7 @@ sge_utils_add_program(
 	LINK_LIBS
 		${fcppt_core_TARGET}
 		${fcppt_filesystem_TARGET}
+		${sgecharconv_TARGET}
 		${sgecore_TARGET}
 		${sgeparse_TARGET}
 		${sgeparsejson_TARGET}

@@ -1,3 +1,5 @@
+#include <sge/charconv/utf8_string.hpp>
+#include <sge/charconv/utf8_string_to_fcppt.hpp>
 #include <sge/parse/json/array.hpp>
 #include <sge/parse/json/element_vector.hpp>
 #include <sge/parse/json/find_member_exn.hpp>
@@ -152,12 +154,12 @@ worker(
 	{
 		boost::filesystem::path const filename(
 			sge::parse::json::find_member_exn<
-				sge::parse::json::string const
+				sge::charconv::utf8_string const
 			>(
 				json_object.members,
-				fcppt::string(
-					FCPPT_TEXT("file")
-				)
+				sge::charconv::utf8_string{
+					"file"
+				}
 			)
 		);
 
@@ -180,13 +182,23 @@ worker(
 		fcppt::optional::to_exception(
 			fcppt::to_std_string(
 				make_syntax_only(
-					sge::parse::json::find_member_exn<
-						sge::parse::json::string const
-					>(
-						json_object.members,
-						fcppt::string(
-							FCPPT_TEXT("command")
-						)
+					fcppt::optional::to_exception(
+						sge::charconv::utf8_string_to_fcppt(
+							sge::parse::json::find_member_exn<
+								sge::charconv::utf8_string const
+							>(
+								json_object.members,
+								sge::charconv::utf8_string{
+									"command"
+								}
+							)
+						),
+						[]{
+							return
+								fcppt::exception{
+									FCPPT_TEXT("Failed to convert command!")
+								};
+						}
 					)
 				)
 			),
@@ -284,7 +296,7 @@ main_program(
 				_verbose
 			]{
 				worker(
-					element,
+					element.get(),
 					io_service,
 					_verbose
 				);

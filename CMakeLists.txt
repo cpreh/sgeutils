@@ -52,6 +52,7 @@ if(
 		sge
 		REQUIRED
 		COMPONENTS
+		charconv
 		parse
 		parsejson
 	)

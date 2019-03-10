@@ -23,6 +23,7 @@ sge_utils_add_program(
 		${fcppt_core_TARGET}
 		${fcppt_filesystem_TARGET}
 		${fcppt_options_TARGET}
+		${sgecharconv_TARGET}
 		${sgecore_TARGET}
 		${sgeparsejson_TARGET}
 		${ASIO_LIBS}

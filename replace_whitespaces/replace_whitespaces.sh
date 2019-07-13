@@ -1,7 +1,7 @@
 #!/bin/sh
 find \( \
 	\( \
-		! -path './sgebuild_*' \
+		! -path './.sgebuild/*' \
 		-a -type f \
 	\) \
 	-a  \

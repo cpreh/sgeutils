@@ -13,7 +13,7 @@
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <boost/range/iterator_range_core.hpp>
 #include <cassert>
 #include <cstdlib>
@@ -27,12 +27,12 @@
 namespace
 {
 
-boost::filesystem::path::iterator::difference_type
+std::filesystem::path::iterator::difference_type
 path_levels(
-	boost::filesystem::path const &_base_path
+	std::filesystem::path const &_base_path
 )
 {
-	boost::filesystem::path::iterator::difference_type ret(
+	std::filesystem::path::iterator::difference_type ret(
 		std::distance(
 			_base_path.begin(),
 			_base_path.end()
@@ -55,13 +55,13 @@ path_levels(
 
 fcppt::string
 make_include_guard(
-	boost::filesystem::path::iterator::difference_type const _base_level,
-	boost::filesystem::path const &_path
+	std::filesystem::path::iterator::difference_type const _base_level,
+	std::filesystem::path const &_path
 )
 {
 	fcppt::string ret;
 
-	boost::filesystem::path const without_extension(
+	std::filesystem::path const without_extension(
 		fcppt::filesystem::remove_extension(
 			_path
 		)
@@ -77,7 +77,7 @@ make_include_guard(
 	);
 
 	for(
-		boost::filesystem::path const &path
+		std::filesystem::path const &path
 		:
 		boost::make_iterator_range(
 			std::next(
@@ -162,9 +162,9 @@ try
 			fcppt::string()
 	);
 
-	boost::filesystem::path const base_path(
+	std::filesystem::path const base_path(
 		fcppt::filesystem::normalize(
-			boost::filesystem::path(
+			std::filesystem::path(
 				fcppt::from_std_string(
 					argv[1]
 				)
@@ -172,14 +172,14 @@ try
 		)
 	);
 
-	boost::filesystem::path::iterator::difference_type const base_levels(
+	std::filesystem::path::iterator::difference_type const base_levels(
 		::path_levels(
 			base_path
 		)
 	);
 
 	for(
-		boost::filesystem::path const &path
+		std::filesystem::path const &path
 		:
 		boost::make_iterator_range(
 			boost::filesystem::recursive_directory_iterator(

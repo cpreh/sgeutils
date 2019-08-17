@@ -15,7 +15,7 @@
 #include <fcppt/config/external_begin.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <algorithm>
 #include <exception>
 #include <iosfwd>
@@ -30,9 +30,9 @@
 namespace
 {
 
-boost::filesystem::path
+std::filesystem::path
 make_header(
-	boost::filesystem::path const &_path
+	std::filesystem::path const &_path
 )
 {
 	assert(
@@ -55,19 +55,19 @@ make_header(
 
 fcppt::string
 make_include_guard(
-	boost::filesystem::path const &_path
+	std::filesystem::path const &_path
 )
 {
 	fcppt::string ret;
 
-	boost::filesystem::path const new_path(
+	std::filesystem::path const new_path(
 		fcppt::filesystem::remove_extension(
 			_path
 		)
 	);
 
 	for(
-		boost::filesystem::path::const_iterator it(
+		std::filesystem::path::const_iterator it(
 			new_path.begin()
 		);
 		it != new_path.end();
@@ -115,7 +115,7 @@ FCPPT_PP_POP_WARNING
 
 bool
 needs_header(
-	boost::filesystem::path const &_path
+	std::filesystem::path const &_path
 )
 {
 	if(
@@ -166,7 +166,7 @@ try
 		return EXIT_FAILURE;
 	}
 
-	boost::filesystem::path const dir(
+	std::filesystem::path const dir(
 		fcppt::from_std_string(
 			argv[1]
 		)
@@ -188,7 +188,7 @@ try
 		)
 			continue;
 
-		boost::filesystem::path const header(
+		std::filesystem::path const header(
 			make_header(
 				dir_it->path()
 			)

@@ -48,7 +48,7 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/asio/io_service.hpp>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <algorithm>
 #include <cstdlib>
 #include <exception>
@@ -152,7 +152,7 @@ worker(
 	);
 
 	{
-		boost::filesystem::path const filename(
+		std::filesystem::path const filename(
 			sge::parse::json::find_member_exn<
 				sge::charconv::utf8_string const
 			>(
@@ -166,7 +166,7 @@ worker(
 		if(
 			fcppt::algorithm::contains(
 				filename,
-				boost::filesystem::path(
+				std::filesystem::path(
 					FCPPT_TEXT("impl")
 				)
 			)

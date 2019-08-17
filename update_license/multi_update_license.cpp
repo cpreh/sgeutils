@@ -49,7 +49,7 @@ Assertions:
 #include <fcppt/io/clog.hpp>
 #include <fcppt/config/external_begin.hpp>
 #include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <boost/range/iterator_range_core.hpp>
 #include <algorithm>
 #include <cstdlib>
@@ -82,7 +82,7 @@ regex_set;
 typedef
 std::pair<
 	regex_set,
-	boost::filesystem::path
+	std::filesystem::path
 >
 exception;
 
@@ -94,7 +94,7 @@ exception_set;
 
 typedef
 std::set<
-	boost::filesystem::path
+	std::filesystem::path
 >
 path_set;
 
@@ -170,7 +170,7 @@ extract_exceptions(
 								)
 							);
 
-							boost::filesystem::path license_file(
+							std::filesystem::path license_file(
 								sge::parse::json::find_member_exn<
 									sge::charconv::utf8_string
 								>(
@@ -210,7 +210,7 @@ extract_exceptions(
 
 bool
 has_hidden_components(
-	boost::filesystem::path const &_path
+	std::filesystem::path const &_path
 )
 {
 	if(
@@ -229,7 +229,7 @@ has_hidden_components(
 				_path.end()
 			),
 			[](
-				boost::filesystem::path const &_entry
+				std::filesystem::path const &_entry
 			)
 			{
 				return
@@ -261,12 +261,12 @@ extract_paths(
 			[
 				&_standard_regex
 			](
-				boost::filesystem::path const &_path
+				std::filesystem::path const &_path
 			)
 			{
 				typedef
 				fcppt::optional::object<
-					boost::filesystem::path
+					std::filesystem::path
 				>
 				optional_path;
 
@@ -338,7 +338,7 @@ typedef
 std::pair
 <
 	path_set,
-	boost::filesystem::path
+	std::filesystem::path
 >
 path_set_with_license;
 
@@ -471,8 +471,8 @@ ref_set_difference(
 
 void
 apply_license(
-	boost::filesystem::path const &file,
-	boost::filesystem::path const &license
+	std::filesystem::path const &file,
+	std::filesystem::path const &license
 )
 {
 	if(
@@ -505,7 +505,7 @@ main_function(
 	sge::parse::json::object const &json_object(
 		json_file.object());
 
-	boost::filesystem::path const main_license{
+	std::filesystem::path const main_license{
 		sge::parse::json::find_member_exn<
 			sge::charconv::utf8_string
 		>(

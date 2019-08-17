@@ -3,7 +3,7 @@
 #include <boost/filesystem/convenience.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <algorithm>
 #include <exception>
 #include <iostream>
@@ -30,7 +30,7 @@ add_files(
 	Iterator _iterator,
 	std::regex const &_regex,
 	file_vector &_files,
-	boost::filesystem::path const &_out_file
+	std::filesystem::path const &_out_file
 )
 {
 	for(
@@ -76,7 +76,7 @@ class out_remover
 public:
 	explicit
 	out_remover(
-		boost::filesystem::path const &_file
+		std::filesystem::path const &_file
 	)
 	:
 		file_(
@@ -104,7 +104,7 @@ public:
 		remove_ = false;
 	}
 private:
-	boost::filesystem::path const file_;
+	std::filesystem::path const file_;
 
 	bool remove_;
 };
@@ -134,7 +134,7 @@ try
 		return EXIT_FAILURE;
 	}
 
-	boost::filesystem::path const cmake_file(
+	std::filesystem::path const cmake_file(
 		argv[1]
 	);
 
@@ -153,7 +153,7 @@ try
 		return EXIT_FAILURE;
 	}
 
-	boost::filesystem::path const out_file(
+	std::filesystem::path const out_file(
 		cmake_file.string()
 		+
 		".new"

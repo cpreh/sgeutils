@@ -10,7 +10,7 @@
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <list>
 #include <iterator>
 #include <streambuf>
@@ -33,7 +33,7 @@ directory_sequence;
  */
 directory_sequence const
 calculate_sequence(
-	boost::filesystem::path const &current)
+	std::filesystem::path const &current)
 {
 	if(
 		fcppt::filesystem::path_to_string(
@@ -109,7 +109,7 @@ try
 		return EXIT_FAILURE;
 	}
 
-	boost::filesystem::path const p(
+	std::filesystem::path const p(
 		fcppt::from_std_string(
 			argv[1]));
 

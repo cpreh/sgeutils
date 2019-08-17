@@ -3,7 +3,7 @@
 #include <fcppt/config/external_begin.hpp>
 #include <boost/filesystem/convenience.hpp>
 #include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <algorithm>
 #include <exception>
 #include <fstream>
@@ -73,11 +73,11 @@ try
 		return EXIT_FAILURE;
 	}
 
-	boost::filesystem::path const
+	std::filesystem::path const
 		input_file_with_extension(
 			argv[1]);
 
-	boost::filesystem::path
+	std::filesystem::path
 		input_directory(
 			input_file_with_extension.parent_path()),
 		namespace_path;
@@ -136,7 +136,7 @@ try
 		!is_header || std::distance(namespace_path.begin(),namespace_path.end()) > 1,
 		FCPPT_TEXT("There's no directory below include/ denoting the namespace of the project. Don't know how to handle that yet."));
 
-	boost::filesystem::path const trimmed_namespace_path =
+	std::filesystem::path const trimmed_namespace_path =
 		std::accumulate(
 			boost::next(
 				namespace_path.begin(),
@@ -146,8 +146,8 @@ try
 				:
 					1),
 			namespace_path.end(),
-			boost::filesystem::path(),
-			std::divides<boost::filesystem::path>());
+			std::filesystem::path(),
+			std::divides<std::filesystem::path>());
 
 	if(debug_mode)
 	{

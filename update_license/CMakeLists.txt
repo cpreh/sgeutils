@@ -17,5 +17,4 @@ sge_utils_add_program(
 		${sgecore_TARGET}
 		${sgeparse_TARGET}
 		${sgeparsejson_TARGET}
-		${Boost_REGEX_LIBRARY}
 )

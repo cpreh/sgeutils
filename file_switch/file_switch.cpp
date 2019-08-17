@@ -1,8 +1,6 @@
 #include <fcppt/assert/error_message.hpp>
 #include <fcppt/text.hpp>
 #include <fcppt/config/external_begin.hpp>
-#include <boost/filesystem/convenience.hpp>
-#include <boost/filesystem/operations.hpp>
 #include <filesystem>
 #include <algorithm>
 #include <exception>
@@ -92,8 +90,8 @@ try
 	}
 
 	while(
-		!boost::filesystem::is_directory(input_directory / "src") ||
-		!boost::filesystem::is_directory(input_directory / "include"))
+		!std::filesystem::is_directory(input_directory / "src") ||
+		!std::filesystem::is_directory(input_directory / "include"))
 	{
 		namespace_path = *(boost::prior(input_directory.end())) / namespace_path;
 		input_directory = input_directory.parent_path();
@@ -117,16 +115,16 @@ try
 		FCPPT_TEXT("Not sure what to do here..."));
 
 	// I'm not sure if this is a good test.
-	bool const is_header = namespace_path.begin()->string<std::string>() == "include";
+	bool const is_header = namespace_path.begin()->string<char>() == "include";
 
-	if(is_header && input_file_with_extension.extension().string<std::string>() != ".hpp")
+	if(is_header && input_file_with_extension.extension().string<char>() != ".hpp")
 	{
-		std::cerr << "Got a file in include/ which doesn't end in \"hpp\" (extension is " << input_file_with_extension.extension().string<std::string>() << ").\n";
+		std::cerr << "Got a file in include/ which doesn't end in \"hpp\" (extension is " << input_file_with_extension.extension().string<char>() << ").\n";
 		std::cerr << "Not sure what to do, exiting...\n";
 		return EXIT_FAILURE;
 	}
 
-	if(!is_header && input_file_with_extension.extension().string<std::string>() != ".cpp")
+	if(!is_header && input_file_with_extension.extension().string<char>() != ".cpp")
 	{
 		std::cerr << "Got a file in src/ which doesn't end in \"cpp\". Not sure what to do, exiting...\n";
 		return EXIT_FAILURE;
@@ -154,17 +152,17 @@ try
 		std::cout << "Trimmed namespace path: " << trimmed_namespace_path << "\n";
 	}
 
-	boost::filesystem::directory_iterator include_directory_iterator(
+	std::filesystem::directory_iterator include_directory_iterator(
 		input_directory / "include");
 
-	if(include_directory_iterator == boost::filesystem::directory_iterator())
+	if(include_directory_iterator == std::filesystem::directory_iterator())
 	{
 		std::cerr << "The include directory " << (input_directory / "include") << " is empty. Exiting...\n";
 		return EXIT_FAILURE;
 	}
 
 	std::string const namespace_name(
-		include_directory_iterator->path().stem().string<std::string>());
+		include_directory_iterator->path().stem().string<char>());
 
 	if(debug_mode)
 	{
@@ -173,11 +171,11 @@ try
 
 	if(is_header)
 	{
-		std::cout << (input_directory / "src" / trimmed_namespace_path / input_file_with_extension.stem().replace_extension(".cpp")).string<std::string>();
+		std::cout << (input_directory / "src" / trimmed_namespace_path / input_file_with_extension.stem().replace_extension(".cpp")).string<char>();
 	}
 	else
 	{
-		std::cout << (input_directory / "include" / namespace_name / trimmed_namespace_path / input_file_with_extension.stem().replace_extension(".hpp")).string<std::string>();
+		std::cout << (input_directory / "include" / namespace_name / trimmed_namespace_path / input_file_with_extension.stem().replace_extension(".hpp")).string<char>();
 	}
 
 	return EXIT_SUCCESS;

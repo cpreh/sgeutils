@@ -14,7 +14,6 @@
 #include <fcppt/preprocessor/push_warning.hpp>
 #include <fcppt/config/external_begin.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
-#include <boost/filesystem/operations.hpp>
 #include <filesystem>
 #include <algorithm>
 #include <exception>
@@ -36,7 +35,7 @@ make_header(
 )
 {
 	assert(
-		boost::filesystem::is_directory(
+		std::filesystem::is_directory(
 			_path
 		)
 	);
@@ -119,7 +118,7 @@ needs_header(
 )
 {
 	if(
-		!boost::filesystem::is_directory(
+		!std::filesystem::is_directory(
 			_path
 		)
 	)
@@ -173,7 +172,7 @@ try
 	);
 
 	for(
-		boost::filesystem::recursive_directory_iterator dir_it(
+		std::filesystem::recursive_directory_iterator dir_it(
 			dir
 		),
 		dir_end;
@@ -206,7 +205,7 @@ try
 		string_vector filenames;
 
 		for(
-			boost::filesystem::directory_iterator file_it(
+			std::filesystem::directory_iterator file_it(
 				dir_it->path()
 			),
 			file_end;
@@ -233,7 +232,7 @@ try
 					)
 				);
 			else if(
-				!boost::filesystem::is_directory(
+				!std::filesystem::is_directory(
 					file_it->path()
 				)
 			)

@@ -9,7 +9,6 @@
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/classification.hpp>
-#include <boost/filesystem/operations.hpp>
 #include <filesystem>
 #include <list>
 #include <iterator>
@@ -31,7 +30,7 @@ directory_sequence;
  *   got {}, adding foo, returning {foo}
  * got {foo}, adding bar, returning {foo,bar}
  */
-directory_sequence const
+directory_sequence
 calculate_sequence(
 	std::filesystem::path const &current)
 {
@@ -56,7 +55,7 @@ calculate_sequence(
 	return result;
 }
 
-fcppt::string const
+fcppt::string
 create_guard(
 	directory_sequence const &dirs,
 	fcppt::string const &fn)
@@ -84,7 +83,7 @@ create_guard(
 	return guard + FCPPT_TEXT("_INCLUDED");
 }
 
-std::pair<fcppt::string,fcppt::string> const
+std::pair<fcppt::string,fcppt::string>
 create_namespaces(
 	directory_sequence const &dirs)
 {
@@ -114,7 +113,7 @@ try
 			argv[1]));
 
 	// We might open a new buffer in vim to which no (saved) file is attached yet, so this test is useless
-	//if (!boost::filesystem::is_regular_file(p))
+	//if (!std::filesystem::is_regular_file(p))
 	//{
 	//	fcppt::io::cerr() << FCPPT_TEXT("The file ") << p << FCPPT_TEXT(" is not regular\n");
 	//	return EXIT_FAILURE;

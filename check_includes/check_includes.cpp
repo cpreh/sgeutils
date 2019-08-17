@@ -11,13 +11,12 @@
 #include <fcppt/io/cout.hpp>
 #include <fcppt/config/external_begin.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
-#include <boost/filesystem/fstream.hpp>
-#include <boost/filesystem/operations.hpp>
 #include <filesystem>
 #include <boost/range/iterator_range_core.hpp>
 #include <cassert>
 #include <cstdlib>
 #include <exception>
+#include <fstream>
 #include <iostream>
 #include <iterator>
 #include <string>
@@ -182,14 +181,15 @@ try
 		std::filesystem::path const &path
 		:
 		boost::make_iterator_range(
-			boost::filesystem::recursive_directory_iterator(
+			std::filesystem::recursive_directory_iterator(
 				base_path
-			)
+			),
+			std::filesystem::recursive_directory_iterator()
 		)
 	)
 	{
 		if(
-			!boost::filesystem::is_regular_file(
+			!std::filesystem::is_regular_file(
 				path
 			)
 		)
@@ -212,7 +212,7 @@ try
 		)
 			continue;
 
-		boost::filesystem::basic_ifstream<
+		std::basic_ifstream<
 			fcppt::char_type
 		> stream(
 			path

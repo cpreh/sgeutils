@@ -3,7 +3,6 @@ sge_utils_add_program(
 	SOURCES
 		file_switch.cpp
 	LINK_LIBS
-		${Boost_FILESYSTEM_LIBRARY}
-		${Boost_SYSTEM_LIBRARY}
+		${FCPPT_UTILS_FILESYSTEM_LIBRARIES}
 		${fcppt_core_TARGET}
 )

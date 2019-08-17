@@ -23,9 +23,6 @@ if(
 	# Find Boost
 	find_package(
 		Boost 1.48.0
-		REQUIRED
-		filesystem
-		system
 	)
 
 	# Find fcppt

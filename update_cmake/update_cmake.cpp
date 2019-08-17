@@ -1,11 +1,9 @@
 #include <fcppt/noncopyable.hpp>
 #include <fcppt/config/external_begin.hpp>
-#include <boost/filesystem/convenience.hpp>
-#include <boost/filesystem/fstream.hpp>
-#include <boost/filesystem/operations.hpp>
 #include <filesystem>
 #include <algorithm>
 #include <exception>
+#include <fstream>
 #include <iostream>
 #include <ostream>
 #include <regex>
@@ -40,7 +38,7 @@ add_files(
 	)
 	{
 		if(
-			boost::filesystem::equivalent(
+			std::filesystem::equivalent(
 				_out_file,
 				*_iterator
 			)
@@ -48,7 +46,7 @@ add_files(
 			continue;
 
 		if(
-			!boost::filesystem::is_regular_file(
+			!std::filesystem::is_regular_file(
 				*_iterator
 			)
 		)
@@ -93,7 +91,7 @@ public:
 		if(
 			remove_
 		)
-			boost::filesystem::remove(
+			std::filesystem::remove(
 				file_
 			);
 	}
@@ -138,7 +136,7 @@ try
 		argv[1]
 	);
 
-	boost::filesystem::ifstream ifs(
+	std::ifstream ifs(
 		cmake_file
 	);
 
@@ -163,7 +161,7 @@ try
 		out_file
 	);
 
-	boost::filesystem::ofstream ofs(
+	std::ofstream ofs(
 		out_file
 	);
 
@@ -256,7 +254,7 @@ try
 			mode == "r"
 		)
 			::add_files(
-				boost::filesystem::recursive_directory_iterator(
+				std::filesystem::recursive_directory_iterator(
 					arg_string
 				),
 				fileregex,
@@ -267,7 +265,7 @@ try
 			mode == "n"
 		)
 			::add_files(
-				boost::filesystem::directory_iterator(
+				std::filesystem::directory_iterator(
 					arg_string
 				),
 				fileregex,
@@ -384,7 +382,7 @@ try
 
 	remove_ofs.commit();
 
-	boost::filesystem::rename(
+	std::filesystem::rename(
 		out_file,
 		cmake_file
 	);

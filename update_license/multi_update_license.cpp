@@ -48,7 +48,6 @@ Assertions:
 #include <fcppt/io/cerr.hpp>
 #include <fcppt/io/clog.hpp>
 #include <fcppt/config/external_begin.hpp>
-#include <boost/filesystem/operations.hpp>
 #include <filesystem>
 #include <boost/range/iterator_range_core.hpp>
 #include <algorithm>
@@ -182,7 +181,7 @@ extract_exceptions(
 							);
 
 							FCPPT_ASSERT_THROW(
-								boost::filesystem::exists(
+								std::filesystem::exists(
 									license_file
 								),
 								fcppt::assert_::exception
@@ -254,9 +253,10 @@ extract_paths(
 			path_set
 		>(
 			boost::make_iterator_range(
-				boost::filesystem::recursive_directory_iterator(
+				std::filesystem::recursive_directory_iterator(
 					FCPPT_TEXT(".")
-				)
+				),
+				std::filesystem::recursive_directory_iterator()
 			),
 			[
 				&_standard_regex
@@ -271,7 +271,7 @@ extract_paths(
 				optional_path;
 
 				return
-					boost::filesystem::is_regular_file(
+					std::filesystem::is_regular_file(
 						_path
 					)
 					&&
@@ -528,7 +528,7 @@ main_function(
 	);
 
 	FCPPT_ASSERT_THROW(
-		boost::filesystem::exists(
+		std::filesystem::exists(
 			main_license
 		),
 		fcppt::assert_::exception

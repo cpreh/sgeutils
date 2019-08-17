@@ -4,7 +4,5 @@ sge_utils_add_program(
 		update_cmake.cpp
 	LINK_LIBS
 		fcppt_core_interface
-		${Boost_FILESYSTEM_LIBRARY}
-		${Boost_SYSTEM_LIBRARY}
-		${Boost_REGEX_LIBRARY}
+		${FCPPT_UTILS_FILESYSTEM_LIBRARIES}
 )

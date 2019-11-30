@@ -34,6 +34,11 @@ if(
 	include(
 		FcpptCMakeUtils
 	)
+
+	find_package(
+		Metal
+		REQUIRED
+	)
 endif()
 
 option(

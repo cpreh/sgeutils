@@ -1,18 +1,18 @@
-#include <fcppt/assert/error_message.hpp>
 #include <fcppt/text.hpp>
+#include <fcppt/assert/error_message.hpp>
 #include <fcppt/config/external_begin.hpp>
-#include <filesystem>
+#include <boost/next_prior.hpp>
 #include <algorithm>
+#include <cstdlib>
 #include <exception>
+#include <filesystem>
 #include <fstream>
-#include <numeric>
-#include <iterator>
 #include <iostream>
+#include <iterator>
+#include <numeric>
 #include <ostream>
 #include <string>
 #include <vector>
-#include <cstdlib>
-#include <boost/next_prior.hpp>
 #include <fcppt/config/external_end.hpp>
 
 /*

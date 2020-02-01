@@ -28,8 +28,8 @@
 #include <fcppt/optional/to_exception.hpp>
 #include <fcppt/options/apply.hpp>
 #include <fcppt/options/error.hpp>
-#include <fcppt/options/make_default_value.hpp>
 #include <fcppt/options/long_name.hpp>
+#include <fcppt/options/make_default_value.hpp>
 #include <fcppt/options/option.hpp>
 #include <fcppt/options/optional_help_text.hpp>
 #include <fcppt/options/optional_short_name.hpp>
@@ -48,14 +48,14 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/asio/io_service.hpp>
-#include <filesystem>
 #include <algorithm>
 #include <cstdlib>
 #include <exception>
+#include <filesystem>
 #include <iostream>
 #include <iterator>
-#include <string>
 #include <ostream>
+#include <string>
 #include <thread>
 #include <vector>
 #include <fcppt/config/external_end.hpp>

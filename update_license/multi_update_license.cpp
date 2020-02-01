@@ -24,9 +24,9 @@ Assertions:
 #include <sge/charconv/utf8_char.hpp>
 #include <sge/charconv/utf8_string.hpp>
 #include <sge/parse/json/array.hpp>
-#include <sge/parse/json/get_exn.hpp>
 #include <sge/parse/json/find_member.hpp>
 #include <sge/parse/json/find_member_exn.hpp>
+#include <sge/parse/json/get_exn.hpp>
 #include <sge/parse/json/object.hpp>
 #include <sge/parse/json/parse_file_exn.hpp>
 #include <sge/parse/json/start.hpp>
@@ -35,8 +35,6 @@ Assertions:
 #include <fcppt/from_std_string.hpp>
 #include <fcppt/recursive_impl.hpp>
 #include <fcppt/reference_impl.hpp>
-#include <fcppt/optional/maybe.hpp>
-#include <fcppt/optional/object.hpp>
 #include <fcppt/strong_typedef_output.hpp>
 #include <fcppt/text.hpp>
 #include <fcppt/algorithm/contains_if.hpp>
@@ -47,12 +45,14 @@ Assertions:
 #include <fcppt/filesystem/path_to_string.hpp>
 #include <fcppt/io/cerr.hpp>
 #include <fcppt/io/clog.hpp>
+#include <fcppt/optional/maybe.hpp>
+#include <fcppt/optional/object.hpp>
 #include <fcppt/config/external_begin.hpp>
-#include <filesystem>
 #include <boost/range/iterator_range_core.hpp>
 #include <algorithm>
 #include <cstdlib>
 #include <exception>
+#include <filesystem>
 #include <iostream>
 #include <iterator>
 #include <ostream>

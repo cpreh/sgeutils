@@ -1,3 +1,7 @@
+#include <fcppt/exception.hpp>
+#include <fcppt/from_std_string.hpp>
+#include <fcppt/string.hpp>
+#include <fcppt/text.hpp>
 #include <fcppt/algorithm/contains.hpp>
 #include <fcppt/filesystem/ofstream.hpp>
 #include <fcppt/filesystem/open_exn.hpp>
@@ -5,24 +9,20 @@
 #include <fcppt/filesystem/remove_extension.hpp>
 #include <fcppt/filesystem/stem.hpp>
 #include <fcppt/io/cerr.hpp>
-#include <fcppt/exception.hpp>
-#include <fcppt/from_std_string.hpp>
-#include <fcppt/string.hpp>
-#include <fcppt/text.hpp>
 #include <fcppt/preprocessor/disable_clang_warning.hpp>
 #include <fcppt/preprocessor/pop_warning.hpp>
 #include <fcppt/preprocessor/push_warning.hpp>
 #include <fcppt/config/external_begin.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
-#include <filesystem>
 #include <algorithm>
+#include <cassert>
+#include <cstdlib>
 #include <exception>
+#include <filesystem>
 #include <iosfwd>
 #include <iostream>
 #include <ostream>
 #include <vector>
-#include <cassert>
-#include <cstdlib>
 #include <fcppt/config/external_end.hpp>
 
 

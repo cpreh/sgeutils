@@ -3,19 +3,19 @@
 #include <fcppt/preprocessor/pop_warning.hpp>
 #include <fcppt/preprocessor/push_warning.hpp>
 #include <fcppt/config/external_begin.hpp>
-#include <boost/spirit/repository/include/qi_confix.hpp>
-#include <boost/spirit/include/qi_match.hpp>
 #include <boost/spirit/include/qi_char.hpp>
-#include <boost/spirit/include/qi_string.hpp>
 #include <boost/spirit/include/qi_eol.hpp>
+#include <boost/spirit/include/qi_match.hpp>
 #include <boost/spirit/include/qi_operator.hpp>
+#include <boost/spirit/include/qi_string.hpp>
+#include <boost/spirit/repository/include/qi_confix.hpp>
+#include <cstdio>
+#include <cstdlib>
+#include <fstream>
+#include <iosfwd>
 #include <iostream>
 #include <ostream>
-#include <fstream>
 #include <string>
-#include <iosfwd>
-#include <cstdlib>
-#include <cstdio>
 #include <fcppt/config/external_end.hpp>
 
 int

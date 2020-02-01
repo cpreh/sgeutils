@@ -1,17 +1,17 @@
 #include <fcppt/exception.hpp>
-#include <fcppt/filesystem/path_to_string.hpp>
 #include <fcppt/from_std_string.hpp>
-#include <fcppt/io/cerr.hpp>
-#include <fcppt/io/cout.hpp>
 #include <fcppt/string.hpp>
 #include <fcppt/text.hpp>
+#include <fcppt/filesystem/path_to_string.hpp>
+#include <fcppt/io/cerr.hpp>
+#include <fcppt/io/cout.hpp>
 #include <fcppt/config/external_begin.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
-#include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <filesystem>
-#include <list>
 #include <iterator>
+#include <list>
 #include <streambuf>
 #include <fcppt/config/external_end.hpp>
 

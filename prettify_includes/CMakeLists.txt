@@ -7,10 +7,3 @@ sge_utils_add_program(
 		${fcppt_filesystem_TARGET}
 		${fcppt_options_TARGET}
 )
-
-install(
-	FILES
-	prettify_includes.py
-	DESTINATION
-	${CMAKE_INSTALL_BINDIR}
-)

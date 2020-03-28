@@ -33,7 +33,6 @@
 #include <fcppt/record/get.hpp>
 #include <fcppt/record/make_label.hpp>
 #include <fcppt/record/object_impl.hpp>
-#include <fcppt/record/permute.hpp>
 #include <fcppt/config/external_begin.hpp>
 #include <cstdlib>
 #include <exception>
@@ -391,13 +390,11 @@ try
 			{
 				return
 					main_program(
-						fcppt::record::permute<
-							args_record
-						>(
+						args_record{
 							std::move(
 								_result
 							)
-						)
+						}
 					);
 			}
 		);

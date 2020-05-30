@@ -33,6 +33,7 @@ Assertions:
 #include <sge/parse/json/value.hpp>
 #include <fcppt/exception.hpp>
 #include <fcppt/from_std_string.hpp>
+#include <fcppt/make_cref.hpp>
 #include <fcppt/recursive_impl.hpp>
 #include <fcppt/reference_impl.hpp>
 #include <fcppt/strong_typedef_output.hpp>
@@ -118,8 +119,10 @@ extract_regexes(
 						sge::parse::json::get_exn<
 							sge::charconv::utf8_string
 						>(
-							_value.get()
-						)
+							fcppt::make_cref(
+								_value.get()
+							)
+						).get()
 					);
 			}
 		);
@@ -135,7 +138,9 @@ extract_exceptions(
 			sge::parse::json::find_member<
 				sge::parse::json::array
 			>(
-				_object.members,
+				fcppt::make_cref(
+					_object.members
+				),
 				sge::charconv::utf8_string{
 					"exceptions"
 				}
@@ -165,19 +170,23 @@ extract_exceptions(
 								sge::parse::json::get_exn<
 									sge::parse::json::object
 								>(
-									_value.get()
-								)
+									fcppt::make_cref(
+										_value.get()
+									)
+								).get()
 							);
 
 							std::filesystem::path license_file(
 								sge::parse::json::find_member_exn<
 									sge::charconv::utf8_string
 								>(
-									r2.members,
+									fcppt::make_cref(
+										r2.members
+									),
 									sge::charconv::utf8_string{
 										"license"
 									}
-								)
+								).get()
 							);
 
 							FCPPT_ASSERT_THROW(
@@ -193,11 +202,13 @@ extract_exceptions(
 										sge::parse::json::find_member_exn<
 											sge::parse::json::array
 										>(
-											r2.members,
+											fcppt::make_cref(
+												r2.members
+											),
 											sge::charconv::utf8_string{
 												"files"
 											}
-										)
+										).get()
 									),
 									license_file
 								);
@@ -509,22 +520,26 @@ main_function(
 		sge::parse::json::find_member_exn<
 			sge::charconv::utf8_string
 		>(
-			json_object.members,
+			fcppt::make_cref(
+				json_object.members
+			),
 			sge::charconv::utf8_string{
 				"main_license"
 			}
-		)
+		).get()
 	};
 
 	regex const standard_regex(
 		sge::parse::json::find_member_exn<
 			sge::charconv::utf8_string
 		>(
-			json_object.members,
+			fcppt::make_cref(
+				json_object.members
+			),
 			sge::charconv::utf8_string{
 				"standard_match"
 			}
-		)
+		).get()
 	);
 
 	FCPPT_ASSERT_THROW(
@@ -543,11 +558,13 @@ main_function(
 			sge::parse::json::find_member_exn<
 				sge::parse::json::array
 			>(
-				json_object.members,
+				fcppt::make_cref(
+					json_object.members
+				),
 				sge::charconv::utf8_string{
 					"nolicense"
 				}
-			)
+			).get()
 		)
 	};
 

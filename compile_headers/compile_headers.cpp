@@ -10,6 +10,7 @@
 #include <fcppt/args_from_second.hpp>
 #include <fcppt/exception.hpp>
 #include <fcppt/main.hpp>
+#include <fcppt/make_cref.hpp>
 #include <fcppt/make_int_range_count.hpp>
 #include <fcppt/make_strong_typedef.hpp>
 #include <fcppt/string.hpp>
@@ -147,8 +148,10 @@ worker(
 		sge::parse::json::get_exn<
 			sge::parse::json::object
 		>(
-			_element
-		)
+			fcppt::make_cref(
+				_element
+			)
+		).get()
 	);
 
 	{
@@ -156,11 +159,13 @@ worker(
 			sge::parse::json::find_member_exn<
 				sge::charconv::utf8_string const
 			>(
-				json_object.members,
+				fcppt::make_cref(
+					json_object.members
+				),
 				sge::charconv::utf8_string{
 					"file"
 				}
-			)
+			).get()
 		);
 
 		if(
@@ -187,11 +192,13 @@ worker(
 							sge::parse::json::find_member_exn<
 								sge::charconv::utf8_string const
 							>(
-								json_object.members,
+								fcppt::make_cref(
+									json_object.members
+								),
 								sge::charconv::utf8_string{
 									"command"
 								}
-							)
+							).get()
 						),
 						[]{
 							return

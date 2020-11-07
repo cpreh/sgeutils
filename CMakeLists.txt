@@ -146,10 +146,6 @@ if(
 endif()
 
 add_subdirectory(
-	convenience_headers
-)
-
-add_subdirectory(
 	file_switch
 )
 

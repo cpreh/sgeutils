@@ -18,6 +18,8 @@ sge_utils_add_program(
 		compile_headers.cpp
 	COMPILE_FLAGS
 		${FcpptThreads_DEFINITIONS}
+	COMPILE_OPTIONS
+		${FCPPT_UTILS_MAIN_COMPILE_OPTIONS}
 	LINK_LIBS
 		${FcpptThreads_LIBRARIES}
 		${fcppt_core_TARGET}

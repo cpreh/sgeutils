@@ -77,6 +77,7 @@ function(
 	set(
 		MULTI_ARGS
 		COMPILE_FLAGS
+		COMPILE_OPTIONS
 		LINK_LIBS
 		SOURCES
 	)
@@ -116,6 +117,12 @@ function(
 		${PROGRAM_NAME}
 		PRIVATE
 		${_LINK_LIBS}
+	)
+
+	target_compile_options(
+		${PROGRAM_NAME}
+		PRIVATE
+		${_COMPILE_OPTIONS}
 	)
 
 	install(

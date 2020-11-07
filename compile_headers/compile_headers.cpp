@@ -12,7 +12,9 @@
 #include <fcppt/main.hpp>
 #include <fcppt/make_cref.hpp>
 #include <fcppt/make_int_range_count.hpp>
+#include <fcppt/make_ref.hpp>
 #include <fcppt/make_strong_typedef.hpp>
+#include <fcppt/reference_impl.hpp>
 #include <fcppt/string.hpp>
 #include <fcppt/strong_typedef_impl.hpp>
 #include <fcppt/strong_typedef_output.hpp>
@@ -70,23 +72,24 @@ make_syntax_only(
 	fcppt::string const &_compile_command
 )
 {
-	typedef
+	using
+	string_sequence
+	=
 	std::vector<
 		fcppt::string
-	>
-	string_sequence;
+	>;
 
 	string_sequence parts;
 
 	boost::algorithm::split(
 		parts,
 		_compile_command,
-		boost::algorithm::is_space(),
+		boost::algorithm::is_space(), // NOLINT(fuchsia-default-arguments-calls)
 		boost::algorithm::token_compress_on
 	);
 
 	for(
-		string_sequence::iterator it(
+		auto it(
 			parts.begin()
 		);
 		it != parts.end();
@@ -97,20 +100,22 @@ make_syntax_only(
 		)
 		{
 			if(
-				std::next(
+				std::next( // NOLINT(fuchsia-default-arguments-calls)
 					it
 				)
 				==
 				parts.end()
 			)
+			{
 				throw fcppt::exception(
 					FCPPT_TEXT("Nothing following a -o argument!")
 				);
+			}
 
 			it =
-				parts.erase(
-					it,
-					it + 2
+				parts.erase( // NOLINT(fuchsia-default-arguments-calls)
+					it, // NOLINT(fuchsia-default-arguments-calls)
+					it + 2 // NOLINT(fuchsia-default-arguments-calls)
 				);
 		}
 		else
@@ -140,7 +145,9 @@ FCPPT_MAKE_STRONG_TYPEDEF(
 void
 worker(
 	sge::parse::json::value const &_element,
-	boost::asio::io_service &_io_service,
+	fcppt::reference<
+		boost::asio::io_service
+	> const _io_service,
 	verbose const _verbose
 )
 {
@@ -155,7 +162,7 @@ worker(
 	);
 
 	{
-		std::filesystem::path const filename(
+		std::filesystem::path const filename( // NOLINT(fuchsia-default-arguments-calls)
 			sge::parse::json::find_member_exn<
 				sge::charconv::utf8_string const
 			>(
@@ -171,16 +178,20 @@ worker(
 		if(
 			fcppt::algorithm::contains(
 				filename,
-				std::filesystem::path(
+				std::filesystem::path( // NOLINT(fuchsia-default-arguments-calls)
 					FCPPT_TEXT("impl")
 				)
 			)
 			||
 			filename.extension()
 			!=
-			".hpp"
+			std::filesystem::path{ // NOLINT(fuchsia-default-arguments-calls)
+				".hpp"
+			}
 		)
+		{
 			return;
+		}
 	}
 
 	std::string const command{
@@ -221,14 +232,16 @@ worker(
 	if(
 		_verbose.get()
 	)
+	{
 		std::cout
 			<<
 			command
 			<<
 			'\n';
+	}
 
 	int const exit_status(
-		std::system(
+		std::system( // NOLINT(cert-env33-c)
 			command.c_str()
 		)
 	);
@@ -241,7 +254,7 @@ worker(
 		fcppt::io::cerr()
 			<< FCPPT_TEXT("system() failed\n");
 
-		_io_service.stop();
+		_io_service.get().stop();
 
 		return;
 	}
@@ -250,7 +263,7 @@ FCPPT_PP_PUSH_WARNING
 FCPPT_PP_DISABLE_GCC_WARNING(-Wcast-qual)
 FCPPT_PP_DISABLE_GCC_WARNING(-Wold-style-cast)
 	if(
-		WIFSIGNALED(
+		WIFSIGNALED( // NOLINT(hicpp-signed-bitwise)
 			exit_status
 		)
 	)
@@ -259,7 +272,7 @@ FCPPT_PP_POP_WARNING
 		fcppt::io::cout()
 			<< FCPPT_TEXT('\n');
 
-		_io_service.stop();
+		_io_service.get().stop();
 	}
 #endif
 }
@@ -285,7 +298,9 @@ main_program(
 
 	sge::parse::json::array const build_commands(
 		sge::parse::json::parse_file_exn(
-			FCPPT_TEXT("compile_commands.json")
+			std::filesystem::path{ // NOLINT(fuchsia-default-arguments-calls)
+				FCPPT_TEXT("compile_commands.json")
+			}
 		).array()
 	);
 
@@ -296,6 +311,7 @@ main_program(
 		:
 		build_commands.elements
 	)
+	{
 		io_service.post(
 			[
 				&io_service,
@@ -304,17 +320,21 @@ main_program(
 			]{
 				worker(
 					element.get(),
-					io_service,
+					fcppt::make_ref(
+						io_service
+					),
 					_verbose
 				);
 			}
 		);
+	}
 
-	typedef
+	using
+	thread_vector
+	=
 	std::vector<
 		std::thread
-	>
-	thread_vector;
+	>;
 
 	thread_vector threads{
 		fcppt::algorithm::map<
@@ -346,7 +366,9 @@ main_program(
 		:
 		threads
 	)
+	{
 		thread.join();
+	}
 }
 
 }
@@ -400,7 +422,7 @@ try
 					fcppt::optional::make(
 						std::max(
 							std::thread::hardware_concurrency(),
-							1u
+							1U
 						)
 					)
 				),

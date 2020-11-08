@@ -59,7 +59,9 @@ FCPPT_RECORD_MAKE_LABEL(
 	path_label
 );
 
-typedef
+using
+args_record
+=
 fcppt::record::object<
 	fcppt::record::element<
 		pretend_label,
@@ -77,8 +79,7 @@ fcppt::record::object<
 			std::filesystem::path
 		>
 	>
->
-args_record;
+>;
 
 int
 run_command(
@@ -278,17 +279,21 @@ main_program(
 								_args
 							)
 						)
+						{
 							fcppt::io::cout()
 								<<
 								command
 								<<
 								FCPPT_TEXT('\n');
+						}
 						else
+						{
 							result =
 								run_command(
 									command,
 									result
 								);
+						}
 					}
 				}
 			}

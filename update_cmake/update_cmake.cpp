@@ -1,4 +1,6 @@
-#include <fcppt/noncopyable.hpp>
+#include <fcppt/make_ref.hpp>
+#include <fcppt/nonmovable.hpp>
+#include <fcppt/reference_impl.hpp>
 #include <fcppt/config/external_begin.hpp>
 #include <algorithm>
 #include <cstdlib>
@@ -9,6 +11,7 @@
 #include <ostream>
 #include <regex>
 #include <string>
+#include <utility>
 #include <vector>
 #include <fcppt/config/external_end.hpp>
 
@@ -16,9 +19,12 @@
 namespace
 {
 
-typedef std::vector<
+using
+file_vector
+=
+std::vector<
 	std::string
-> file_vector;
+>;
 
 template<
 	typename Iterator
@@ -27,7 +33,9 @@ void
 add_files(
 	Iterator _iterator,
 	std::regex const &_regex,
-	file_vector &_files,
+	fcppt::reference<
+		file_vector
+	> const _files,
 	std::filesystem::path const &_out_file
 )
 {
@@ -43,24 +51,30 @@ add_files(
 				*_iterator
 			)
 		)
+		{
 			continue;
+		}
 
 		if(
 			!std::filesystem::is_regular_file(
 				*_iterator
 			)
 		)
+		{
 			continue;
+		}
 
 		if(
-			!std::regex_match(
+			!std::regex_match( // NOLINT(fuchsia-default-arguments-calls)
 				_iterator->path().filename().string(),
 				_regex
 			)
 		)
+		{
 			continue;
+		}
 
-		_files.push_back(
+		_files.get().push_back(
 			_iterator->path().generic_string()
 		);
 	}
@@ -68,17 +82,19 @@ add_files(
 
 class out_remover
 {
-	FCPPT_NONCOPYABLE(
+	FCPPT_NONMOVABLE(
 		out_remover
 	);
 public:
 	explicit
 	out_remover(
-		std::filesystem::path const &_file
+		std::filesystem::path _file
 	)
 	:
 		file_(
-			_file
+			std::move(
+				_file
+			)
 		),
 		remove_(
 			true
@@ -91,9 +107,11 @@ public:
 		if(
 			remove_
 		)
+		{
 			std::filesystem::remove(
 				file_
 			);
+		}
 	}
 
 	void
@@ -132,11 +150,11 @@ try
 		return EXIT_FAILURE;
 	}
 
-	std::filesystem::path const cmake_file(
+	std::filesystem::path const cmake_file( // NOLINT(fuchsia-default-arguments-calls)
 		argv[1]
 	);
 
-	std::ifstream ifs(
+	std::ifstream ifs( // NOLINT(fuchsia-default-arguments-calls)
 		cmake_file
 	);
 
@@ -151,7 +169,7 @@ try
 		return EXIT_FAILURE;
 	}
 
-	std::filesystem::path const out_file(
+	std::filesystem::path const out_file( // NOLINT(fuchsia-default-arguments-calls)
 		cmake_file.string()
 		+
 		".new"
@@ -161,7 +179,7 @@ try
 		out_file
 	);
 
-	std::ofstream ofs(
+	std::ofstream ofs( // NOLINT(fuchsia-default-arguments-calls)
 		out_file
 	);
 
@@ -185,7 +203,7 @@ try
 		"r"
 	);
 
-	std::regex fileregex(
+	std::regex fileregex( // NOLINT(fuchsia-default-arguments-calls)
 		".*\\..pp"
 	);
 
@@ -222,10 +240,12 @@ try
 				arg_string[1]
 				== 'r'
 			)
+			{
 				mode =
-					arg_string.substr(
-						1u
+					arg_string.substr( // NOLINT(fuchsia-default-arguments-calls)
+						1U
 					);
+			}
 			else if(
 				arg_string[1]
 				== 'e'
@@ -253,25 +273,33 @@ try
 		if(
 			mode == "r"
 		)
+		{
 			::add_files(
-				std::filesystem::recursive_directory_iterator(
-					arg_string
+				std::filesystem::recursive_directory_iterator( // NOLINT(fuchsia-default-arguments-calls)
+					arg_string // NOLINT(fuchsia-default-arguments-calls)
 				),
 				fileregex,
-				files,
+				fcppt::make_ref(
+					files
+				),
 				out_file
 			);
+		}
 		else if(
 			mode == "n"
 		)
+		{
 			::add_files(
-				std::filesystem::directory_iterator(
-					arg_string
+				std::filesystem::directory_iterator( // NOLINT(fuchsia-default-arguments-calls)
+					arg_string // NOLINT(fuchsia-default-arguments-calls)
 				),
 				fileregex,
-				files,
+				fcppt::make_ref(
+					files
+				),
 				out_file
 			);
+		}
 		else
 		{
 			std::cerr
@@ -306,9 +334,11 @@ try
 		line
 		!= search_line
 	)
+	{
 		ofs
 			<< line
 			<< '\n';
+	}
 
 	if(
 		line != search_line
@@ -326,16 +356,16 @@ try
 		<< '\n';
 
 	for(
-		file_vector::const_iterator it(
-			files.begin()
-		);
-		it != files.end();
-		++it
+		auto const &file
+		:
+		files
 	)
+	{
 		ofs
 			<< '\t'
-			<< *it
+			<< file
 			<< '\n';
+	}
 
 	std::string const search_end(
 		")"
@@ -349,7 +379,9 @@ try
 		&&
 		line
 		!= search_end
-	) ;
+	)
+	{
+	}
 
 	if(
 		line != search_end
@@ -372,9 +404,11 @@ try
 			line
 		)
 	)
+	{
 		ofs
 			<< line
 			<< '\n';
+	}
 
 	ofs.close();
 

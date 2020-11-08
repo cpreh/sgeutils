@@ -778,8 +778,9 @@ try
 			}
 		);
 }
-catch (
-	fcppt::exception const &_e)
+catch(
+	fcppt::exception const &_e
+)
 {
 	fcppt::io::cerr()
 		<< FCPPT_TEXT("Caught an exception: ")

@@ -1,7 +1,23 @@
+#include <fcppt/args_char.hpp>
+#include <fcppt/args_from_second.hpp>
+#include <fcppt/exception.hpp>
+#include <fcppt/main.hpp>
+#include <fcppt/text.hpp>
 #include <fcppt/config/compiler.hpp>
+#include <fcppt/io/cerr.hpp>
+#include <fcppt/options/apply.hpp>
+#include <fcppt/options/argument.hpp>
+#include <fcppt/options/error.hpp>
+#include <fcppt/options/error_output.hpp>
+#include <fcppt/options/long_name.hpp>
+#include <fcppt/options/optional_help_text.hpp>
+#include <fcppt/options/parse.hpp>
+#include <fcppt/options/result_of.hpp>
 #include <fcppt/preprocessor/disable_gcc_warning.hpp>
 #include <fcppt/preprocessor/pop_warning.hpp>
 #include <fcppt/preprocessor/push_warning.hpp>
+#include <fcppt/record/get.hpp>
+#include <fcppt/record/make_label.hpp>
 #include <fcppt/config/external_begin.hpp>
 #include <boost/spirit/include/qi_char.hpp>
 #include <boost/spirit/include/qi_eol.hpp>
@@ -11,6 +27,7 @@
 #include <boost/spirit/repository/include/qi_confix.hpp>
 #include <cstdio>
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <iosfwd>
 #include <iostream>
@@ -18,30 +35,18 @@
 #include <string>
 #include <fcppt/config/external_end.hpp>
 
+
+namespace
+{
+
 int
-main(
-	int argc,
-	char **argv
+main_program(
+	std::filesystem::path const &_file,
+	std::filesystem::path const &_license_file
 )
 {
-	if(
-		argc != 3
-	)
-	{
-		std::cerr
-			<< "Usage: "
-			<< argv[0]
-			<< " <file> <license_file>\n";
-
-		return EXIT_FAILURE;
-	}
-
-	std::string const filename(
-		argv[1]
-	);
-
-	std::ifstream ifs(
-		filename.c_str()
+	std::ifstream ifs( // NOLINT(fuchsia-default-arguments-calls)
+		_file
 	);
 
 	if(
@@ -50,7 +55,7 @@ main(
 	{
 		std::cerr
 			<< "Cannot open "
-			<< filename
+			<< _file.string()
 			<< '\n';
 
 		return EXIT_FAILURE;
@@ -72,14 +77,14 @@ FCPPT_PP_DISABLE_GCC_WARNING(-Wzero-as-null-pointer-constant)
 			>> std::noskipws
 			>> boost::spirit::qi::match(
 				*(
-					confix(
+					confix( // NOLINT(fuchsia-default-arguments-calls)
 						"/*",
 						"*/"
 					)[
 						*(char_ - "*/")
 					]
 					|
-					confix(
+					confix( // NOLINT(fuchsia-default-arguments-calls)
 						"//",
 						eol
 					)[
@@ -101,19 +106,15 @@ FCPPT_PP_POP_WARNING
 	{
 		std::cerr
 			<< "Input file "
-			<< filename
+			<< _file.string()
 			<< " broken\n";
 
 		return EXIT_FAILURE;
 	}
 
-	std::string const license_filename(
-		argv[2]
-	);
-
-	std::ifstream license(
-		license_filename.c_str()
-	);
+	std::ifstream license{ // NOLINT(fuchsia-default-arguments-calls)
+		_license_file
+	};
 
 	if(
 		!license.is_open()
@@ -121,18 +122,22 @@ FCPPT_PP_POP_WARNING
 	{
 		std::cerr
 			<< "Cannot open license file "
-			<< license_filename
+			<< _license_file.string()
 			<< '\n';
 
 		return EXIT_FAILURE;
 	}
 
-	std::string const temp_filename(
-		filename + ".temp"
+	std::filesystem::path const temp_filename( // NOLINT(fuchsia-default-arguments-calls)
+		_file.string()
+		+
+		std::string{
+			".temp"
+		}
 	);
 
 	{
-		std::ofstream ofs(
+		std::ofstream ofs( // NOLINT(fuchsia-default-arguments-calls)
 			temp_filename.c_str()
 		);
 
@@ -154,7 +159,7 @@ FCPPT_PP_POP_WARNING
 	}
 
 	{
-		ifs.clear();
+		ifs.clear(); // NOLINT(fuchsia-default-arguments-calls)
 
 		ifs.seekg(
 			std::ios_base::beg
@@ -166,13 +171,13 @@ FCPPT_PP_POP_WARNING
 		{
 			std::cerr
 				<< "Rewinding "
-				<< filename
+				<< _file.string()
 				<< " failed\n";
 
 			return EXIT_FAILURE;
 		}
 
-		std::ifstream new_ifs(
+		std::ifstream new_ifs( // NOLINT(fuchsia-default-arguments-calls)
 			temp_filename.c_str()
 		);
 
@@ -188,9 +193,8 @@ FCPPT_PP_POP_WARNING
 			return EXIT_FAILURE;
 		}
 
-		std::string
-			line1,
-			line2;
+		std::string line1{};
+		std::string line2{};
 
 		bool equal(
 			true
@@ -206,6 +210,7 @@ FCPPT_PP_POP_WARNING
 				line2
 			)
 		)
+		{
 			if(
 				line1 != line2
 			)
@@ -214,6 +219,7 @@ FCPPT_PP_POP_WARNING
 
 				break;
 			}
+		}
 
 		if(
 			equal
@@ -244,8 +250,8 @@ FCPPT_PP_POP_WARNING
 
 	if(
 		std::rename(
-			temp_filename.c_str(),
-			filename.c_str()
+			temp_filename.string().c_str(),
+			_file.string().c_str()
 		)
 		!= 0
 	)
@@ -254,7 +260,7 @@ FCPPT_PP_POP_WARNING
 			<< "Cannot rename "
 			<< temp_filename
 			<< " into "
-			<< filename
+			<< _file.string()
 			<< '\n';
 
 		if(
@@ -263,11 +269,135 @@ FCPPT_PP_POP_WARNING
 			)
 			!= 0
 		)
+		{
 			std::cerr
 				<< "Cannot remove "
 				<< temp_filename
 				<< "! You have to remove it manually!\n";
+		}
 
 		return EXIT_FAILURE;
 	}
+
+	return
+		EXIT_SUCCESS;
+}
+
+}
+
+
+int
+FCPPT_MAIN(
+	int argc,
+	fcppt::args_char **argv
+)
+try
+{
+	FCPPT_RECORD_MAKE_LABEL(
+		file_label
+	);
+
+	FCPPT_RECORD_MAKE_LABEL(
+		license_file_label
+	);
+
+	auto const parser{
+		fcppt::options::apply(
+			fcppt::options::argument<
+				file_label,
+				std::filesystem::path
+			>{
+				fcppt::options::long_name{
+					FCPPT_TEXT("file")
+				},
+				fcppt::options::optional_help_text{}
+			},
+			fcppt::options::argument<
+				license_file_label,
+				std::filesystem::path
+			>{
+				fcppt::options::long_name{
+					FCPPT_TEXT("license-file")
+				},
+				fcppt::options::optional_help_text{}
+			}
+		)
+	};
+
+	return
+		fcppt::either::match(
+			fcppt::options::parse(
+				parser,
+				fcppt::args_from_second(
+					argc,
+					argv
+				)
+			),
+			[
+				&parser
+			](
+				fcppt::options::error const &_error
+			)
+			{
+				fcppt::io::cerr()
+					<<
+					_error
+					<<
+					FCPPT_TEXT("\nUsage:\n")
+					<<
+					parser.usage()
+					<<
+					FCPPT_TEXT('\n');
+
+				return
+					EXIT_FAILURE;
+			},
+			[](
+				fcppt::options::result_of<
+					decltype(
+						parser
+					)
+				> const &_result
+			)
+			{
+				return
+					main_program(
+						fcppt::record::get<
+							file_label
+						>(
+							_result
+						),
+						fcppt::record::get<
+							license_file_label
+						>(
+							_result
+						)
+					);
+			}
+		);
+}
+catch(
+	fcppt::exception const &_e
+)
+{
+	fcppt::io::cerr()
+		<< FCPPT_TEXT("Caught an exception: ")
+		<< _e.string()
+		<< FCPPT_TEXT("\n");
+
+	return
+		EXIT_FAILURE;
+}
+catch(
+	std::exception const &_error
+)
+{
+	std::cerr
+		<<
+		_error.what()
+		<<
+		'\n';
+
+	return
+		EXIT_FAILURE;
 }

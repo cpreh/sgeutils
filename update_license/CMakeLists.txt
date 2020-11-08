@@ -2,8 +2,11 @@ sge_utils_add_program(
 	update_license
 	SOURCES
 		update_license.cpp
+	COMPILE_OPTIONS
+		${FCPPT_UTILS_MAIN_COMPILE_OPTIONS}
 	LINK_LIBS
-		fcppt_core_interface
+		${fcppt_core_TARGET}
+		${fcppt_options_TARGET}
 )
 
 sge_utils_add_program(

@@ -31,9 +31,11 @@ Assertions:
 #include <sge/parse/json/parse_file_exn.hpp>
 #include <sge/parse/json/start.hpp>
 #include <sge/parse/json/value.hpp>
+#include <fcppt/args_char.hpp>
+#include <fcppt/args_from_second.hpp>
 #include <fcppt/exception.hpp>
-#include <fcppt/from_std_string.hpp>
 #include <fcppt/make_cref.hpp>
+#include <fcppt/main.hpp>
 #include <fcppt/recursive_impl.hpp>
 #include <fcppt/reference_impl.hpp>
 #include <fcppt/strong_typedef_output.hpp>
@@ -43,13 +45,23 @@ Assertions:
 #include <fcppt/algorithm/map_optional.hpp>
 #include <fcppt/assert/exception.hpp>
 #include <fcppt/assert/throw.hpp>
+#include <fcppt/either/match.hpp>
 #include <fcppt/filesystem/path_to_string.hpp>
 #include <fcppt/io/cerr.hpp>
 #include <fcppt/io/clog.hpp>
+#include <fcppt/iterator/make_range.hpp>
 #include <fcppt/optional/maybe.hpp>
 #include <fcppt/optional/object.hpp>
+#include <fcppt/options/argument.hpp>
+#include <fcppt/options/error.hpp>
+#include <fcppt/options/error_output.hpp>
+#include <fcppt/options/long_name.hpp>
+#include <fcppt/options/optional_help_text.hpp>
+#include <fcppt/options/parse.hpp>
+#include <fcppt/options/result_of.hpp>
+#include <fcppt/record/get.hpp>
+#include <fcppt/record/make_label.hpp>
 #include <fcppt/config/external_begin.hpp>
-#include <boost/range/iterator_range_core.hpp>
 #include <algorithm>
 #include <cstdlib>
 #include <exception>
@@ -67,36 +79,41 @@ Assertions:
 namespace
 {
 
-typedef
+using
+regex
+=
 std::basic_regex<
 	sge::charconv::utf8_char
->
-regex;
+>;
 
-typedef
+using
+regex_set
+=
 std::vector<
 	regex
->
-regex_set;
+>;
 
-typedef
+using
+exception
+=
 std::pair<
 	regex_set,
 	std::filesystem::path
->
-exception;
+>;
 
-typedef
+using
+exception_set
+=
 std::vector<
 	exception
->
-exception_set;
+>;
 
-typedef
+using
+path_set
+=
 std::set<
 	std::filesystem::path
->
-path_set;
+>;
 
 regex_set
 extract_regexes(
@@ -115,7 +132,7 @@ extract_regexes(
 			)
 			{
 				return
-					regex(
+					regex( // NOLINT(fuchsia-default-arguments-calls)
 						sge::parse::json::get_exn<
 							sge::charconv::utf8_string
 						>(
@@ -176,7 +193,7 @@ extract_exceptions(
 								).get()
 							);
 
-							std::filesystem::path license_file(
+							std::filesystem::path license_file( // NOLINT(fuchsia-default-arguments-calls)
 								sge::parse::json::find_member_exn<
 									sge::charconv::utf8_string
 								>(
@@ -226,14 +243,16 @@ has_hidden_components(
 	if(
 		_path.empty()
 	)
+	{
 		return
 			false;
+	}
 
 	return
 		fcppt::algorithm::contains_if(
-			boost::make_iterator_range(
+			fcppt::iterator::make_range(
 				// skip the first entry because it starts with "./"
-				std::next(
+				std::next( // NOLINT(fuchsia-default-arguments-calls)
 					_path.begin()
 				),
 				_path.end()
@@ -263,9 +282,11 @@ extract_paths(
 		fcppt::algorithm::map_optional<
 			path_set
 		>(
-			boost::make_iterator_range(
-				std::filesystem::recursive_directory_iterator(
-					FCPPT_TEXT(".")
+			fcppt::iterator::make_range(
+				std::filesystem::recursive_directory_iterator( // NOLINT(fuchsia-default-arguments-calls)
+					std::filesystem::path{ // NOLINT(fuchsia-default-arguments-calls)
+						FCPPT_TEXT(".")
+					}
 				),
 				std::filesystem::recursive_directory_iterator()
 			),
@@ -275,11 +296,12 @@ extract_paths(
 				std::filesystem::path const &_path
 			)
 			{
-				typedef
+				using
+				optional_path
+				=
 				fcppt::optional::object<
 					std::filesystem::path
-				>
-				optional_path;
+				>;
 
 				return
 					std::filesystem::is_regular_file(
@@ -290,7 +312,7 @@ extract_paths(
 						_path
 					)
 					&&
-					std::regex_match(
+					std::regex_match( // NOLINT(fuchsia-default-arguments-calls)
 						_path.string(),
 						_standard_regex
 					)
@@ -313,71 +335,77 @@ intersection(
 	path_set ret;
 
 	for(
-		path_set::const_iterator path_it(
-			_paths.begin()
-		);
-		path_it != _paths.end();
-		++path_it
+		auto const &path
+		:
+		_paths
 	)
+	{
 		for(
-			regex_set::const_iterator regex_it(
-				_regexs.begin()
-			);
-			regex_it != _regexs.end();
-			++regex_it
+			auto const &r
+			:
+			_regexs
 		)
 		{
 			FCPPT_ASSERT_THROW(
-				path_it->string().compare(0,2,"./") == 0,
+				path.string().compare(0,2,"./") == 0,
 				fcppt::assert_::exception
 			);
 
 			bool const result =
-				regex_match(
-					path_it->string().substr(2),
-					*regex_it,
-					std::regex_constants::match_default);
+				std::regex_match( // NOLINT(fuchsia-default-arguments-calls)
+					path.string().substr(2), // NOLINT(fuchsia-default-arguments-calls)
+					r,
+					std::regex_constants::match_default
+				);
 
 			if(result)
+			{
 				ret.insert(
-					*path_it);
+					path
+				);
+			}
 		}
+	}
 	return ret;
 }
 
-typedef
-std::pair
-<
+using
+path_set_with_license
+=
+std::pair<
 	path_set,
 	std::filesystem::path
->
-path_set_with_license;
+>;
 
-typedef
-std::set<path_set_with_license>
-path_set_with_license_set;
+using
+path_set_with_license_set
+=
+std::set<
+	path_set_with_license
+>;
 
 path_set_with_license_set
 intersections(
 	path_set const &ps,
 	exception_set const &es)
 {
-	path_set_with_license_set pls;
+	path_set_with_license_set pls{};
 
 	for(
-		exception_set::const_iterator ex_it(
-			es.begin()
-		);
-		ex_it != es.end();
-		++ex_it
+		auto const &ex
+		:
+		es
 	)
 	{
 		pls.insert(
 			path_set_with_license(
 				intersection(
 					ps,
-					ex_it->first),
-				ex_it->second));
+					ex.first
+				),
+				ex.second
+			)
+		);
 	}
 	return pls;
 }
@@ -391,27 +419,35 @@ is_disjoint(
 	Set2 const &set2)
 {
 	if(set1.empty() || set2.empty())
+	{
 		return true;
+	}
 
-	typename Set1::const_iterator
-		it1 = set1.begin(),
-		it1End = set1.end();
+	auto it1{set1.begin()};
+	auto it1End{set1.end()};
 
-	typename Set2::const_iterator
-		it2 = set2.begin(),
-		it2End = set2.end();
+	auto it2{set2.begin()};
+	auto it2End{set2.end()};
 
 	if(*it1 > *set2.rbegin() || *it2 > *set1.rbegin())
+	{
 		return true;
+	}
 
 	while(it1 != it1End && it2 != it2End)
 	{
 		if(*it1 == *it2)
+		{
 			return false;
+		}
 		if(*it1 < *it2)
+		{
 			it1++;
+		}
 		else
+		{
 			it2++;
+		}
 	}
 
 	return true;
@@ -423,32 +459,38 @@ bool
 is_pairwise_disjoint(
 	std::set<T*> const &ts)
 {
-	typedef
-	std::set<T*>
-	set;
+	if(ts.empty())
+	{
+		return true;
+	}
 
-	typedef typename
-	set::const_iterator
-	const_iterator;
-
-	// TODO: This is wrong
 	for(
-		const_iterator i = ts.begin();
-		i != std::prev(ts.end());
-		++i)
+		auto i = ts.begin();
+		i != std::prev(ts.end()); // NOLINT(fuchsia-default-arguments-calls)
+		++i
+	)
+	{
 		for (
-			const_iterator j = std::next(i);
+			auto j = std::next(i); // NOLINT(fuchsia-default-arguments-calls)
 			j != ts.end();
-			++j)
+			++j
+		)
+		{
 			if (!is_disjoint(**i,**j))
+			{
 				return false;
+			}
+		}
+	}
+
 	return true;
 }
 
 
-typedef
-std::set<path_set const *>
-path_ref_set;
+using
+path_ref_set
+=
+std::set<path_set const *>;
 
 path_set
 ref_set_difference(
@@ -456,26 +498,27 @@ ref_set_difference(
 	path_ref_set const &refs)
 {
 	for(
-		path_ref_set::const_iterator it(
-			refs.begin()
-		);
-		it != refs.end();
-		++it
+		auto const &path
+		:
+		refs
 	)
 	{
-		path_set b;
+		path_set b{};
 
 		std::set_difference(
 			_paths.begin(),
 			_paths.end(),
-			(*it)->begin(),
-			(*it)->end(),
+			path->begin(),
+			path->end(),
 			std::inserter(
 				b,
-				b.begin()));
-		// H4x0r!
+				b.begin()
+			)
+		);
+
 		_paths.swap(
-			b);
+			b
+		);
 	}
 	return _paths;
 }
@@ -487,7 +530,7 @@ apply_license(
 )
 {
 	if(
-		std::system(
+		std::system( // NOLINT(cert-env33-c)
 			(
 				"update_license "
 				+
@@ -500,12 +543,14 @@ apply_license(
 		)
 		!= EXIT_SUCCESS
 	)
+	{
 		fcppt::io::cerr()
 			<< FCPPT_TEXT("update_license failed for ")
 			<< fcppt::filesystem::path_to_string(
 				file
 			)
 			<< FCPPT_TEXT('\n');
+	}
 }
 
 int
@@ -516,7 +561,7 @@ main_function(
 	sge::parse::json::object const &json_object(
 		json_file.object());
 
-	std::filesystem::path const main_license{
+	std::filesystem::path const main_license{ // NOLINT(fuchsia-default-arguments-calls)
 		sge::parse::json::find_member_exn<
 			sge::charconv::utf8_string
 		>(
@@ -529,7 +574,7 @@ main_function(
 		).get()
 	};
 
-	regex const standard_regex(
+	regex const standard_regex( // NOLINT(fuchsia-default-arguments-calls)
 		sge::parse::json::find_member_exn<
 			sge::charconv::utf8_string
 		>(
@@ -585,14 +630,15 @@ main_function(
 	path_ref_set path_refs;
 
 	for(
-		path_set_with_license_set::const_iterator ref_it(
-			exception_paths.begin()
-		);
-		ref_it != exception_paths.end();
-		++ref_it
+		auto const &ref
+		:
+		exception_paths
 	)
+	{
 		path_refs.insert(
-			&(ref_it->first));
+			&(ref.first)
+		);
+	}
 
 	path_refs.insert(
 		&nolicense_paths);
@@ -613,37 +659,37 @@ main_function(
 		);
 
 		for(
-			path_set::const_iterator path_it(
-				difference_set.begin()
-			);
-			path_it != difference_set.end();
-			++path_it
+			auto const &path
+			:
+			difference_set
 		)
+		{
 			apply_license(
-				*path_it,
+				path,
 				main_license
 			);
+		}
 	}
 
 	// Collect all exceptions
 	for(
-		path_set_with_license_set::const_iterator ex_it(
-			exception_paths.begin()
-		);
-		ex_it != exception_paths.end();
-		++ex_it
+		auto const &ex
+		:
+		exception_paths
 	)
+	{
 		for(
-			path_set::const_iterator path_it(
-				ex_it->first.begin()
-			);
-			path_it != ex_it->first.end();
-			++path_it
+			auto const &path
+			:
+			ex.first
 		)
+		{
 			apply_license(
-				*path_it,
-				ex_it->second
+				path,
+				ex.second
 			);
+		}
+	}
 
 	return
 		EXIT_SUCCESS;
@@ -651,38 +697,85 @@ main_function(
 
 }
 
-int main(
-	int const _argc,
-	char *_argv[])
+int FCPPT_MAIN(
+	int const argc,
+	fcppt::args_char *argv[])
 try
 {
-	if (_argc != 2)
-	{
-		fcppt::io::cerr()
-			<< FCPPT_TEXT("usage: ")
-			<< fcppt::from_std_string(_argv[0])
-			<< FCPPT_TEXT(" <json file>\n");
-		return EXIT_FAILURE;
-	}
+	FCPPT_RECORD_MAKE_LABEL(
+		file_label
+	);
 
-	fcppt::string const json_file_name =
-		fcppt::from_std_string(
-			_argv[1]);
-
-	sge::parse::json::start const result{
-		sge::parse::json::parse_file_exn(
-			json_file_name
-		)
+	fcppt::options::argument<
+		file_label,
+		std::filesystem::path
+	> const parser{
+		fcppt::options::long_name{
+			FCPPT_TEXT("json-file")
+		},
+		fcppt::options::optional_help_text{}
 	};
 
-	fcppt::io::clog()
-		<< FCPPT_TEXT("Successfully parsed the file \"")
-		<< json_file_name
-		<< FCPPT_TEXT("\"\n");
-
 	return
-		main_function(
-			result
+		fcppt::either::match(
+			fcppt::options::parse(
+				parser,
+				fcppt::args_from_second(
+					argc,
+					argv
+				)
+			),
+			[
+				&parser
+			](
+				fcppt::options::error const &_error
+			)
+			{
+				fcppt::io::cerr()
+					<<
+					_error
+					<<
+					FCPPT_TEXT("\nUsage:\n")
+					<<
+					parser.usage()
+					<<
+					FCPPT_TEXT('\n');
+
+				return
+					EXIT_FAILURE;
+			},
+			[](
+				fcppt::options::result_of<
+					decltype(
+						parser
+					)
+				> const &_result
+			)
+			{
+				std::filesystem::path const &json_file_name{
+					fcppt::record::get<
+						file_label
+					>(
+						_result
+					)
+				};
+
+				sge::parse::json::start const json{
+					sge::parse::json::parse_file_exn(
+						json_file_name
+					)
+				};
+
+				fcppt::io::clog()
+					<< FCPPT_TEXT("Successfully parsed the file \"")
+					<< json_file_name
+					<< FCPPT_TEXT("\"\n");
+
+				return
+					main_function(
+						json
+					);
+			}
 		);
 }
 catch (

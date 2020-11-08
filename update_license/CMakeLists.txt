@@ -10,9 +10,12 @@ sge_utils_add_program(
 	multi_update_license
 	SOURCES
 		multi_update_license.cpp
+	COMPILE_OPTIONS
+		${FCPPT_UTILS_MAIN_COMPILE_OPTIONS}
 	LINK_LIBS
 		${fcppt_core_TARGET}
 		${fcppt_filesystem_TARGET}
+		${fcppt_options_TARGET}
 		${sgecharconv_TARGET}
 		${sgecore_TARGET}
 		${sgeparse_TARGET}

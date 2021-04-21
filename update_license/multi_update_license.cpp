@@ -43,8 +43,6 @@ Assertions:
 #include <fcppt/algorithm/contains_if.hpp>
 #include <fcppt/algorithm/map.hpp>
 #include <fcppt/algorithm/map_optional.hpp>
-#include <fcppt/assert/exception.hpp>
-#include <fcppt/assert/throw.hpp>
 #include <fcppt/either/match.hpp>
 #include <fcppt/filesystem/path_to_string.hpp>
 #include <fcppt/io/cerr.hpp>
@@ -206,12 +204,23 @@ extract_exceptions(
 								).get()
 							);
 
-							FCPPT_ASSERT_THROW(
-								std::filesystem::exists(
+							if(
+								!std::filesystem::exists(
 									license_file
-								),
-								fcppt::assert_::exception
-							);
+								)
+							)
+							{
+								throw
+									fcppt::exception{
+										FCPPT_TEXT("License file ")
+										+
+										fcppt::filesystem::path_to_string(
+											license_file
+										)
+										+
+										FCPPT_TEXT(" does not exist!")
+									};
+							}
 
 							return
 								exception(
@@ -346,10 +355,15 @@ intersection(
 			_regexs
 		)
 		{
-			FCPPT_ASSERT_THROW(
-				path.string().compare(0,2,"./") == 0,
-				fcppt::assert_::exception
-			);
+			if(
+				path.string().compare(0,2,"./") != 0
+			)
+			{
+				throw
+					fcppt::exception{
+						FCPPT_TEXT("Path does not start with ./")
+					};
+			}
 
 			bool const result =
 				std::regex_match( // NOLINT(fuchsia-default-arguments-calls)
@@ -587,12 +601,23 @@ main_function(
 		).get()
 	);
 
-	FCPPT_ASSERT_THROW(
-		std::filesystem::exists(
+	if(
+		!std::filesystem::exists(
 			main_license
-		),
-		fcppt::assert_::exception
-	);
+		)
+	)
+	{
+		throw
+			fcppt::exception{
+				FCPPT_TEXT("main license file ")
+				+
+				fcppt::filesystem::path_to_string(
+					main_license
+				)
+				+
+				FCPPT_TEXT(" does not exist")
+			};
+	}
 
 	exception_set const exceptions =
 		extract_exceptions(

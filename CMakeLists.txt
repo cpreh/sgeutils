@@ -51,6 +51,12 @@ if(
 	ENABLE_SGE AND BUILD_APPS
 )
 	find_package(
+		Boost 1.48.0
+		COMPONENTS
+		locale
+	)
+
+	find_package(
 		sge
 		REQUIRED
 		COMPONENTS

@@ -177,9 +177,9 @@ FCPPT_PP_POP_WARNING
 			return EXIT_FAILURE;
 		}
 
-		std::ifstream new_ifs( // NOLINT(fuchsia-default-arguments-calls)
-			temp_filename.c_str()
-		);
+		std::ifstream new_ifs{ // NOLINT(fuchsia-default-arguments-calls)
+			temp_filename
+		};
 
 		if(
 			!new_ifs
@@ -229,7 +229,7 @@ FCPPT_PP_POP_WARNING
 
 			if(
 				std::remove(
-					temp_filename.c_str()
+					temp_filename.string().c_str()
 				)
 				!= 0
 			)
@@ -265,7 +265,7 @@ FCPPT_PP_POP_WARNING
 
 		if(
 			std::remove(
-				temp_filename.c_str()
+				temp_filename.string().c_str()
 			)
 			!= 0
 		)

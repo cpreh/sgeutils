@@ -5,7 +5,7 @@ sge_utils_add_program(
 	COMPILE_OPTIONS
 		${FCPPT_UTILS_MAIN_COMPILE_OPTIONS}
 	LINK_LIBS
-		${FCPPT_UTILS_FILESYSTEM_LIBRARIES}
+		${FCPPT_UTILS_MAIN_LINK_LIBS}
 		${fcppt_core_TARGET}
 		${fcppt_options_TARGET}
 )

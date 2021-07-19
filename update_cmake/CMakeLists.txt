@@ -4,5 +4,4 @@ sge_utils_add_program(
 		update_cmake.cpp
 	LINK_LIBS
 		fcppt_core_interface
-		${FCPPT_UTILS_FILESYSTEM_LIBRARIES}
 )

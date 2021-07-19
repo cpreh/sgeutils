@@ -8,7 +8,7 @@ if(
 )
 	set(
 		ASIO_LIBS
-		WS2_32
+		ws2_32
 	)
 endif()
 
@@ -21,6 +21,7 @@ sge_utils_add_program(
 	COMPILE_OPTIONS
 		${FCPPT_UTILS_MAIN_COMPILE_OPTIONS}
 	LINK_LIBS
+		${FCPPT_UTILS_MAIN_LINK_LIBS}
 		${FcpptThreads_LIBRARIES}
 		${fcppt_core_TARGET}
 		${fcppt_filesystem_TARGET}

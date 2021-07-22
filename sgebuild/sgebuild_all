@@ -46,6 +46,12 @@ project all config (optional):
     SGEBUILD_ALL_PROJECT_TARGETS=(
       \"gcc_flto\"
     )
+  SGEBUILD_ALL_PROJECT_IGNORE_TARGETS:
+    An array of targets to ignore for this project, for example:
+
+    SGEBUILD_ALL_PROJECT_IGNORE_TARGETS=(
+      \"mingw\"
+    )
 "
 
 exit
@@ -77,6 +83,7 @@ for target in "${SGEBUILD_ALL_TARGETS[@]}" ; do
 	for ignore_target in "${SGEBUILD_ALL_PROJECT_IGNORE_TARGETS[@]}" ; do
 		if [[ "${target}" = "${ignore_target}" ]] ; then
 			ignore=true
+			echo "Ignoring target ${target}"
 		fi
 	done
 

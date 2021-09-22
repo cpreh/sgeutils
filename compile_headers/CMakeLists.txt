@@ -1,10 +1,8 @@
-if(
-	WIN32
-)
-	set(
-		ASIO_LIBS
-		ws2_32
-	)
+if(WIN32)
+	set(ASIO_LIBS ws2_32)
+elseif(UNIX)
+	set(ASIO_LIBS pthread)
+	set(ASIO_COMPILE_OPTIONS -pthread)
 endif()
 
 sge_utils_add_program(
@@ -13,6 +11,7 @@ sge_utils_add_program(
 		compile_headers.cpp
 	COMPILE_OPTIONS
 		${FCPPT_UTILS_MAIN_COMPILE_OPTIONS}
+		${ASIO_COMPILE_OPTIONS}
 	LINK_LIBS
 		${FCPPT_UTILS_MAIN_LINK_LIBS}
 		${fcppt_core_TARGET}

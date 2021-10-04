@@ -9,6 +9,8 @@ sge_utils_add_program(
 	compile_headers
 	SOURCES
 		compile_headers.cpp
+	COMPILE_DEFINITIONS
+		BOOST_ASIO_HAS_STD_INVOKE_RESULT
 	COMPILE_OPTIONS
 		${FCPPT_UTILS_MAIN_COMPILE_OPTIONS}
 		${ASIO_COMPILE_OPTIONS}

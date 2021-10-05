@@ -8,12 +8,12 @@
 #include <sge/parse/json/start.hpp>
 #include <fcppt/args_char.hpp>
 #include <fcppt/args_from_second.hpp>
+#include <fcppt/declare_strong_typedef.hpp>
 #include <fcppt/exception.hpp>
 #include <fcppt/main.hpp>
 #include <fcppt/make_cref.hpp>
 #include <fcppt/make_int_range_count.hpp>
 #include <fcppt/make_ref.hpp>
-#include <fcppt/declare_strong_typedef.hpp>
 #include <fcppt/reference_impl.hpp>
 #include <fcppt/string.hpp>
 #include <fcppt/strong_typedef_impl.hpp>

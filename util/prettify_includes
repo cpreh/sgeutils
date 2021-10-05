@@ -4,7 +4,6 @@ LIBS=(--library sge --library fcppt)
 DIRS=(
 	check_includes
 	compile_headers
-	convenience_headers
 	file_switch
 	generate_includeguard
 	prettify_includes

@@ -34,8 +34,8 @@ Assertions:
 #include <fcppt/args_char.hpp>
 #include <fcppt/args_from_second.hpp>
 #include <fcppt/exception.hpp>
-#include <fcppt/make_cref.hpp>
 #include <fcppt/main.hpp>
+#include <fcppt/make_cref.hpp>
 #include <fcppt/recursive_impl.hpp>
 #include <fcppt/reference_impl.hpp>
 #include <fcppt/strong_typedef_output.hpp>

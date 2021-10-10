@@ -30,10 +30,7 @@
 
 namespace
 {
-using
-directory_sequence
-=
-std::list<fcppt::string>;
+using directory_sequence = std::list<fcppt::string>;
 
 /*
  * Example: We're in project/include/foo/bar/baz.hpp and call the program
@@ -44,190 +41,110 @@ std::list<fcppt::string>;
  *   got {}, adding foo, returning {foo}
  * got {foo}, adding bar, returning {foo,bar}
  */
-directory_sequence
-calculate_sequence(
-	std::filesystem::path const &current)
+directory_sequence calculate_sequence(std::filesystem::path const &current)
 {
-	if(
-		fcppt::filesystem::path_to_string(
-			current.filename())
-		== FCPPT_TEXT("include")
-	)
-	{
-		return directory_sequence();
-	}
+  if (fcppt::filesystem::path_to_string(current.filename()) == FCPPT_TEXT("include"))
+  {
+    return directory_sequence();
+  }
 
-	if (!current.has_parent_path())
-	{
-		throw fcppt::exception(FCPPT_TEXT("Arrived at the root, didn't find include/"));
-	}
+  if (!current.has_parent_path())
+  {
+    throw fcppt::exception(FCPPT_TEXT("Arrived at the root, didn't find include/"));
+  }
 
-	directory_sequence result =
-		calculate_sequence(
-			current.parent_path());
+  directory_sequence result = calculate_sequence(current.parent_path());
 
-	result.push_back(
-		fcppt::filesystem::path_to_string(
-			current.filename()));
+  result.push_back(fcppt::filesystem::path_to_string(current.filename()));
 
-	return result;
+  return result;
 }
 
-fcppt::string
-create_guard(
-	directory_sequence const &dirs,
-	fcppt::string const &fn)
+fcppt::string create_guard(directory_sequence const &dirs, fcppt::string const &fn)
 {
-	fcppt::string guard;
-	for (auto i = dirs.begin(); i != dirs.end(); ++i)
-	{
-		if (i != dirs.begin())
-		{
-			guard +=
-				FCPPT_TEXT('_');
-		}
+  fcppt::string guard;
+  for (auto i = dirs.begin(); i != dirs.end(); ++i)
+  {
+    if (i != dirs.begin())
+    {
+      guard += FCPPT_TEXT('_');
+    }
 
-		guard +=
-			boost::algorithm::to_upper_copy( // NOLINT(fuchsia-default-arguments-calls)
-				*i);
-	}
+    guard += boost::algorithm::to_upper_copy( // NOLINT(fuchsia-default-arguments-calls)
+        *i);
+  }
 
-	guard +=
-		FCPPT_TEXT('_') +
-		boost::algorithm::to_upper_copy( // NOLINT(fuchsia-default-arguments-calls)
-			boost::algorithm::replace_all_copy(
-				fn,
-				FCPPT_TEXT("."),
-				FCPPT_TEXT("_")));
+  guard += FCPPT_TEXT('_') +
+           boost::algorithm::to_upper_copy( // NOLINT(fuchsia-default-arguments-calls)
+               boost::algorithm::replace_all_copy(fn, FCPPT_TEXT("."), FCPPT_TEXT("_")));
 
-	return guard + FCPPT_TEXT("_INCLUDED");
+  return guard + FCPPT_TEXT("_INCLUDED");
 }
 
-std::pair<fcppt::string,fcppt::string>
-create_namespaces(
-	directory_sequence const &dirs)
+std::pair<fcppt::string, fcppt::string> create_namespaces(directory_sequence const &dirs)
 {
-	std::pair<fcppt::string,fcppt::string> output;
-	for (auto const &d : dirs)
-	{
-		output.first += FCPPT_TEXT("namespace ")+d+FCPPT_TEXT("\n{\n");
-		output.second += FCPPT_TEXT("}\n");
-	}
-	return output;
+  std::pair<fcppt::string, fcppt::string> output;
+  for (auto const &d : dirs)
+  {
+    output.first += FCPPT_TEXT("namespace ") + d + FCPPT_TEXT("\n{\n");
+    output.second += FCPPT_TEXT("}\n");
+  }
+  return output;
 }
 
-void
-main_program(
-	std::filesystem::path const &_p
-)
+void main_program(std::filesystem::path const &_p)
 {
-	// We might open a new buffer in vim to which no (saved) file is attached yet, so this test is useless
-	//if (!std::filesystem::is_regular_file(p))
-	//{
-	//	fcppt::io::cerr() << FCPPT_TEXT("The file ") << p << FCPPT_TEXT(" is not regular\n");
-	//	return EXIT_FAILURE;
-	//}
+  // We might open a new buffer in vim to which no (saved) file is attached yet, so this test is useless
+  //if (!std::filesystem::is_regular_file(p))
+  //{
+  //	fcppt::io::cerr() << FCPPT_TEXT("The file ") << p << FCPPT_TEXT(" is not regular\n");
+  //	return EXIT_FAILURE;
+  //}
 
-	directory_sequence const s =
-		calculate_sequence(
-			_p.parent_path());
+  directory_sequence const s = calculate_sequence(_p.parent_path());
 
-	std::pair<fcppt::string,fcppt::string> const namespaces =
-		create_namespaces(
-			s);
+  std::pair<fcppt::string, fcppt::string> const namespaces = create_namespaces(s);
 
-	fcppt::string const guard =
-		create_guard(
-			s,
-			fcppt::filesystem::path_to_string(
-				_p.filename()));
+  fcppt::string const guard = create_guard(s, fcppt::filesystem::path_to_string(_p.filename()));
 
-	fcppt::io::cout()
-		<< FCPPT_TEXT("#ifndef ") << guard << FCPPT_TEXT("\n")
-		<< FCPPT_TEXT("#define ") << guard << FCPPT_TEXT("\n\n")
-		<< namespaces.first
-		<< namespaces.second
-		<< FCPPT_TEXT("\n")
-		<< FCPPT_TEXT("#endif");
+  fcppt::io::cout() << FCPPT_TEXT("#ifndef ") << guard << FCPPT_TEXT("\n") << FCPPT_TEXT("#define ")
+                    << guard << FCPPT_TEXT("\n\n") << namespaces.first << namespaces.second
+                    << FCPPT_TEXT("\n") << FCPPT_TEXT("#endif");
 }
 
 }
 
-int FCPPT_MAIN(
-	int argc,
-	fcppt::args_char **argv)
+int FCPPT_MAIN(int argc, fcppt::args_char **argv)
 try
 {
-	FCPPT_RECORD_MAKE_LABEL(
-		file_label
-	);
+  FCPPT_RECORD_MAKE_LABEL(file_label);
 
-	fcppt::options::argument<
-		file_label,
-		std::filesystem::path
-	> const parser{
-		fcppt::options::long_name{
-			FCPPT_TEXT("filename")
-		},
-		fcppt::options::optional_help_text{}
-	};
+  fcppt::options::argument<file_label, std::filesystem::path> const parser{
+      fcppt::options::long_name{FCPPT_TEXT("filename")}, fcppt::options::optional_help_text{}};
 
-	return
-		fcppt::either::match(
-			fcppt::options::parse(
-				parser,
-				fcppt::args_from_second(
-					argc,
-					argv
-				)
-			),
-			[
-				&parser
-			](
-				fcppt::options::error const &_error
-			)
-			{
-				fcppt::io::cerr()
-					<<
-					_error
-					<<
-					FCPPT_TEXT("\nUsage:\n")
-					<<
-					parser.usage()
-					<<
-					FCPPT_TEXT('\n');
+  return fcppt::either::match(
+      fcppt::options::parse(parser, fcppt::args_from_second(argc, argv)),
+      [&parser](fcppt::options::error const &_error)
+      {
+        fcppt::io::cerr() << _error << FCPPT_TEXT("\nUsage:\n") << parser.usage()
+                          << FCPPT_TEXT('\n');
 
-				return
-					EXIT_FAILURE;
-			},
-			[](
-				fcppt::options::result_of<
-					decltype(
-						parser
-					)
-				> const &_result
-			)
-			{
-				main_program(
-					fcppt::record::get<
-						file_label
-					>(
-						_result
-					)
-				);
+        return EXIT_FAILURE;
+      },
+      [](fcppt::options::result_of<decltype(parser)> const &_result)
+      {
+        main_program(fcppt::record::get<file_label>(_result));
 
-				return
-					EXIT_SUCCESS;
-			}
-		);
+        return EXIT_SUCCESS;
+      });
 }
 catch (fcppt::exception const &e)
 {
-	fcppt::io::cerr() << e.string() << FCPPT_TEXT("\n");
-	return EXIT_FAILURE;
+  fcppt::io::cerr() << e.string() << FCPPT_TEXT("\n");
+  return EXIT_FAILURE;
 }
 catch (std::exception const &e)
 {
-	std::cerr << e.what() << '\n';
-	return EXIT_FAILURE;
+  std::cerr << e.what() << '\n';
+  return EXIT_FAILURE;
 }

@@ -63,312 +63,144 @@
 #include <vector>
 #include <fcppt/config/external_end.hpp>
 
-
 namespace
 {
 
-fcppt::string
-make_syntax_only(
-	fcppt::string const &_compile_command
-)
+fcppt::string make_syntax_only(fcppt::string const &_compile_command)
 {
-	using
-	string_sequence
-	=
-	std::vector<
-		fcppt::string
-	>;
+  using string_sequence = std::vector<fcppt::string>;
 
-	string_sequence parts;
+  string_sequence parts;
 
-	boost::algorithm::split(
-		parts,
-		_compile_command,
-		boost::algorithm::is_space(), // NOLINT(fuchsia-default-arguments-calls)
-		boost::algorithm::token_compress_on
-	);
+  boost::algorithm::split(
+      parts,
+      _compile_command,
+      boost::algorithm::is_space(), // NOLINT(fuchsia-default-arguments-calls)
+      boost::algorithm::token_compress_on);
 
-	for(
-		auto it(
-			parts.begin()
-		);
-		it != parts.end();
-	)
-	{
-		if(
-			*it == FCPPT_TEXT("-o")
-		)
-		{
-			if(
-				std::next( // NOLINT(fuchsia-default-arguments-calls)
-					it
-				)
-				==
-				parts.end()
-			)
-			{
-				throw fcppt::exception(
-					FCPPT_TEXT("Nothing following a -o argument!")
-				);
-			}
+  for (auto it(parts.begin()); it != parts.end();)
+  {
+    if (*it == FCPPT_TEXT("-o"))
+    {
+      if (std::next( // NOLINT(fuchsia-default-arguments-calls)
+              it) == parts.end())
+      {
+        throw fcppt::exception(FCPPT_TEXT("Nothing following a -o argument!"));
+      }
 
-			it =
-				parts.erase( // NOLINT(fuchsia-default-arguments-calls)
-					it, // NOLINT(fuchsia-default-arguments-calls)
-					it + 2 // NOLINT(fuchsia-default-arguments-calls)
-				);
-		}
-		else
-		{
-			++it;
-		}
-	}
+      it = parts.erase( // NOLINT(fuchsia-default-arguments-calls)
+          it, // NOLINT(fuchsia-default-arguments-calls)
+          it + 2 // NOLINT(fuchsia-default-arguments-calls)
+      );
+    }
+    else
+    {
+      ++it;
+    }
+  }
 
-	parts.push_back(
-		FCPPT_TEXT("-fsyntax-only")
-	);
+  parts.push_back(FCPPT_TEXT("-fsyntax-only"));
 
-	return
-		boost::algorithm::join(
-			parts,
-			fcppt::string(
-				FCPPT_TEXT(" ")
-			)
-		);
+  return boost::algorithm::join(parts, fcppt::string(FCPPT_TEXT(" ")));
 }
 
-FCPPT_DECLARE_STRONG_TYPEDEF(
-	bool,
-	verbose
-);
+FCPPT_DECLARE_STRONG_TYPEDEF(bool, verbose);
 
-void
-worker(
-	sge::parse::json::value const &_element,
-	fcppt::reference<
-		boost::asio::io_service
-	> const _io_service,
-	verbose const _verbose
-)
+void worker(
+    sge::parse::json::value const &_element,
+    fcppt::reference<boost::asio::io_service> const _io_service,
+    verbose const _verbose)
 {
-	sge::parse::json::object const &json_object(
-		sge::parse::json::get_exn<
-			sge::parse::json::object
-		>(
-			fcppt::make_cref(
-				_element
-			)
-		).get()
-	);
+  sge::parse::json::object const &json_object(
+      sge::parse::json::get_exn<sge::parse::json::object>(fcppt::make_cref(_element)).get());
 
-	{
-		std::filesystem::path const filename( // NOLINT(fuchsia-default-arguments-calls)
-			sge::parse::json::find_member_exn<
-				sge::charconv::utf8_string const
-			>(
-				fcppt::make_cref(
-					json_object.members
-				),
-				sge::charconv::utf8_string{
-					"file"
-				}
-			).get()
-		);
+  {
+    std::filesystem::path const filename( // NOLINT(fuchsia-default-arguments-calls)
+        sge::parse::json::find_member_exn<sge::charconv::utf8_string const>(
+            fcppt::make_cref(json_object.members), sge::charconv::utf8_string{"file"})
+            .get());
 
-		if(
-			fcppt::algorithm::contains(
-				filename,
-				std::filesystem::path( // NOLINT(fuchsia-default-arguments-calls)
-					FCPPT_TEXT("impl")
-				)
-			)
-			||
-			filename.extension()
-			!=
-			std::filesystem::path{ // NOLINT(fuchsia-default-arguments-calls)
-				".hpp"
-			}
-		)
-		{
-			return;
-		}
-	}
+    if (fcppt::algorithm::contains(
+            filename,
+            std::filesystem::path( // NOLINT(fuchsia-default-arguments-calls)
+                FCPPT_TEXT("impl"))) ||
+        filename.extension() != std::filesystem::path{// NOLINT(fuchsia-default-arguments-calls)
+                                                      ".hpp"})
+    {
+      return;
+    }
+  }
 
-	std::string const command{
-		fcppt::optional::to_exception(
-			fcppt::to_std_string(
-				make_syntax_only(
-					fcppt::optional::to_exception(
-						sge::charconv::utf8_string_to_fcppt(
-							sge::parse::json::find_member_exn<
-								sge::charconv::utf8_string const
-							>(
-								fcppt::make_cref(
-									json_object.members
-								),
-								sge::charconv::utf8_string{
-									"command"
-								}
-							).get()
-						),
-						[]{
-							return
-								fcppt::exception{
-									FCPPT_TEXT("Failed to convert command!")
-								};
-						}
-					)
-				)
-			),
-			[]{
-				return
-					fcppt::exception{
-						FCPPT_TEXT("Failed to convert command!")
-					};
-			}
-		)
-	};
+  std::string const command{fcppt::optional::to_exception(
+      fcppt::to_std_string(make_syntax_only(fcppt::optional::to_exception(
+          sge::charconv::utf8_string_to_fcppt(
+              sge::parse::json::find_member_exn<sge::charconv::utf8_string const>(
+                  fcppt::make_cref(json_object.members), sge::charconv::utf8_string{"command"})
+                  .get()),
+          [] { return fcppt::exception{FCPPT_TEXT("Failed to convert command!")}; }))),
+      [] { return fcppt::exception{FCPPT_TEXT("Failed to convert command!")}; })};
 
-	if(
-		_verbose.get()
-	)
-	{
-		std::cout
-			<<
-			command
-			<<
-			'\n';
-	}
+  if (_verbose.get())
+  {
+    std::cout << command << '\n';
+  }
 
-	int const exit_status(
-		std::system( // NOLINT(cert-env33-c)
-			command.c_str()
-		)
-	);
+  int const exit_status(std::system( // NOLINT(cert-env33-c)
+      command.c_str()));
 
+  if (exit_status == -1)
+  {
+    fcppt::io::cerr() << FCPPT_TEXT("system() failed\n");
 
-	if(
-		exit_status == -1
-	)
-	{
-		fcppt::io::cerr()
-			<< FCPPT_TEXT("system() failed\n");
+    _io_service.get().stop();
 
-		_io_service.get().stop();
-
-		return;
-	}
+    return;
+  }
 #if defined(FCPPT_CONFIG_POSIX_PLATFORM)
-FCPPT_PP_PUSH_WARNING
-FCPPT_PP_DISABLE_GCC_WARNING(-Wcast-qual)
-FCPPT_PP_DISABLE_GCC_WARNING(-Wold-style-cast)
-	if(
-		WIFSIGNALED( // NOLINT(hicpp-signed-bitwise)
-			exit_status
-		)
-	)
-FCPPT_PP_POP_WARNING
-	{
-		fcppt::io::cout()
-			<< FCPPT_TEXT('\n');
+  FCPPT_PP_PUSH_WARNING
+  FCPPT_PP_DISABLE_GCC_WARNING(-Wcast-qual)
+  FCPPT_PP_DISABLE_GCC_WARNING(-Wold-style-cast)
+  if (WIFSIGNALED( // NOLINT(hicpp-signed-bitwise)
+          exit_status))
+    FCPPT_PP_POP_WARNING
+    {
+      fcppt::io::cout() << FCPPT_TEXT('\n');
 
-		_io_service.get().stop();
-	}
+      _io_service.get().stop();
+    }
 #endif
 }
 
-FCPPT_DECLARE_STRONG_TYPEDEF(
-	unsigned,
-	num_threads
-);
+FCPPT_DECLARE_STRONG_TYPEDEF(unsigned, num_threads);
 
-void
-main_program(
-	num_threads const _num_threads,
-	verbose const _verbose
-)
+void main_program(num_threads const _num_threads, verbose const _verbose)
 {
-	fcppt::io::cout()
-		<<
-		FCPPT_TEXT("Starting ")
-		<<
-		_num_threads
-		<<
-		FCPPT_TEXT(" threads\n");
+  fcppt::io::cout() << FCPPT_TEXT("Starting ") << _num_threads << FCPPT_TEXT(" threads\n");
 
-	sge::parse::json::array const build_commands(
-		sge::parse::json::parse_file_exn(
-			std::filesystem::path{ // NOLINT(fuchsia-default-arguments-calls)
-				FCPPT_TEXT("compile_commands.json")
-			}
-		).array()
-	);
+  sge::parse::json::array const build_commands(
+      sge::parse::json::parse_file_exn(
+          std::filesystem::path{// NOLINT(fuchsia-default-arguments-calls)
+                                FCPPT_TEXT("compile_commands.json")})
+          .array());
 
-	boost::asio::io_service io_service{};
+  boost::asio::io_service io_service{};
 
-	for(
-		auto const &element
-		:
-		build_commands.elements
-	)
-	{
-		io_service.post(
-			[
-				&io_service,
-				element,
-				_verbose
-			]{
-				worker(
-					element.get(),
-					fcppt::make_ref(
-						io_service
-					),
-					_verbose
-				);
-			}
-		);
-	}
+  for (auto const &element : build_commands.elements)
+  {
+    io_service.post([&io_service, element, _verbose]
+                    { worker(element.get(), fcppt::make_ref(io_service), _verbose); });
+  }
 
-	using
-	thread_vector
-	=
-	std::vector<
-		std::thread
-	>;
+  using thread_vector = std::vector<std::thread>;
 
-	thread_vector threads{
-		fcppt::algorithm::map<
-			thread_vector
-		>(
-			fcppt::make_int_range_count(
-				_num_threads.get()
-			),
-			[
-				&io_service
-			](
-				unsigned
-			){
-				return
-					std::thread{
-						[
-							&io_service
-						]()
-						{
-							io_service.run();
-						}
-					};
-			}
-		)
-	};
+  thread_vector threads{fcppt::algorithm::map<thread_vector>(
+      fcppt::make_int_range_count(_num_threads.get()),
+      [&io_service](unsigned) { return std::thread{[&io_service]() { io_service.run(); }}; })};
 
-	for(
-		auto &thread
-		:
-		threads
-	)
-	{
-		thread.join();
-	}
+  for (auto &thread : threads)
+  {
+    thread.join();
+  }
 }
 
 }
@@ -376,147 +208,55 @@ main_program(
 FCPPT_PP_PUSH_WARNING
 FCPPT_PP_DISABLE_GCC_WARNING(-Wmissing-declarations)
 
-int
-FCPPT_MAIN(
-	int argc,
-	fcppt::args_char **argv
-)
+int FCPPT_MAIN(int argc, fcppt::args_char **argv)
 try
 {
-	FCPPT_RECORD_MAKE_LABEL(
-		verbose_label
-	);
+  FCPPT_RECORD_MAKE_LABEL(verbose_label);
 
-	FCPPT_RECORD_MAKE_LABEL(
-		num_threads_label
-	);
+  FCPPT_RECORD_MAKE_LABEL(num_threads_label);
 
-	auto const parser(
-		fcppt::options::apply(
-			fcppt::options::switch_<
-				verbose_label
-			>{
-				fcppt::options::optional_short_name{
-					fcppt::options::short_name{
-						FCPPT_TEXT("v")
-					}
-				},
-				fcppt::options::long_name{
-					FCPPT_TEXT("verbose")
-				},
-				fcppt::options::optional_help_text{}
-			},
-			fcppt::options::option<
-				num_threads_label,
-				unsigned
-			>{
-				fcppt::options::optional_short_name{
-					fcppt::options::short_name{
-						FCPPT_TEXT("j")
-					}
-				},
-				fcppt::options::long_name{
-					FCPPT_TEXT("threads")
-				},
-				fcppt::options::make_default_value(
-					fcppt::optional::make(
-						std::max(
-							std::thread::hardware_concurrency(),
-							1U
-						)
-					)
-				),
-				fcppt::options::optional_help_text{}
-			}
-		)
-	);
+  auto const parser(fcppt::options::apply(
+      fcppt::options::switch_<verbose_label>{
+          fcppt::options::optional_short_name{fcppt::options::short_name{FCPPT_TEXT("v")}},
+          fcppt::options::long_name{FCPPT_TEXT("verbose")},
+          fcppt::options::optional_help_text{}},
+      fcppt::options::option<num_threads_label, unsigned>{
+          fcppt::options::optional_short_name{fcppt::options::short_name{FCPPT_TEXT("j")}},
+          fcppt::options::long_name{FCPPT_TEXT("threads")},
+          fcppt::options::make_default_value(
+              fcppt::optional::make(std::max(std::thread::hardware_concurrency(), 1U))),
+          fcppt::options::optional_help_text{}}));
 
-	return
-		fcppt::either::match(
-			fcppt::options::parse(
-				parser,
-				fcppt::args_from_second(
-					argc,
-					argv
-				)
-			),
-			[
-				&parser
-			](
-				fcppt::options::error const &_error
-			)
-			{
-				fcppt::io::cerr()
-					<<
-					_error
-					<<
-					FCPPT_TEXT('\n')
-					<<
-					parser.usage()
-					<<
-					FCPPT_TEXT('\n');
+  return fcppt::either::match(
+      fcppt::options::parse(parser, fcppt::args_from_second(argc, argv)),
+      [&parser](fcppt::options::error const &_error)
+      {
+        fcppt::io::cerr() << _error << FCPPT_TEXT('\n') << parser.usage() << FCPPT_TEXT('\n');
 
-				return
-					EXIT_FAILURE;
-			},
-			[](
-				fcppt::options::result_of<
-					decltype(
-						parser
-					)
-				> const &_args
-			)
-			{
-				main_program(
-					num_threads{
-						fcppt::record::get<
-							num_threads_label
-						>(
-							_args
-						)
-					},
-					verbose{
-						fcppt::record::get<
-							verbose_label
-						>(
-							_args
-						)
-					}
-				);
+        return EXIT_FAILURE;
+      },
+      [](fcppt::options::result_of<decltype(parser)> const &_args)
+      {
+        main_program(
+            num_threads{fcppt::record::get<num_threads_label>(_args)},
+            verbose{fcppt::record::get<verbose_label>(_args)});
 
-				return
-					EXIT_SUCCESS;
-			}
-		);
+        return EXIT_SUCCESS;
+      });
 
-	return
-		EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }
-catch(
-	fcppt::exception const &_exception
-)
+catch (fcppt::exception const &_exception)
 {
-	fcppt::io::cerr()
-		<<
-		_exception.string()
-		<<
-		FCPPT_TEXT('\n');
+  fcppt::io::cerr() << _exception.string() << FCPPT_TEXT('\n');
 
-	return
-		EXIT_FAILURE;
+  return EXIT_FAILURE;
 }
-catch(
-	std::exception const &_exception
-)
+catch (std::exception const &_exception)
 {
-	std::cerr
-		<<
-		_exception.what()
-		<<
-		'\n';
+  std::cerr << _exception.what() << '\n';
 
-	return
-		EXIT_FAILURE;
+  return EXIT_FAILURE;
 }
 
 FCPPT_PP_POP_WARNING

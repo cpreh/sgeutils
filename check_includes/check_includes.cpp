@@ -8,7 +8,6 @@
 #include <fcppt/assert/error.hpp>
 #include <fcppt/either/match.hpp>
 #include <fcppt/filesystem/extension_without_dot.hpp>
-#include <fcppt/filesystem/normalize.hpp>
 #include <fcppt/filesystem/path_to_string.hpp>
 #include <fcppt/filesystem/remove_extension.hpp>
 #include <fcppt/io/cerr.hpp>
@@ -181,7 +180,7 @@ try
       [](fcppt::options::result_of<decltype(parser)> const &_result)
       {
         main_program(
-            fcppt::filesystem::normalize(fcppt::record::get<path_label>(_result)),
+            std::filesystem::canonical(fcppt::record::get<path_label>(_result)),
             fcppt::optional::from(
                 fcppt::record::get<prefix_label>(_result), [] { return fcppt::string{}; }));
 

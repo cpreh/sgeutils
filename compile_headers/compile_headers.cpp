@@ -8,7 +8,10 @@
 #include <sge/parse/json/start.hpp>
 #include <fcppt/args_char.hpp>
 #include <fcppt/args_from_second.hpp>
+#include <fcppt/char_type.hpp>
+#include <fcppt/copy.hpp>
 #include <fcppt/declare_strong_typedef.hpp>
+#include <fcppt/deref_reference.hpp>
 #include <fcppt/exception.hpp>
 #include <fcppt/main.hpp>
 #include <fcppt/make_cref.hpp>
@@ -21,10 +24,14 @@
 #include <fcppt/text.hpp>
 #include <fcppt/to_std_string.hpp>
 #include <fcppt/algorithm/contains.hpp>
+#include <fcppt/algorithm/join_strings.hpp>
 #include <fcppt/algorithm/map.hpp>
+#include <fcppt/algorithm/map_optional.hpp>
+#include <fcppt/container/join.hpp>
 #include <fcppt/config/platform.hpp>
 #include <fcppt/either/match.hpp>
 #include <fcppt/either/output.hpp>
+#include <fcppt/either/to_exception.hpp>
 #include <fcppt/io/cerr.hpp>
 #include <fcppt/io/cout.hpp>
 #include <fcppt/optional/make.hpp>
@@ -40,26 +47,37 @@
 #include <fcppt/options/result_of.hpp>
 #include <fcppt/options/short_name.hpp>
 #include <fcppt/options/switch.hpp>
+#include <fcppt/parse/basic_char_set.hpp>
+#include <fcppt/parse/basic_string.hpp>
+#include <fcppt/parse/convert_const.hpp>
+#include <fcppt/parse/make_fatal.hpp>
+#include <fcppt/parse/make_lexeme.hpp>
+#include <fcppt/parse/phrase_parse_string.hpp>
+#include <fcppt/parse/space_set.hpp>
+#include <fcppt/parse/operators/alternative.hpp>
+#include <fcppt/parse/operators/complement.hpp>
+#include <fcppt/parse/operators/repetition_plus.hpp>
+#include <fcppt/parse/operators/sequence.hpp>
+#include <fcppt/parse/skipper/basic_space.hpp>
 #include <fcppt/preprocessor/disable_gcc_warning.hpp>
 #include <fcppt/preprocessor/pop_warning.hpp>
 #include <fcppt/preprocessor/push_warning.hpp>
 #include <fcppt/record/get.hpp>
 #include <fcppt/record/make_label.hpp>
+#include <fcppt/tuple/object_impl.hpp>
+#include <fcppt/variant/match.hpp>
+#include <fcppt/variant/object_impl.hpp>
 #include <fcppt/variant/output.hpp>
 #include <fcppt/config/external_begin.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/join.hpp>
-#include <boost/algorithm/string/split.hpp>
 #include <boost/asio/io_service.hpp>
-#include <algorithm>
 #include <cstdlib>
 #include <exception>
 #include <filesystem>
 #include <iostream>
-#include <iterator>
 #include <ostream>
 #include <string>
 #include <thread>
+#include <utility>
 #include <vector>
 #include <fcppt/config/external_end.hpp>
 
@@ -68,40 +86,42 @@ namespace
 
 fcppt::string make_syntax_only(fcppt::string const &_compile_command)
 {
+  auto const word{fcppt::parse::make_lexeme(+~fcppt::parse::basic_char_set<fcppt::char_type>{
+      fcppt::parse::space_set<fcppt::char_type>()})};
+
   using string_sequence = std::vector<fcppt::string>;
 
-  string_sequence parts;
+  struct otag{};
 
-  boost::algorithm::split(
-      parts,
-      _compile_command,
-      boost::algorithm::is_space(), // NOLINT(fuchsia-default-arguments-calls)
-      boost::algorithm::token_compress_on);
-
-  for (auto it(parts.begin()); it != parts.end();)
-  {
-    if (*it == FCPPT_TEXT("-o"))
-    {
-      if (std::next( // NOLINT(fuchsia-default-arguments-calls)
-              it) == parts.end())
-      {
-        throw fcppt::exception(FCPPT_TEXT("Nothing following a -o argument!"));
-      }
-
-      it = parts.erase( // NOLINT(fuchsia-default-arguments-calls)
-          it, // NOLINT(fuchsia-default-arguments-calls)
-          it + 2 // NOLINT(fuchsia-default-arguments-calls)
-      );
-    }
-    else
-    {
-      ++it;
-    }
-  }
-
-  parts.push_back(FCPPT_TEXT("-fsyntax-only"));
-
-  return boost::algorithm::join(parts, fcppt::string(FCPPT_TEXT(" ")));
+  return fcppt::algorithm::join_strings(
+      fcppt::container::join(
+          fcppt::algorithm::map_optional<string_sequence>(
+              fcppt::either::to_exception(
+                  fcppt::parse::phrase_parse_string(
+                      +((fcppt::parse::convert_const{
+                             fcppt::parse::basic_string<fcppt::char_type>{FCPPT_TEXT("-o")},
+                             otag{}} >>
+                         fcppt::parse::make_fatal(fcppt::make_cref(word))) |
+                        fcppt::make_cref(word)),
+                      fcppt::copy(_compile_command),
+                      fcppt::parse::skipper::basic_space<fcppt::char_type>()),
+                  [](fcppt::parse::error<fcppt::char_type> &&_error)
+                  {
+                    return fcppt::exception{
+                        FCPPT_TEXT("Failed to parse command line: ") + std::move(_error.get())};
+                  }),
+              [](fcppt::variant::object<fcppt::tuple::object<otag, fcppt::string>, fcppt::string>
+                     const &_element)
+              {
+                return fcppt::variant::match(
+                    _element,
+                    [](fcppt::tuple::object<otag, fcppt::string> const &)
+                    { return fcppt::optional::object<fcppt::string>{}; },
+                    [](fcppt::string const &_string)
+                    { return fcppt::optional::make(_string); });
+              }),
+          string_sequence{FCPPT_TEXT("-fsyntax-only")}),
+      FCPPT_TEXT(" "));
 }
 
 FCPPT_DECLARE_STRONG_TYPEDEF(bool, verbose);

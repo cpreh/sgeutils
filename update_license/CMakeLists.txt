@@ -8,6 +8,7 @@ sge_utils_add_program(
 		${FCPPT_UTILS_MAIN_LINK_LIBS}
 		${fcppt_core_TARGET}
 		${fcppt_options_TARGET}
+		fcppt_parse_interface
 )
 
 sge_utils_add_program(

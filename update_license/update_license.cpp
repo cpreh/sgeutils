@@ -2,6 +2,7 @@
 #include <fcppt/args_from_second.hpp>
 #include <fcppt/exception.hpp>
 #include <fcppt/main.hpp>
+#include <fcppt/make_cref.hpp>
 #include <fcppt/text.hpp>
 #include <fcppt/config/compiler.hpp>
 #include <fcppt/io/cerr.hpp>
@@ -13,18 +14,17 @@
 #include <fcppt/options/optional_help_text.hpp>
 #include <fcppt/options/parse.hpp>
 #include <fcppt/options/result_of.hpp>
-#include <fcppt/preprocessor/disable_gcc_warning.hpp>
-#include <fcppt/preprocessor/pop_warning.hpp>
-#include <fcppt/preprocessor/push_warning.hpp>
+#include <fcppt/parse/char.hpp>
+#include <fcppt/parse/make_literal.hpp>
+#include <fcppt/parse/parse_stream.hpp>
+#include <fcppt/parse/string.hpp>
+#include <fcppt/parse/operators/alternative.hpp>
+#include <fcppt/parse/operators/exclude.hpp>
+#include <fcppt/parse/operators/repetition.hpp>
+#include <fcppt/parse/operators/sequence.hpp>
 #include <fcppt/record/get.hpp>
 #include <fcppt/record/make_label.hpp>
 #include <fcppt/config/external_begin.hpp>
-#include <boost/spirit/include/qi_char.hpp>
-#include <boost/spirit/include/qi_eol.hpp>
-#include <boost/spirit/include/qi_match.hpp>
-#include <boost/spirit/include/qi_operator.hpp>
-#include <boost/spirit/include/qi_string.hpp>
-#include <boost/spirit/repository/include/qi_confix.hpp>
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
@@ -40,8 +40,7 @@ namespace
 
 int main_program(std::filesystem::path const &_file, std::filesystem::path const &_license_file)
 {
-  std::ifstream ifs( // NOLINT(fuchsia-default-arguments-calls)
-      _file);
+  std::ifstream ifs{_file};
 
   if (!ifs.is_open())
   {
@@ -51,27 +50,26 @@ int main_program(std::filesystem::path const &_file, std::filesystem::path const
   }
 
   {
-    namespace encoding = boost::spirit::qi::standard;
+    ifs >> std::noskipws;
 
-    using boost::spirit::repository::qi::confix;
-    using boost::spirit::qi::eol;
-    using encoding::char_;
+    auto const eol{fcppt::parse::make_literal('\n')};
 
-    FCPPT_PP_PUSH_WARNING
-#if defined(FCPPT_CONFIG_GNU_GCC_COMPILER)
-    FCPPT_PP_DISABLE_GCC_WARNING(-Wzero-as-null-pointer-constant)
-#endif
+    auto const ml_comment{
+        fcppt::parse::string{"/*"} >> *(fcppt::parse::char_{} - fcppt::parse::string{"*/"}) >>
+        fcppt::parse::string{"*/"}};
 
-    ifs >> std::noskipws >> boost::spirit::qi::match(
-                                *(confix( // NOLINT(fuchsia-default-arguments-calls)
-                                      "/*",
-                                      "*/")[*(char_ - "*/")] |
-                                  confix( // NOLINT(fuchsia-default-arguments-calls)
-                                      "//",
-                                      eol)[*(char_ - eol)]) >>
-                                *eol);
+    auto const comment{
+        fcppt::parse::string{"//"} >> *(fcppt::parse::char_{} - fcppt::make_cref(eol)) >>
+        fcppt::make_cref(eol)};
 
-    FCPPT_PP_POP_WARNING
+    auto const parser{
+        *(fcppt::make_cref(ml_comment) | fcppt::make_cref(comment)) >> *fcppt::make_cref(eol)};
+
+    if(fcppt::parse::parse_stream(parser, ifs).has_failure())
+    {
+      std::cerr << "Parsing license header failed.\n";
+      return EXIT_FAILURE;
+    }
   }
 
   ifs.unget(); // FIXME
@@ -83,8 +81,7 @@ int main_program(std::filesystem::path const &_file, std::filesystem::path const
     return EXIT_FAILURE;
   }
 
-  std::ifstream license{// NOLINT(fuchsia-default-arguments-calls)
-                        _license_file};
+  std::ifstream license{_license_file};
 
   if (!license.is_open())
   {
@@ -93,12 +90,10 @@ int main_program(std::filesystem::path const &_file, std::filesystem::path const
     return EXIT_FAILURE;
   }
 
-  std::filesystem::path const temp_filename( // NOLINT(fuchsia-default-arguments-calls)
-      _file.string() + std::string{".temp"});
+  std::filesystem::path const temp_filename{_file.string() + std::string{".temp"}};
 
   {
-    std::ofstream ofs( // NOLINT(fuchsia-default-arguments-calls)
-        temp_filename.c_str());
+    std::ofstream ofs{temp_filename};
 
     if (!ofs.is_open())
     {

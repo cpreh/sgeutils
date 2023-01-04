@@ -1,9 +1,11 @@
 #include <fcppt/args_char.hpp>
 #include <fcppt/args_from_second.hpp>
+#include <fcppt/exception.hpp>
 #include <fcppt/main.hpp>
+#include <fcppt/not.hpp>
 #include <fcppt/text.hpp>
-#include <fcppt/assert/error_message.hpp>
 #include <fcppt/either/match.hpp>
+#include <fcppt/io/cerr.hpp>
 #include <fcppt/options/apply.hpp>
 #include <fcppt/options/argument.hpp>
 #include <fcppt/options/error.hpp>
@@ -102,10 +104,12 @@ int main_program(std::filesystem::path const &_input_file_with_extension, bool c
     }
   }
 
-  FCPPT_ASSERT_ERROR_MESSAGE(
-      !namespace_path.empty(),
-      FCPPT_TEXT("The namespace path is empty, so the file isn't under include/ or src/.\n")
-          FCPPT_TEXT("Not sure what to do here..."));
+  if (namespace_path.empty())
+  {
+    throw fcppt::exception{
+        FCPPT_TEXT("The namespace path is empty, so the file isn't under include/ or src/.\n")
+        FCPPT_TEXT("Not sure what to do here...")};
+  }
 
   // I'm not sure if this is a good test.
   // NOLINTNEXTLINE(fuchsia-default-arguments-calls)
@@ -129,10 +133,12 @@ int main_program(std::filesystem::path const &_input_file_with_extension, bool c
     return EXIT_FAILURE;
   }
 
-  FCPPT_ASSERT_ERROR_MESSAGE(
-      !is_header || std::distance(namespace_path.begin(), namespace_path.end()) > 1,
-      FCPPT_TEXT("There's no directory below include/ denoting the namespace of the project. Don't "
-                 "know how to handle that yet."));
+  if (fcppt::not_(!is_header || std::distance(namespace_path.begin(), namespace_path.end()) > 1))
+  {
+    throw fcppt::exception{FCPPT_TEXT(
+        "There's no directory below include/ denoting the namespace of the project. Don't "
+        "know how to handle that yet.")};
+  }
 
   std::filesystem::path const trimmed_namespace_path = std::accumulate(
       std::next(namespace_path.begin(), is_header ? 2 : 1),

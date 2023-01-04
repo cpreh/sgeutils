@@ -5,7 +5,6 @@
 #include <fcppt/main.hpp>
 #include <fcppt/string.hpp>
 #include <fcppt/text.hpp>
-#include <fcppt/assert/error.hpp>
 #include <fcppt/either/match.hpp>
 #include <fcppt/filesystem/extension_without_dot.hpp>
 #include <fcppt/filesystem/path_to_string.hpp>
@@ -65,7 +64,10 @@ fcppt::string make_include_guard(
 
   std::filesystem::path const without_extension(fcppt::filesystem::remove_extension(_path));
 
-  FCPPT_ASSERT_ERROR(std::distance(_path.begin(), _path.end()) >= _base_level);
+  if(std::distance(_path.begin(), _path.end()) < _base_level)
+  {
+     throw fcppt::exception{FCPPT_TEXT("Path too short")};
+  }
 
   for (std::filesystem::path const &path : boost::make_iterator_range(
            std::next(without_extension.begin(), _base_level), without_extension.end()))

@@ -17,6 +17,7 @@
 #include <fcppt/make_cref.hpp>
 #include <fcppt/make_int_range_count.hpp>
 #include <fcppt/make_ref.hpp>
+#include <fcppt/output_to_fcppt_string.hpp>
 #include <fcppt/reference_impl.hpp>
 #include <fcppt/string.hpp>
 #include <fcppt/strong_typedef_impl.hpp>
@@ -52,6 +53,8 @@
 #include <fcppt/parse/convert_const.hpp>
 #include <fcppt/parse/make_fatal.hpp>
 #include <fcppt/parse/make_lexeme.hpp>
+#include <fcppt/parse/parse_string_error.hpp>
+#include <fcppt/parse/parse_string_error_output.hpp>
 #include <fcppt/parse/phrase_parse_string.hpp>
 #include <fcppt/parse/space_set.hpp>
 #include <fcppt/parse/operators/alternative.hpp>
@@ -77,7 +80,6 @@
 #include <ostream>
 #include <string>
 #include <thread>
-#include <utility>
 #include <vector>
 #include <fcppt/config/external_end.hpp>
 
@@ -105,13 +107,15 @@ fcppt::string make_syntax_only(fcppt::string const &_compile_command)
                         fcppt::make_cref(word)),
                       fcppt::copy(_compile_command),
                       fcppt::parse::skipper::basic_space<fcppt::char_type>()),
-                  [](fcppt::parse::error<fcppt::char_type> &&_error)
+                  [](fcppt::parse::parse_string_error<fcppt::char_type> const &_error)
                   {
                     return fcppt::exception{
-                        FCPPT_TEXT("Failed to parse command line: ") + std::move(_error.get())};
+                        FCPPT_TEXT("Failed to parse command line: ") +
+                        fcppt::output_to_fcppt_string(_error)};
                   }),
-              [](fcppt::variant::object<fcppt::tuple::object<otag, fcppt::string>, fcppt::string>
-                     const &_element)
+              [](fcppt::variant::object<
+                  fcppt::tuple::object<otag, fcppt::string>,
+                  fcppt::string> const &_element)
               {
                 return fcppt::variant::match(
                     _element,

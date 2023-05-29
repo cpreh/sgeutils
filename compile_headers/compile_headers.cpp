@@ -39,6 +39,7 @@
 #include <fcppt/optional/to_exception.hpp>
 #include <fcppt/options/apply.hpp>
 #include <fcppt/options/error.hpp>
+#include <fcppt/options/error_output.hpp>
 #include <fcppt/options/long_name.hpp>
 #include <fcppt/options/make_default_value.hpp>
 #include <fcppt/options/option.hpp>

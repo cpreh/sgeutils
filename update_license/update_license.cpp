@@ -14,6 +14,7 @@
 #include <fcppt/options/optional_help_text.hpp>
 #include <fcppt/options/parse.hpp>
 #include <fcppt/options/result_of.hpp>
+#include <fcppt/options/usage_output.hpp>
 #include <fcppt/parse/char.hpp>
 #include <fcppt/parse/make_literal.hpp>
 #include <fcppt/parse/parse_stream.hpp>

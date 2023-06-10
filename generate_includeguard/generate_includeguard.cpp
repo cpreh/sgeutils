@@ -15,6 +15,7 @@
 #include <fcppt/options/optional_help_text.hpp>
 #include <fcppt/options/parse.hpp>
 #include <fcppt/options/result_of.hpp>
+#include <fcppt/options/usage_output.hpp>
 #include <fcppt/record/get.hpp>
 #include <fcppt/record/make_label.hpp>
 #include <fcppt/config/external_begin.hpp>

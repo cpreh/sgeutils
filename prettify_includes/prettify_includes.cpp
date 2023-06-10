@@ -29,6 +29,7 @@
 #include <fcppt/options/result_of.hpp>
 #include <fcppt/options/short_name.hpp>
 #include <fcppt/options/switch.hpp>
+#include <fcppt/options/usage_output.hpp>
 #include <fcppt/record/element.hpp>
 #include <fcppt/record/get.hpp>
 #include <fcppt/record/make_label.hpp>

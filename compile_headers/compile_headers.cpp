@@ -49,6 +49,7 @@
 #include <fcppt/options/result_of.hpp>
 #include <fcppt/options/short_name.hpp>
 #include <fcppt/options/switch.hpp>
+#include <fcppt/options/usage_output.hpp>
 #include <fcppt/parse/basic_char_set.hpp>
 #include <fcppt/parse/basic_string.hpp>
 #include <fcppt/parse/convert_const.hpp>

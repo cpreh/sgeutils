@@ -116,7 +116,7 @@ exception_set extract_exceptions(sge::parse::json::object const &_object)
                       fcppt::make_cref(_value.get()))
                       .get());
 
-              std::filesystem::path license_file( // NOLINT(fuchsia-default-arguments-calls)
+              std::filesystem::path const license_file( // NOLINT(fuchsia-default-arguments-calls)
                   sge::parse::json::find_member_exn<sge::charconv::utf8_string>(
                       fcppt::make_cref(r2.members), sge::charconv::utf8_string{"license"})
                       .get());

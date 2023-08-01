@@ -82,7 +82,7 @@ int main_program(std::filesystem::path const &_file, std::filesystem::path const
     return EXIT_FAILURE;
   }
 
-  std::ifstream license{_license_file};
+  std::ifstream const license{_license_file};
 
   if (!license.is_open())
   {

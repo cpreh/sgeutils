@@ -153,7 +153,7 @@ int main_program(std::filesystem::path const &_input_file_with_extension, bool c
   }
 
   // NOLINTNEXTLINE(fuchsia-default-arguments-calls)
-  std::filesystem::directory_iterator include_directory_iterator(input_directory / "include");
+  std::filesystem::directory_iterator const include_directory_iterator(input_directory / "include");
 
   if (include_directory_iterator == std::filesystem::directory_iterator())
   {

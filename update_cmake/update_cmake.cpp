@@ -68,6 +68,7 @@ public:
   void commit() { remove_ = false; }
 
 private:
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-const-or-ref-data-members)
   std::filesystem::path const file_;
 
   bool remove_;

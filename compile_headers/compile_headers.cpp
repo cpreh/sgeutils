@@ -65,6 +65,7 @@
 #include <fcppt/parse/operators/sequence.hpp>
 #include <fcppt/parse/skipper/basic_space.hpp>
 #include <fcppt/preprocessor/disable_gcc_warning.hpp>
+#include <fcppt/preprocessor/ignore_dangling_reference.hpp>
 #include <fcppt/preprocessor/pop_warning.hpp>
 #include <fcppt/preprocessor/push_warning.hpp>
 #include <fcppt/record/get.hpp>
@@ -137,8 +138,11 @@ void worker(
     fcppt::reference<boost::asio::io_service> const _io_service,
     verbose const _verbose)
 {
-  sge::parse::json::object const &json_object(
-      sge::parse::json::get_exn<sge::parse::json::object>(fcppt::make_cref(_element)).get());
+  FCPPT_PP_PUSH_WARNING
+  FCPPT_PP_IGNORE_DANGLING_REFERENCE
+  sge::parse::json::object const &json_object{
+      sge::parse::json::get_exn<sge::parse::json::object>(fcppt::make_cref(_element)).get()};
+  FCPPT_PP_POP_WARNING
 
   {
     std::filesystem::path const filename( // NOLINT(fuchsia-default-arguments-calls)

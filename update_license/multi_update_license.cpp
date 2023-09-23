@@ -58,6 +58,9 @@ Assertions:
 #include <fcppt/options/parse.hpp>
 #include <fcppt/options/result_of.hpp>
 #include <fcppt/options/usage_output.hpp>
+#include <fcppt/preprocessor/disable_gcc_warning.hpp>
+#include <fcppt/preprocessor/ignore_dangling_reference.hpp>
+#include <fcppt/preprocessor/pop_warning.hpp>
 #include <fcppt/record/get.hpp>
 #include <fcppt/record/make_label.hpp>
 #include <fcppt/config/external_begin.hpp>
@@ -111,10 +114,13 @@ exception_set extract_exceptions(sge::parse::json::object const &_object)
             _array.get().elements,
             [](fcppt::recursive<sge::parse::json::value> const &_value)
             {
-              sge::parse::json::object const &r2(
+              FCPPT_PP_PUSH_WARNING
+              FCPPT_PP_IGNORE_DANGLING_REFERENCE
+              sge::parse::json::object const &r2{
                   sge::parse::json::get_exn<sge::parse::json::object>(
                       fcppt::make_cref(_value.get()))
-                      .get());
+                      .get()};
+              FCPPT_PP_POP_WARNING
 
               std::filesystem::path const license_file( // NOLINT(fuchsia-default-arguments-calls)
                   sge::parse::json::find_member_exn<sge::charconv::utf8_string>(

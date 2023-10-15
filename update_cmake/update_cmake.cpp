@@ -71,6 +71,7 @@ private:
   // NOLINTNEXTLINE(cppcoreguidelines-avoid-const-or-ref-data-members)
   std::filesystem::path const file_;
 
+  // NOLINTNEXTLINE(cppcoreguidelines-use-default-member-init,modernize-use-default-member-init)
   bool remove_;
 };
 

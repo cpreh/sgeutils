@@ -20,8 +20,8 @@
 #include <fcppt/record/make_label.hpp>
 #include <fcppt/config/external_begin.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
-#include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/replace.hpp>
+#include <cstdlib>
 #include <exception>
 #include <filesystem>
 #include <iostream>

@@ -4,7 +4,7 @@
 #include <fcppt/main.hpp>
 #include <fcppt/make_cref.hpp>
 #include <fcppt/text.hpp>
-#include <fcppt/config/compiler.hpp>
+#include <fcppt/either/match.hpp>
 #include <fcppt/io/cerr.hpp>
 #include <fcppt/options/apply.hpp>
 #include <fcppt/options/argument.hpp>
@@ -28,6 +28,7 @@
 #include <fcppt/config/external_begin.hpp>
 #include <cstdio>
 #include <cstdlib>
+#include <exception>
 #include <filesystem>
 #include <fstream>
 #include <iosfwd>

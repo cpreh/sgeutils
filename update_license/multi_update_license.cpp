@@ -38,7 +38,7 @@ Assertions:
 #include <fcppt/make_cref.hpp>
 #include <fcppt/recursive_impl.hpp>
 #include <fcppt/reference_impl.hpp>
-#include <fcppt/strong_typedef_output.hpp>
+#include <fcppt/strong_typedef_output.hpp> // NOLINT(misc-include-cleaner)
 #include <fcppt/text.hpp>
 #include <fcppt/algorithm/contains_if.hpp>
 #include <fcppt/algorithm/map.hpp>
@@ -58,9 +58,9 @@ Assertions:
 #include <fcppt/options/parse.hpp>
 #include <fcppt/options/result_of.hpp>
 #include <fcppt/options/usage_output.hpp>
-#include <fcppt/preprocessor/disable_gcc_warning.hpp>
 #include <fcppt/preprocessor/ignore_dangling_reference.hpp>
 #include <fcppt/preprocessor/pop_warning.hpp>
+#include <fcppt/preprocessor/push_warning.hpp>
 #include <fcppt/record/get.hpp>
 #include <fcppt/record/make_label.hpp>
 #include <fcppt/config/external_begin.hpp>

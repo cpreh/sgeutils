@@ -1,17 +1,17 @@
 #include <sge/charconv/utf8_string.hpp>
 #include <sge/charconv/utf8_string_to_fcppt.hpp>
 #include <sge/parse/json/array.hpp>
-#include <sge/parse/json/element_vector.hpp>
 #include <sge/parse/json/find_member_exn.hpp>
+#include <sge/parse/json/get_exn.hpp>
 #include <sge/parse/json/object.hpp>
 #include <sge/parse/json/parse_file_exn.hpp>
 #include <sge/parse/json/start.hpp>
+#include <sge/parse/json/value.hpp>
 #include <fcppt/args_char.hpp>
 #include <fcppt/args_from_second.hpp>
 #include <fcppt/char_type.hpp>
 #include <fcppt/copy.hpp>
 #include <fcppt/declare_strong_typedef.hpp>
-#include <fcppt/deref_reference.hpp>
 #include <fcppt/exception.hpp>
 #include <fcppt/main.hpp>
 #include <fcppt/make_cref.hpp>
@@ -20,7 +20,7 @@
 #include <fcppt/output_to_fcppt_string.hpp>
 #include <fcppt/reference_impl.hpp>
 #include <fcppt/string.hpp>
-#include <fcppt/strong_typedef_impl.hpp>
+#include <fcppt/strong_typedef_impl.hpp> // NOLINT(misc-include-cleaner)
 #include <fcppt/strong_typedef_output.hpp>
 #include <fcppt/text.hpp>
 #include <fcppt/to_std_string.hpp>
@@ -31,11 +31,12 @@
 #include <fcppt/container/join.hpp>
 #include <fcppt/config/platform.hpp>
 #include <fcppt/either/match.hpp>
-#include <fcppt/either/output.hpp>
+#include <fcppt/either/output.hpp> // NOLINT(misc-include-cleaner)
 #include <fcppt/either/to_exception.hpp>
 #include <fcppt/io/cerr.hpp>
 #include <fcppt/io/cout.hpp>
 #include <fcppt/optional/make.hpp>
+#include <fcppt/optional/object_impl.hpp>
 #include <fcppt/optional/to_exception.hpp>
 #include <fcppt/options/apply.hpp>
 #include <fcppt/options/error.hpp>
@@ -56,7 +57,7 @@
 #include <fcppt/parse/make_fatal.hpp>
 #include <fcppt/parse/make_lexeme.hpp>
 #include <fcppt/parse/parse_string_error.hpp>
-#include <fcppt/parse/parse_string_error_output.hpp>
+#include <fcppt/parse/parse_string_error_output.hpp> // NOLINT(misc-include-cleaner)
 #include <fcppt/parse/phrase_parse_string.hpp>
 #include <fcppt/parse/space_set.hpp>
 #include <fcppt/parse/operators/alternative.hpp>
@@ -73,9 +74,10 @@
 #include <fcppt/tuple/object_impl.hpp>
 #include <fcppt/variant/match.hpp>
 #include <fcppt/variant/object_impl.hpp>
-#include <fcppt/variant/output.hpp>
+#include <fcppt/variant/output.hpp> // NOLINT(misc-include-cleaner)
 #include <fcppt/config/external_begin.hpp>
 #include <boost/asio/io_service.hpp>
+#include <algorithm>
 #include <cstdlib>
 #include <exception>
 #include <filesystem>

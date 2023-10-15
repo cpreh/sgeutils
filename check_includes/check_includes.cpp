@@ -18,7 +18,6 @@
 #include <fcppt/options/error_output.hpp>
 #include <fcppt/options/long_name.hpp>
 #include <fcppt/options/make_optional.hpp>
-#include <fcppt/options/option.hpp>
 #include <fcppt/options/optional_help_text.hpp>
 #include <fcppt/options/parse.hpp>
 #include <fcppt/options/result_of.hpp>

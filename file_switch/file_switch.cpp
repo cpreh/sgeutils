@@ -23,6 +23,7 @@
 #include <cstdlib>
 #include <exception>
 #include <filesystem>
+#include <functional>
 #include <iostream>
 #include <iterator>
 #include <numeric>

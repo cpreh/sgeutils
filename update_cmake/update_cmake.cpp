@@ -126,7 +126,7 @@ try
   std::string mode("r");
 
   std::regex fileregex( // NOLINT(fuchsia-default-arguments-calls)
-      ".*\\..pp");
+      ".*\\..(pp)?");
 
   for (int arg = 3; arg < argc; ++arg)
   {

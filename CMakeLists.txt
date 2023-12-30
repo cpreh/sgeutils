@@ -153,14 +153,6 @@ add_subdirectory(
 	check_includes
 )
 
-if(
-	ENABLE_SGE
-)
-	add_subdirectory(
-		compile_headers
-	)
-endif()
-
 add_subdirectory(
 	file_switch
 )

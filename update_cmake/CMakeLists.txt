@@ -5,3 +5,10 @@ sge_utils_add_program(
 	LINK_LIBS
 		fcppt_core_interface
 )
+
+install(
+	PROGRAMS
+	update_cmake.sh
+	DESTINATION
+	${CMAKE_INSTALL_BINDIR}
+)

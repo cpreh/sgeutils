@@ -21,9 +21,7 @@ if(
 	BUILD_APPS
 )
 	# Find Boost
-	find_package(
-		Boost 1.48.0
-	)
+    find_package(Boost 1.70.0 CONFIG REQUIRED)
 
 	# Find fcppt
 	find_package(
@@ -53,11 +51,7 @@ option(
 if(
 	ENABLE_SGE AND BUILD_APPS
 )
-	find_package(
-		Boost 1.48.0
-		COMPONENTS
-		locale
-	)
+	find_package(Boost 1.70.0 CONFIG REQUIRED COMPONENTS locale)
 
 	find_package(
 		sge

@@ -1,68 +1,26 @@
-set(
-	SGEBUILD_INSTALL_COMMON_DIR
-	${CMAKE_INSTALL_LIBEXECDIR}
-)
+set(SGEBUILD_INSTALL_COMMON_DIR ${CMAKE_INSTALL_LIBEXECDIR})
 
-function(
-	sgebuild_configure_file
-	FILENAME
-)
-	set(
-		SGEBUILD_COMMON_DIR
-		${CMAKE_CURRENT_SOURCE_DIR}
-	)
+function(sgebuild_configure_file FILENAME)
+  set(SGEBUILD_COMMON_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-	set(
-		SGEBUILD_BIN_DIR
-		"${${PROJECT_NAME}_BINARY_DIR}/bin"
-	)
+  set(SGEBUILD_BIN_DIR "${${PROJECT_NAME}_BINARY_DIR}/bin")
 
-	configure_file(
-		${FILENAME}
-		"${SGEBUILD_BIN_DIR}/${FILENAME}"
-		@ONLY
-	)
+  configure_file(${FILENAME} "${SGEBUILD_BIN_DIR}/${FILENAME}" @ONLY)
 
-	set(
-		SGEBUILD_COMMON_DIR
-		${CMAKE_INSTALL_PREFIX}/${SGEBUILD_INSTALL_COMMON_DIR}
-	)
+  set(SGEBUILD_COMMON_DIR
+      ${CMAKE_INSTALL_PREFIX}/${SGEBUILD_INSTALL_COMMON_DIR})
 
-	set(
-		SGEBUILD_BIN_DIR
-		"${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}"
-	)
+  set(SGEBUILD_BIN_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}")
 
-	set(
-		INSTALL_FILE
-		${CMAKE_CURRENT_BINARY_DIR}/install/${FILENAME}
-	)
+  set(INSTALL_FILE ${CMAKE_CURRENT_BINARY_DIR}/install/${FILENAME})
 
-	configure_file(
-		${FILENAME}
-		${INSTALL_FILE}
-		@ONLY
-	)
+  configure_file(${FILENAME} ${INSTALL_FILE} @ONLY)
 
-	install(
-		PROGRAMS
-		${INSTALL_FILE}
-		DESTINATION
-		${CMAKE_INSTALL_BINDIR}
-	)
+  install(PROGRAMS ${INSTALL_FILE} DESTINATION ${CMAKE_INSTALL_BINDIR})
 endfunction()
 
-sgebuild_configure_file(
-	sgebuild
-)
+sgebuild_configure_file(sgebuild)
 
-sgebuild_configure_file(
-	sgebuild_all
-)
+sgebuild_configure_file(sgebuild_all)
 
-install(
-	FILES
-	sgebuild-common
-	DESTINATION
-	${SGEBUILD_INSTALL_COMMON_DIR}
-)
+install(FILES sgebuild-common DESTINATION ${SGEBUILD_INSTALL_COMMON_DIR})

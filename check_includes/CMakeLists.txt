@@ -1,12 +1,11 @@
 sge_utils_add_program(
-	check_includes
-	SOURCES
-		check_includes.cpp
-	COMPILE_OPTIONS
-		${FCPPT_UTILS_MAIN_COMPILE_OPTIONS}
-	LINK_LIBS
-		${FCPPT_UTILS_MAIN_LINK_LIBS}
-		${fcppt_core_TARGET}
-		${fcppt_filesystem_TARGET}
-		${fcppt_options_TARGET}
-)
+  check_includes
+  SOURCES
+  check_includes.cpp
+  COMPILE_OPTIONS
+  ${FCPPT_UTILS_MAIN_COMPILE_OPTIONS}
+  LINK_LIBS
+  ${FCPPT_UTILS_MAIN_LINK_LIBS}
+  ${fcppt_core_TARGET}
+  ${fcppt_filesystem_TARGET}
+  ${fcppt_options_TARGET})

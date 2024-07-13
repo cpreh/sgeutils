@@ -8,4 +8,4 @@ else
     FIND_PARAMS=("-name" "${FIND_PATTERN}")
 fi
 
-LC_COLLATE="C" find "${@:2}" "${FIND_PARAMS[@]}" | sort > "$1"
+LC_COLLATE="C" find "${@:2}" "${FIND_PARAMS[@]}" | sort | uniq > "$1"

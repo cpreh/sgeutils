@@ -46,9 +46,7 @@ path_levels(std::filesystem::path const &_base_path)
       std::distance(_base_path.begin(), _base_path.end()));
 
   if (ret > 0 &&
-      fcppt::filesystem::path_to_string(*std::prev( // NOLINT(fuchsia-default-arguments-calls)
-                                            _base_path.end()))
-          .empty())
+      fcppt::filesystem::path_to_string(_base_path.filename()).empty())
   {
     --ret;
   }

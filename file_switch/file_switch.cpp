@@ -27,7 +27,6 @@
 #include <iostream>
 #include <iterator>
 #include <numeric>
-#include <ostream>
 #include <string>
 #include <fcppt/config/external_end.hpp>
 
@@ -89,8 +88,7 @@ int main_program(std::filesystem::path const &_input_file_with_extension, bool c
          !std::filesystem::is_directory(input_directory / "include"))
   {
     // NOLINTNEXTLINE(fuchsia-default-arguments-calls)
-    namespace_path = *(std::prev(input_directory.end())) /
-                     namespace_path;
+    namespace_path = input_directory.filename() / namespace_path;
     input_directory = input_directory.parent_path();
 
     if (input_directory.empty())

@@ -70,7 +70,6 @@ Assertions:
 #include <filesystem>
 #include <iostream>
 #include <iterator>
-#include <ostream>
 #include <regex>
 #include <set>
 #include <utility>
@@ -190,7 +189,7 @@ path_set intersection(path_set const &_paths, regex_set const &_regexs)
   {
     for (auto const &r : _regexs)
     {
-      if (path.string().compare(0, 2, "./") != 0)
+      if (path.string().starts_with("./"))
       {
         throw fcppt::exception{FCPPT_TEXT("Path does not start with ./")};
       }

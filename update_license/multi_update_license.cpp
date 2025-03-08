@@ -58,6 +58,7 @@ Assertions:
 #include <fcppt/options/parse.hpp>
 #include <fcppt/options/result_of.hpp>
 #include <fcppt/options/usage_output.hpp>
+#include <fcppt/preprocessor/disable_gcc_warning.hpp>
 #include <fcppt/preprocessor/ignore_dangling_reference.hpp>
 #include <fcppt/preprocessor/pop_warning.hpp>
 #include <fcppt/preprocessor/push_warning.hpp>
@@ -389,6 +390,9 @@ int main_function(sge::parse::json::start const &json_file)
 
 }
 
+FCPPT_PP_PUSH_WARNING
+FCPPT_PP_DISABLE_GCC_WARNING(-Wmissing-declarations)
+
 int FCPPT_MAIN(int const argc, fcppt::args_char *argv[])
 try
 {
@@ -430,3 +434,5 @@ catch (std::exception const &_e)
 
   return EXIT_FAILURE;
 }
+
+FCPPT_PP_POP_WARNING

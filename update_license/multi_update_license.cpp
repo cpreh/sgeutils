@@ -47,7 +47,6 @@ Assertions:
 #include <fcppt/filesystem/path_to_string.hpp>
 #include <fcppt/io/cerr.hpp>
 #include <fcppt/io/clog.hpp>
-#include <fcppt/iterator/make_range.hpp>
 #include <fcppt/optional/maybe.hpp>
 #include <fcppt/optional/object.hpp>
 #include <fcppt/options/argument.hpp>
@@ -71,6 +70,7 @@ Assertions:
 #include <filesystem>
 #include <iostream>
 #include <iterator>
+#include <ranges>
 #include <regex>
 #include <set>
 #include <utility>
@@ -152,11 +152,11 @@ bool has_hidden_components(std::filesystem::path const &_path)
   }
 
   return fcppt::algorithm::contains_if(
-      fcppt::iterator::make_range(
+      std::ranges::subrange{
           // skip the first entry because it starts with "./"
           std::next( // NOLINT(fuchsia-default-arguments-calls)
               _path.begin()),
-          _path.end()),
+          _path.end()},
       [](std::filesystem::path const &_entry)
       { return fcppt::filesystem::path_to_string(_entry).at(0) == FCPPT_TEXT('.'); });
 }
@@ -164,11 +164,11 @@ bool has_hidden_components(std::filesystem::path const &_path)
 path_set extract_paths(regex const &_standard_regex)
 {
   return fcppt::algorithm::map_optional<path_set>(
-      fcppt::iterator::make_range(
+      std::ranges::subrange{
           std::filesystem::recursive_directory_iterator( // NOLINT(fuchsia-default-arguments-calls)
               std::filesystem::path{// NOLINT(fuchsia-default-arguments-calls)
                                     FCPPT_TEXT(".")}),
-          std::filesystem::recursive_directory_iterator()),
+          std::filesystem::recursive_directory_iterator()},
       [&_standard_regex](std::filesystem::path const &_path)
       {
         using optional_path = fcppt::optional::object<std::filesystem::path>;

@@ -86,8 +86,8 @@ fcppt::string make_include_guard(
 
 bool is_reserved_identifier(fcppt::string const &_identifier)
 {
-  return !_identifier.empty() && (_identifier[0] == FCPPT_TEXT('_') ||
-                                  _identifier.find(FCPPT_TEXT("__")) != fcppt::string::npos);
+  return !_identifier.empty() &&
+         (_identifier[0] == FCPPT_TEXT('_') || _identifier.contains(FCPPT_TEXT("__")));
 }
 
 void main_program(std::filesystem::path const &_base_path, fcppt::string const &_prefix)

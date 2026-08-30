@@ -121,6 +121,7 @@ void main_program(std::filesystem::path const &_p)
 FCPPT_PP_PUSH_WARNING
 FCPPT_PP_DISABLE_GCC_WARNING(-Wmissing-declarations)
 
+// NOLINTNEXTLINE(misc-const-correctness)
 int FCPPT_MAIN(int argc, fcppt::args_char **argv)
 try
 {

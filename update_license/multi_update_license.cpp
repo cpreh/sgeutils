@@ -235,10 +235,10 @@ bool is_disjoint(Set1 const &set1, Set2 const &set2)
   }
 
   auto it1{set1.begin()};
-  auto it1End{set1.end()};
+  auto const it1End{set1.end()};
 
   auto it2{set2.begin()};
-  auto it2End{set2.end()};
+  auto const it2End{set2.end()};
 
   if (*it1 > *set2.rbegin() || *it2 > *set1.rbegin())
   {
@@ -393,6 +393,7 @@ int main_function(sge::parse::json::start const &json_file)
 FCPPT_PP_PUSH_WARNING
 FCPPT_PP_DISABLE_GCC_WARNING(-Wmissing-declarations)
 
+// NOLINTNEXTLINE(misc-const-correctness)
 int FCPPT_MAIN(int const argc, fcppt::args_char *argv[])
 try
 {
